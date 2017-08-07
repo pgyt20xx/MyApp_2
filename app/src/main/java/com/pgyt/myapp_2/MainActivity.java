@@ -1,5 +1,7 @@
 package com.pgyt.myapp_2;
 
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,9 +15,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener {
+
+
+    ViewPager mViewPager;
+
+    DBHelper dBhelper = null;
+
+    /**
+     * デフォルトタブ
+     */
+    private static int PAGE_COUNT = 0;
+
+    private static String BLANK_STRING = "";
+
+    private static ArrayList<String> TITLE_NAME = new ArrayList<>();
+
+
+    /**
+     * タグ:MainActivity
+     */
+    private static String TAG = "MainActivity";		
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,4 +119,5 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onFragmentInteraction(Uri uri) {
 
     }
+
 }

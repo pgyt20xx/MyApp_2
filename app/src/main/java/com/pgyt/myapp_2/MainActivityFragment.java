@@ -14,9 +14,14 @@ import android.widget.TextView;
  */
 public class MainActivityFragment extends Fragment {
 
-    private static final String ARG_PARAM = "page";
+//    private static final String ARG_PARAM = "page";
     private String mParam;
     private OnFragmentInteractionListener mListener;
+    public static final String ARG_SECTION_NUMBER = "section_number";
+
+
+
+    DBHelper dBhelper = null;
 
     // コンストラクタ
     public MainActivityFragment() {
@@ -25,7 +30,7 @@ public class MainActivityFragment extends Fragment {
     public static MainActivityFragment newInstance(int page) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM, page);
+        args.putInt(ARG_SECTION_NUMBER, page);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,7 +39,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam = getArguments().getString(ARG_PARAM);
+            mParam = getArguments().getString(ARG_SECTION_NUMBER);
         }
     }
 
@@ -42,7 +47,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        int page = getArguments().getInt(ARG_PARAM, 0);
+        int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 //        (TextView)view.findViewById(R.id.textView).setText("Page" + page);
         TextView textView = (TextView) view.findViewById(R.id.textView);

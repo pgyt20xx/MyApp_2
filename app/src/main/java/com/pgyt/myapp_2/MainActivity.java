@@ -8,18 +8,29 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.EditText;
+
+import com.pgyt.myapp_2.model.CategoryBean;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener {
 
+    SectionsPagerAdapter mSectionsPagerAdapter;
 
     ViewPager mViewPager;
 
@@ -30,9 +41,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private static int PAGE_COUNT = 0;
 
-    private static String BLANK_STRING = "";
+    private static final String BLANK_STRING = "";
 
     private static ArrayList<String> TITLE_NAME = new ArrayList<>();
+
+
+
+
 
 
     /**
@@ -52,31 +67,39 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // xmlからViewPagerを取得
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         // ページタイトル配列
-        final String[] pageTitle = {"HOME", "EVENT", "SETTING"};
+//        final String[] pageTitle = {"HOME", "EVENT", "SETTING"};
 
         // 表示Pageに必要な項目を設定
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return MainActivityFragment.newInstance(position + 1);
-            }
 
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return pageTitle[position];
-            }
+        Cursor cursor = null;
+        try {
+            dBhelper = new DBHelper(this.getApplicationContext());
+            cursor = dBhelper.selectCategory(BLANK_STRING);
 
-            @Override
-            public int getCount() {
-                return pageTitle.length;
-            }
-        };
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+
+        // 取得したレコードの件数がページ数
+        PAGE_COUNT = cursor.getCount();
+
+        // 登録されているカテゴリー名を保持する
+        boolean isEof = cursor.moveToFirst();
+        while(isEof){
+            TITLE_NAME.add(cursor.getString(cursor.getColumnIndex("category_name")));
+            isEof = cursor.moveToNext();
+        }
+        cursor.close();
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
 
         // ViewPagerにページを設定
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
-        // ViewPagerをTabLayoutを設定
+        // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);
 
     }
@@ -93,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        // 押下されたメニューで分岐
+        switch (item.getItemId()) {
+            case R.id.item1:
+                createDialogEvent();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,4 +143,69 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     }
 
+    /**
+     * ダイアログイベント
+     */
+    private void createDialogEvent() {
+        final EditText editView = new EditText(MainActivity.this);
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle(R.string.menu_item1);
+        dialog.setView(editView);
+
+        // OKボタン押下時
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // 値が入力された場合はDBに登録
+                if (!TextUtils.isEmpty(editView.getText())) {
+                    CategoryBean param = new CategoryBean();
+                    param.setCategory_name(editView.getText().toString());
+                    dBhelper.insertCategory(param);
+                }
+            }
+        });
+        // Cancelボタン押下時
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return MainActivityFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TITLE_NAME.get(position);
+        }
+//
+//        @Override
+//        public int getCount() {
+//            return pageTitle.length;
+//        }
+
+        /**
+         * 生成するページ数
+         *
+         * @return
+         */
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+    }
 }

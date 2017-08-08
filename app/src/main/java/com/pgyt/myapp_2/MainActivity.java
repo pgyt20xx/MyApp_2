@@ -30,11 +30,11 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener {
 
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
     ViewPager mViewPager;
 
     DBHelper dBhelper = null;
+	
+	SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * デフォルトタブ
@@ -45,11 +45,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static ArrayList<String> TITLE_NAME = new ArrayList<>();
 
-
-
-
-
-
     /**
      * タグ:MainActivity
      */
@@ -58,16 +53,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // xmlからTabLayoutの取得
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        // xmlからViewPagerを取得
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        // ページタイトル配列
-//        final String[] pageTitle = {"HOME", "EVENT", "SETTING"};
 
         // 表示Pageに必要な項目を設定
 
@@ -85,17 +70,28 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         PAGE_COUNT = cursor.getCount();
 
         // 登録されているカテゴリー名を保持する
+		TITLE_NAME.add("DEFAULT");//TODO
         boolean isEof = cursor.moveToFirst();
         while(isEof){
             TITLE_NAME.add(cursor.getString(cursor.getColumnIndex("category_name")));
             isEof = cursor.moveToNext();
         }
         cursor.close();
+		
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		
+		
+		setContentView(R.layout.activity_main);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-
-        // ViewPagerにページを設定
+        // xmlからTabLayoutの取得
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        // xmlからViewPagerを取得
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+		
+		// ViewPagerにページを設定
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
@@ -175,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         dialog.show();
     }
-
+	
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -183,29 +179,24 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             super(fm);
         }
 
-        @Override
-        public Fragment getItem(int position) {
-            return MainActivityFragment.newInstance(position + 1);
-        }
+		@Override
+		public Fragment getItem(int position) {
+			return MainActivityFragment.newInstance(position + 1);
+		}
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return TITLE_NAME.get(position);
-        }
-//
-//        @Override
-//        public int getCount() {
-//            return pageTitle.length;
-//        }
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return TITLE_NAME.get(position);
+		}
 
-        /**
-         * 生成するページ数
-         *
-         * @return
-         */
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
-    }
+		/**
+		 * 生成するページ数
+		 *
+		 * @return
+		 */
+		@Override
+		public int getCount() {
+			return TITLE_NAME.size();
+		}
+	}
 }

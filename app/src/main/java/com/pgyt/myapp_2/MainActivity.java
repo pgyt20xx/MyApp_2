@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     ViewPager mViewPager;
 
     DBHelper dBhelper = null;
-	
-	SectionsPagerAdapter mSectionsPagerAdapter;
+
+    SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * デフォルトタブ
@@ -43,19 +43,18 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static final String BLANK_STRING = "";
 
-    private static ArrayList<String> TITLE_NAME = new ArrayList<>();
+    private static ArrayList<String> TITLE_NAME;
 
     /**
      * タグ:MainActivity
      */
-    private static String TAG = "MainActivity";		
+    private static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 表示Pageに必要な項目を設定
-
+        // DBからカテゴリー名を取得する
         Cursor cursor = null;
         try {
             dBhelper = new DBHelper(this.getApplicationContext());
@@ -65,33 +64,35 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, e.getMessage());
         }
 
-
         // 取得したレコードの件数がページ数
         PAGE_COUNT = cursor.getCount();
 
         // 登録されているカテゴリー名を保持する
-		TITLE_NAME.add("DEFAULT");//TODO
+        // TODO TITLE_NAMEの設定方法を改善する
+        TITLE_NAME = new ArrayList<>();
+        TITLE_NAME.add("DEFAULT");
         boolean isEof = cursor.moveToFirst();
-        while(isEof){
+        while (isEof) {
             TITLE_NAME.add(cursor.getString(cursor.getColumnIndex("category_name")));
             isEof = cursor.moveToNext();
         }
         cursor.close();
-		
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-		
-		
-		setContentView(R.layout.activity_main);
 
+        // フラグメントを取得する
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // 描画処理
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // xmlからTabLayoutの取得
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
         // xmlからViewPagerを取得
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-		
-		// ViewPagerにページを設定
+
+        // ViewPagerにページを設定
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
@@ -109,10 +110,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
         // 押下されたメニューで分岐
         switch (item.getItemId()) {
             case R.id.item1:
@@ -171,32 +168,45 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         dialog.show();
     }
-	
 
+
+    /**
+     * FragmentPagerAdapter呼び出し
+     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-		@Override
-		public Fragment getItem(int position) {
-			return MainActivityFragment.newInstance(position + 1);
-		}
+        /**
+         * フラグメントを取得
+         * @param position
+         * @return
+         */
+        @Override
+        public Fragment getItem(int position) {
+            return MainActivityFragment.newInstance(position + 1);
+        }
 
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return TITLE_NAME.get(position);
-		}
+        /**
+         * タブにタイトルを設定
+         * @param position
+         * @return
+         */
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TITLE_NAME.get(position);
+        }
 
-		/**
-		 * 生成するページ数
-		 *
-		 * @return
-		 */
-		@Override
-		public int getCount() {
-			return TITLE_NAME.size();
-		}
-	}
+        /**
+         * 生成するページ数
+         *
+         * @return
+         */
+        @Override
+        public int getCount() {
+            return TITLE_NAME.size();
+        }
+    }
 }

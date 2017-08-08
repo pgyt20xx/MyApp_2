@@ -48,7 +48,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.content_main, container, false);
 //        (TextView)view.findViewById(R.id.textView).setText("Page" + page);
         TextView textView = (TextView) view.findViewById(R.id.textView);
         textView.setText("Page" + page);

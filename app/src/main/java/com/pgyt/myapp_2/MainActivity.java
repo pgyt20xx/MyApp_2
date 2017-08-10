@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ViewPagerにページを設定
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
+
 
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);

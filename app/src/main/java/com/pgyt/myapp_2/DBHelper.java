@@ -32,6 +32,7 @@ public class DBHelper
         if(this.sqLiteDatabase == null){
             this.sqLiteDatabase = this.dbOpenHelper.getWritableDatabase();
         }
+        isDatabaseDelete(dbOpenHelper.m_context);
     }
 
     /**
@@ -86,5 +87,6 @@ public class DBHelper
             }
         }
         return result;
-    }	
+    }
+
 }

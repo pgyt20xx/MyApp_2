@@ -69,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         PAGE_COUNT = cursor.getCount();
 
         // 登録されているカテゴリー名を保持する
-        // TODO TITLE_NAMEの設定方法を改善する
         TITLE_NAME = new ArrayList<>();
-        TITLE_NAME.add("DEFAULT");
         boolean isEof = cursor.moveToFirst();
         while (isEof) {
             TITLE_NAME.add(cursor.getString(cursor.getColumnIndex("category_name")));

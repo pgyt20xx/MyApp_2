@@ -4,8 +4,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,15 +11,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.pgyt.myapp_2.model.CategoryBean;
@@ -155,6 +149,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     CategoryBean param = new CategoryBean();
                     param.setCategory_name(editView.getText().toString());
                     dBhelper.insertCategory(param);
+
+                    // TODO:タブ追加方法を考える。
+                    TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+                    tabLayout.addTab(tabLayout.newTab().setText(editView.getText()));
+
                 }
             }
         });
@@ -207,6 +206,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         @Override
         public int getCount() {
             return TITLE_NAME.size();
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
     }
 }

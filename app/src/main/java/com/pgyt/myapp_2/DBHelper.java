@@ -32,6 +32,8 @@ public class DBHelper
         if(this.sqLiteDatabase == null){
             this.sqLiteDatabase = this.dbOpenHelper.getWritableDatabase();
         }
+
+        // 完成したら削除する
         isDatabaseDelete(dbOpenHelper.m_context);
     }
 

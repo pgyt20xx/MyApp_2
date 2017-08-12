@@ -71,27 +71,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
         cursor.close();
 
-        // フラグメントを取得する
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // 描画処理
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // xmlからTabLayoutの取得
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        // xmlからViewPagerを取得
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-
-        // ViewPagerにページを設定
-        viewPager.setAdapter(mSectionsPagerAdapter);
-        viewPager.addOnPageChangeListener(this);
-
-
-        // ViewPagerをTabLayoutに設定
-        tabLayout.setupWithViewPager(viewPager);
+        // フラグメントの初期化
+        initFragmentView();
 
     }
 
@@ -113,21 +98,26 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
+    /**
+     * フラグメントを初期化し画面を再描画する
+     */
+    private void initFragmentView(){
+        // フラグメントを取得する
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-    @Override
-    public void onPageSelected(int position) {
-    }
+        // xmlからTabLayoutの取得
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-    @Override
-    public void onPageScrollStateChanged(int state) {
-    }
+        // xmlからViewPagerを取得
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
+        // ViewPagerにページを設定
+        viewPager.setAdapter(mSectionsPagerAdapter);
+        viewPager.addOnPageChangeListener(this);
 
+
+        // ViewPagerをTabLayoutに設定
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     /**
@@ -150,9 +140,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     param.setCategory_name(editView.getText().toString());
                     dBhelper.insertCategory(param);
 
-                    // TODO:タブ追加方法を考える。
-                    TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-                    tabLayout.addTab(tabLayout.newTab().setText(editView.getText()));
+                    // 新規タブ追加
+                    TITLE_NAME.add((editView.getText()).toString());
+
+                    // フラグメントの初期化
+                    initFragmentView();
 
                 }
             }
@@ -167,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         dialog.show();
     }
-
 
     /**
      * FragmentPagerAdapter呼び出し
@@ -212,5 +203,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public int getItemPosition(Object object) {
             return POSITION_NONE;
         }
+    }
+
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public Fragment getItem(int position) {
-            return MainActivityFragment.newInstance(position + 1);
+            return MainActivityFragment.newInstance(position + 1, TITLE_NAME.get(position));
         }
 
         /**

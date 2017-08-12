@@ -28,8 +28,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public CustomAdapter(List<String> itemNames) {
-        this.mDataset = itemNames;
+    public CustomAdapter(List<String> item) {
+        this.mDataset = item;
     }
 
     // Create new views (invoked by the layout manager)

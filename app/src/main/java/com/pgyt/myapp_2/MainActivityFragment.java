@@ -9,11 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -24,12 +24,13 @@ public class MainActivityFragment extends Fragment {
     private String mParam;
     private OnFragmentInteractionListener mListener;
     public static final String ARG_SECTION_NUMBER = "section_number";
+    public static final String ARG_TITLE_NAME = "title_name";
 
     // TODO 仮
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private List<String> itemNames;
+    private List<String> viewItem;
     private static final String[] names = {
             "test",
             "test",
@@ -51,10 +52,11 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    public static MainActivityFragment newInstance(int page) {
+    public static MainActivityFragment newInstance(int page, String title) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
+        args.putString(ARG_TITLE_NAME, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,29 +65,40 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam = getArguments().getString(ARG_SECTION_NUMBER);
+            // param取得
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
+        // パラメータ取得
         int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
+        String title = getArguments().getString(ARG_TITLE_NAME);
+
         View view = inflater.inflate(R.layout.content_main, container, false);
-//        (TextView)view.findViewById(R.id.textView).setText("Page" + page);
-//        TextView textView = (TextView) view.findViewById(R.id.textView);
-//        textView.setText("Page" + page);
+
+        // TODO Mapから表示内容を取得
+        ArrayList itemList = new ArrayList<String>();
+        itemList.add("aaa");
+        itemList.add("bbb");
+        itemList.add("ccc");
+        itemList.add("ddd");
+
+        Map<String, List<String>> itemMap = new LinkedHashMap();
+        itemMap.put("MY_CLIP", itemList);
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        itemNames = new ArrayList(Arrays.asList(names));
-        mAdapter = new CustomAdapter(itemNames);
-        mRecyclerView.setAdapter(mAdapter);
+        viewItem = itemMap.get(title);
 
-
-
-
+        // 表示内容があるときだけ設定
+        if(viewItem != null){
+            mAdapter = new CustomAdapter(viewItem);
+            mRecyclerView.setAdapter(mAdapter);
+        }
         return view;
     }
 

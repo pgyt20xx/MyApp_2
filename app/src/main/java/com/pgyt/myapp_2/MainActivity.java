@@ -25,16 +25,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener {
 
-    ViewPager mViewPager;
-
     DBHelper dBhelper = null;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * デフォルトタブ
-     */
-    private static int PAGE_COUNT = 0;
 
     private static final String BLANK_STRING = "";
 
@@ -49,6 +42,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 登録されているカテゴリー名を保持する
+        TITLE_NAME = getAllCategory();
+
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // フラグメントの初期化
+        initFragmentView();
+
+    }
+
+    /**
+     * カテゴリー名取得
+     * @return
+     */
+    private ArrayList<String> getAllCategory(){
         // DBからカテゴリー名を取得する
         Cursor cursor = null;
         try {
@@ -59,25 +69,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, e.getMessage());
         }
 
-        // 取得したレコードの件数がページ数
-        PAGE_COUNT = cursor.getCount();
+        ArrayList<String> result = new ArrayList<>();
 
-        // 登録されているカテゴリー名を保持する
-        TITLE_NAME = new ArrayList<>();
         boolean isEof = cursor.moveToFirst();
         while (isEof) {
-            TITLE_NAME.add(cursor.getString(cursor.getColumnIndex("category_name")));
+            result.add(cursor.getString(cursor.getColumnIndex("category_name")));
             isEof = cursor.moveToNext();
         }
         cursor.close();
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // フラグメントの初期化
-        initFragmentView();
-
+        return result;
     }
 
     @Override

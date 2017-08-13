@@ -80,7 +80,7 @@ public class MainActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // TODO Mapから表示内容を取得
-        ArrayList itemList = new ArrayList<String>();
+        ArrayList<String> itemList = new ArrayList<>();
         itemList.add("aaa");
         itemList.add("bbb");
         itemList.add("ccc");

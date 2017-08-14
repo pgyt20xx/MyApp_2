@@ -79,6 +79,17 @@ public class DBHelper
     }
 
     /**
+     * カテゴリーテーブルの削除
+     * 紐づくコンテンツテーブルの削除も行う。
+     * @param param
+     */
+    public void deletetCategory(String param){
+        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
+        readDb.delete("CATEGORY", "category_name = ?", new String[]{param});
+        readDb.delete("CONTENTS", "category_name = ?", new String[]{param});
+    }
+
+    /**
      * コンテンツテーブルの内容をすべて取得するのセレクト文
      * @return
      */

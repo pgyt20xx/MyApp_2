@@ -72,8 +72,6 @@ public class MainActivityFragment extends Fragment {
         ArrayList<String> contentsList = CONTENTS_MAP.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
-
-        // TODO Mapから表示内容を取得
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

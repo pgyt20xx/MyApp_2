@@ -215,6 +215,52 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     /**
+     * カテゴリ削除のダイアログイベント
+     */
+    private void categoryDeletetEvent() {
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle(R.string.menu_item2);
+
+        // OKボタン押下時
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                // 現在のフラグメントのpositionを取得
+                mViewPager = (ViewPager) findViewById(R.id.pager);
+                int position = mViewPager.getCurrentItem();
+
+                // デフォルトタブでなければ削除
+                if(position == 0){
+                    Snackbar.make(findViewById(R.id.activity_main), "Default Category cannot Delete", Snackbar.LENGTH_SHORT).show();
+
+                } else {
+                    String param = TITLE_NAME.get(position);
+                    dBhelper.deletetCategory(param);
+
+                    Snackbar.make(findViewById(R.id.activity_main), "Delete Success", Snackbar.LENGTH_SHORT).show();
+
+                    // 変数からカテゴリーを削除
+                    TITLE_NAME.remove(position);
+
+                    // フラグメントの初期化
+                    initFragmentView();
+                }
+            }
+        });
+        // Cancelボタン押下時
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        dialog.show();
+    }
+
+    /**
      * コンテンツ追加のダイアログイベント
      */
     private void contentsInsertEvent() {
@@ -329,6 +375,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         switch (item.getItemId()) {
             case R.id.item1:
                 categoryInsertEvent();
+                return true;
+
+            case R.id.item2:
+                categoryDeletetEvent();
                 return true;
         }
         return super.onOptionsItemSelected(item);

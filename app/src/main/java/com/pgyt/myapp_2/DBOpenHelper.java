@@ -1,14 +1,10 @@
 package com.pgyt.myapp_2;
 
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

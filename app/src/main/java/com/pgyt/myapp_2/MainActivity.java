@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.pgyt.myapp_2.model.CategoryBean;
+import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         MainActivityFragment.OnFragmentInteractionListener {
 
     DBHelper dBhelper = null;
+
+    private ViewPager mViewPager;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -76,9 +79,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CoordinatorLayout coordinatorLayout
-                        = (CoordinatorLayout) findViewById(R.id.activity_main);
-                Snackbar.make(coordinatorLayout, "Unimplemented", Snackbar.LENGTH_SHORT).show();
+                contentsInsertEvent();
             }
         });
     }
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
                 isTmpEof = cursor.moveToNext();
             }
+            contentsList.add("SAMPLE");
             result.put(mapKey, contentsList);
             isEof = cursor.moveToNext();
         }
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     /**
-     * ダイアログイベント
+     * カテゴリ追加のダイアログイベント
      */
     private void categoryInsertEvent() {
         final EditText editView = new EditText(MainActivity.this);
@@ -213,6 +215,60 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                     // 新規タブ追加
                     TITLE_NAME.add((editView.getText()).toString());
+
+                    // フラグメントの初期化
+                    initFragmentView();
+
+                }
+            }
+        });
+        // Cancelボタン押下時
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void contentsInsertEvent() {
+        final EditText editView = new EditText(MainActivity.this);
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle(R.string.fab_title);
+        dialog.setView(editView);
+
+        // OKボタン押下時
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // 値が入力された場合はDBに登録
+                if (!TextUtils.isEmpty(editView.getText())) {
+
+                    // 現在のフラグメントのpositionを取得
+                    mViewPager = (ViewPager) findViewById(R.id.pager);
+                    int position = mViewPager.getCurrentItem();
+
+                    ContentsBean param = new ContentsBean();
+                    param.setCategory_name(TITLE_NAME.get(position));
+                    param.setContents(editView.getText().toString());
+                    dBhelper.insertContents(param);
+
+                    // TODO: Exception
+                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+
+                    ArrayList<String> contentsList;
+                    if(!CONTENTS.containsKey(TITLE_NAME.get(position))){
+                        // 新規コンテンツ追加
+                        contentsList = new ArrayList();
+                    } else {
+                        // 既存コンテンツに追加
+                        contentsList = CONTENTS.get(TITLE_NAME.get(position));
+                    }
+                    contentsList.add(editView.getText().toString());
+                    CONTENTS.put(TITLE_NAME.get(position), contentsList);
 
                     // フラグメントの初期化
                     initFragmentView();

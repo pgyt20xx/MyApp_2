@@ -27,8 +27,6 @@ public class MainActivityFragment extends Fragment {
     public static final String ARG_TITLE_NAME = "title_name";
     public static final String ARG_CONTENTS = "contents";
 
-
-    // TODO 仮
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -46,6 +44,11 @@ public class MainActivityFragment extends Fragment {
         args.putStringArrayList(ARG_CONTENTS, contents);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static void contentsArgSet(ArrayList<String> contents){
+        Bundle args = new Bundle();
+        args.putStringArrayList(ARG_CONTENTS, contents);
     }
 
     @Override
@@ -68,7 +71,6 @@ public class MainActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // TODO Mapから表示内容を取得
-
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

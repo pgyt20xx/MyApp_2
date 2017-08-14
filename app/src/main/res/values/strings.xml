@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MyApp_2</string>
+    <string name="fab_title">Add Contents</string>
     <string name="menu_item1">Add Category</string>
 </resources>

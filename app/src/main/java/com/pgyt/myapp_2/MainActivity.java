@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
                 isTmpEof = cursor.moveToNext();
             }
-            contentsList.add("SAMPLE");
             result.put(mapKey, contentsList);
             isEof = cursor.moveToNext();
         }
@@ -148,24 +147,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         cursor.close();
 
         return result;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // 押下されたメニューで分岐
-        switch (item.getItemId()) {
-            case R.id.item1:
-                categoryInsertEvent();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -233,6 +214,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.show();
     }
 
+    /**
+     * コンテンツ追加のダイアログイベント
+     */
     private void contentsInsertEvent() {
         final EditText editView = new EditText(MainActivity.this);
 
@@ -303,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public Fragment getItem(int position) {
-            return MainActivityFragment.newInstance(position + 1, TITLE_NAME.get(position), CONTENTS.get(TITLE_NAME.get(position)));
+            return MainActivityFragment.newInstance(position, TITLE_NAME.get(position), CONTENTS);
         }
 
         /**
@@ -332,6 +316,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // 押下されたメニューで分岐
+        switch (item.getItemId()) {
+            case R.id.item1:
+                categoryInsertEvent();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

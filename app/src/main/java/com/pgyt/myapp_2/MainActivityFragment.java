@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +23,12 @@ import java.util.Map;
 public class MainActivityFragment extends Fragment {
 
 //    private static final String ARG_PARAM = "page";
-    private String mParam;
     private OnFragmentInteractionListener mListener;
     public static final String ARG_SECTION_NUMBER = "section_number";
     public static final String ARG_TITLE_NAME = "title_name";
     public static final String ARG_CONTENTS = "contents";
+    private static  HashMap<String, ArrayList<String>> CONTENTS_MAP;
+
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -36,12 +39,12 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    public static MainActivityFragment newInstance(int page, String title, ArrayList<String> contents) {
+    public static MainActivityFragment newInstance(int page, String title, HashMap<String, ArrayList<String>> contentsMap) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
         args.putString(ARG_TITLE_NAME, title);
-        args.putStringArrayList(ARG_CONTENTS, contents);
+        CONTENTS_MAP = contentsMap;
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,7 +69,7 @@ public class MainActivityFragment extends Fragment {
         // パラメータ取得
         int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
         String title = getArguments().getString(ARG_TITLE_NAME);
-        ArrayList<String> contentsList = getArguments().getStringArrayList(ARG_CONTENTS);
+        ArrayList<String> contentsList = CONTENTS_MAP.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 

@@ -4,6 +4,9 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,11 +19,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener {
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static final String BLANK_STRING = "";
 
     private static ArrayList<String> TITLE_NAME;
+
+    private static HashMap<String, ArrayList<String>> CONTENTS;
 
     /**
      * タグ:MainActivity
@@ -45,13 +52,73 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // 登録されているカテゴリー名を保持する
         TITLE_NAME = getAllCategory();
 
+        // 登録されているコンテンツを取得
+        CONTENTS = getAllContents();
+
+        // アクティビティを設定
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // フローティングアクションボタンを設定
+        setFabEvent();
+
         // フラグメントの初期化
         initFragmentView();
 
+    }
+
+    /**
+     * フローティングアクションボタンのクリックイベントを定義
+     */
+    private void setFabEvent(){
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CoordinatorLayout coordinatorLayout
+                        = (CoordinatorLayout) findViewById(R.id.activity_main);
+                Snackbar.make(coordinatorLayout, "Unimplemented", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * 全コンテンツを取得
+     * @return
+     */
+    private HashMap<String, ArrayList<String>> getAllContents(){
+        // DBからカテゴリー名を取得する
+        Cursor cursor = null;
+        try {
+            dBhelper = new DBHelper(this.getApplicationContext());
+            cursor = dBhelper.selectAllContents();
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+        HashMap<String, ArrayList<String>> result = new HashMap<>();
+
+        boolean isEof = cursor.moveToFirst();
+
+        String mapKey;
+        while (isEof) {
+            mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
+            ArrayList<String> contentsList = new ArrayList<>();
+            boolean isTmpEof = cursor.moveToFirst();
+
+            // 同一カテゴリーのリストを作成する。
+            while (isTmpEof) {
+                contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
+                isTmpEof = cursor.moveToNext();
+            }
+            result.put(mapKey, contentsList);
+            isEof = cursor.moveToNext();
+        }
+        cursor.close();
+
+        return result;
     }
 
     /**
@@ -93,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // 押下されたメニューで分岐
         switch (item.getItemId()) {
             case R.id.item1:
-                createDialogEvent();
+                categoryInsertEvent();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -124,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * ダイアログイベント
      */
-    private void createDialogEvent() {
+    private void categoryInsertEvent() {
         final EditText editView = new EditText(MainActivity.this);
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
@@ -140,6 +207,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     CategoryBean param = new CategoryBean();
                     param.setCategory_name(editView.getText().toString());
                     dBhelper.insertCategory(param);
+
+                    // TODO: Exception
+                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
                     // 新規タブ追加
                     TITLE_NAME.add((editView.getText()).toString());
@@ -177,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public Fragment getItem(int position) {
-            return MainActivityFragment.newInstance(position + 1, TITLE_NAME.get(position));
+            return MainActivityFragment.newInstance(position + 1, TITLE_NAME.get(position), CONTENTS.get(TITLE_NAME.get(position)));
         }
 
         /**

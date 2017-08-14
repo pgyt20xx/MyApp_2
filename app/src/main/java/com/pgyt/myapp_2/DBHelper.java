@@ -69,12 +69,26 @@ public class DBHelper
         SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
         Cursor cursor = null;
         if(param.isEmpty()){
-            String sql = "SELECT id, category_name FROM CATEGORY;";
+            String sql = "SELECT id, category_name FROM CATEGORY ORDER BY id;";
             cursor = readDb.rawQuery(sql, null);
         }else{
-            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = '" + param + "';";
+            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = '" + param + "' ORDER BY id;";
             cursor = readDb.rawQuery(sql, new String[]{param});
         }
+        return cursor;
+    }
+
+    /**
+     * コンテンツテーブルの内容をすべて取得するのセレクト文
+     * @return
+     */
+    public Cursor selectAllContents(){
+        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
+        Cursor cursor = null;
+
+        String sql = "SELECT id, category_name, contents FROM CONTENTS ORDER BY category_name, id;";
+        cursor = readDb.rawQuery(sql, null);
+
         return cursor;
     }
 

@@ -25,38 +25,25 @@ public class MainActivityFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     public static final String ARG_SECTION_NUMBER = "section_number";
     public static final String ARG_TITLE_NAME = "title_name";
+    public static final String ARG_CONTENTS = "contents";
+
 
     // TODO 仮
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<String> viewItem;
-    private static final String[] names = {
-            "test",
-            "test",
-            "test",
-            "test",
-            "test",
-            "test",
-            "test",
-            "test",
-            "test",
-            "test"
-    };
-
-
-
-    DBHelper dBhelper = null;
 
     // コンストラクタ
     public MainActivityFragment() {
     }
 
-    public static MainActivityFragment newInstance(int page, String title) {
+    public static MainActivityFragment newInstance(int page, String title, ArrayList<String> contents) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
         args.putString(ARG_TITLE_NAME, title);
+        args.putStringArrayList(ARG_CONTENTS, contents);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,23 +63,16 @@ public class MainActivityFragment extends Fragment {
         // パラメータ取得
         int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
         String title = getArguments().getString(ARG_TITLE_NAME);
+        ArrayList<String> contentsList = getArguments().getStringArrayList(ARG_CONTENTS);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // TODO Mapから表示内容を取得
-        ArrayList<String> itemList = new ArrayList<>();
-        itemList.add("aaa");
-        itemList.add("bbb");
-        itemList.add("ccc");
-        itemList.add("ddd");
-
-        Map<String, List<String>> itemMap = new LinkedHashMap();
-        itemMap.put("MY_CLIP", itemList);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        viewItem = itemMap.get(title);
+        viewItem = contentsList;
 
         // 表示内容があるときだけ設定
         if(viewItem != null){

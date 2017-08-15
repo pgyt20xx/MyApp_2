@@ -4,13 +4,18 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -28,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
-        MainActivityFragment.OnFragmentInteractionListener {
+        MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     DBHelper dBhelper = null;
 
@@ -41,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static ArrayList<String> TITLE_NAME;
 
     private static HashMap<String, ArrayList<String>> CONTENTS;
+
 
     /**
      * タグ:MainActivity
@@ -64,6 +71,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // フローティングアクションボタンを設定
         setFabEvent();
+
+        /** サンプル */
+        // DrawerToggle
+        DrawerLayout drawer =
+                (DrawerLayout) findViewById(R.id.drawerLayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // NavigationView Listener
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(this);
 
         // フラグメントの初期化
         initFragmentView();
@@ -365,6 +387,36 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public int getItemPosition(Object object) {
             return POSITION_NONE;
         }
+    }
+
+    /**
+     * Called when an item in the navigation menu is selected.
+     *
+     * @param item The selected item
+     * @return true to display the item as the selected item
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch(item.getItemId()){
+            case R.id.menu_item1:
+                Log.d(TAG, "Item 1 Selected!");
+                break;
+            case R.id.menu_item2:
+                Log.d(TAG, "Item 2 Selected!");
+                break;
+            case R.id.menu_item3:
+                Log.d(TAG, "Item 3 Selected!");
+                break;
+            case R.id.menu_item4:
+                Log.d(TAG, "Item 4 Selected!");
+                break;
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override

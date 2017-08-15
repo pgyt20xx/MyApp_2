@@ -3,4 +3,8 @@
     <string name="fab_title">Add Contents</string>
     <string name="menu_item1">Add Category</string>
     <string name="menu_item2">Delete Current Category</string>
+    <string name="menu_Setting">Setting</string>
+
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
 </resources>

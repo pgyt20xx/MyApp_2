@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
-
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);
     }

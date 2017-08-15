@@ -72,6 +72,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addItemDecoration(new recilerItemDecoration(view.getContext()));
         viewItem = contentsList;
 
         // 表示内容があるときだけ設定

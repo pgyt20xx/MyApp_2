@@ -33,7 +33,7 @@ public class DBHelper
         }
 
         // 完成したら削除する
-        isDatabaseDelete(dbOpenHelper.m_context);
+//        isDatabaseDelete(dbOpenHelper.m_context);
     }
 
     /**

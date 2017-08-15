@@ -19,7 +19,6 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment {
 
-//    private static final String ARG_PARAM = "page";
     private OnFragmentInteractionListener mListener;
     public static final String ARG_SECTION_NUMBER = "section_number";
     public static final String ARG_TITLE_NAME = "title_name";
@@ -46,11 +45,6 @@ public class MainActivityFragment extends Fragment {
         return fragment;
     }
 
-    public static void contentsArgSet(ArrayList<String> contents){
-        Bundle args = new Bundle();
-        args.putStringArrayList(ARG_CONTENTS, contents);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +58,6 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // パラメータ取得
-        int page = getArguments().getInt(ARG_SECTION_NUMBER, 0);
         String title = getArguments().getString(ARG_TITLE_NAME);
         ArrayList<String> contentsList = CONTENTS_MAP.get(title);
 
@@ -81,12 +74,6 @@ public class MainActivityFragment extends Fragment {
             mRecyclerView.setAdapter(mAdapter);
         }
         return view;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

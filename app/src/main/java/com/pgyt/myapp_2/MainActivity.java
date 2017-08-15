@@ -198,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     // フラグメントの初期化
                     initFragmentView();
 
+                    // 追加したページを開く
+                    mViewPager = (ViewPager) findViewById(R.id.pager);
+                    mViewPager.setCurrentItem(TITLE_NAME.size() - 1);
+
                 }
             }
         });
@@ -300,6 +304,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                     // フラグメントの初期化
                     initFragmentView();
+
+                    // 元のページを開く
+                    mViewPager.setCurrentItem(position);
 
                 }
             }

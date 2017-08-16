@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -20,22 +20,19 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    public static final String ARG_SECTION_NUMBER = "section_number";
-    public static final String ARG_TITLE_NAME = "title_name";
-    public static final String ARG_CONTENTS = "contents";
-    private static  HashMap<String, ArrayList<String>> CONTENTS_MAP;
+    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_TITLE_NAME = "title_name";
+    private static HashMap<String, ArrayList<String>> CONTENTS_MAP;
 
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private List<String> viewItem;
+    private static final String TAG = "MainActivityFragment";
+
 
     // コンストラクタ
     public MainActivityFragment() {
     }
 
-    public static MainActivityFragment newInstance(int page, String title, HashMap<String, ArrayList<String>> contentsMap) {
+    static MainActivityFragment newInstance(int page, String title, HashMap<String, ArrayList<String>> contentsMap) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
@@ -50,6 +47,8 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             // param取得
+            Log.d(TAG, "Item 1 Selected!");
+
         }
     }
 
@@ -62,15 +61,14 @@ public class MainActivityFragment extends Fragment {
         ArrayList<String> contentsList = CONTENTS_MAP.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        mLayoutManager = new LinearLayoutManager(getContext());
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(view.getContext()));
-        viewItem = contentsList;
 
         // 表示内容があるときだけ設定
-        if(viewItem != null){
-            mAdapter = new CustomAdapter(viewItem);
+        if (contentsList != null) {
+            RecyclerView.Adapter mAdapter = new CustomAdapter(contentsList);
             mRecyclerView.setAdapter(mAdapter);
         }
         return view;
@@ -93,7 +91,7 @@ public class MainActivityFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 }

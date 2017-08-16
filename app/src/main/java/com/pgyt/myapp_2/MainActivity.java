@@ -49,14 +49,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static HashMap<String, ArrayList<String>> CONTENTS;
 
-    private ListView mDrawerList;
-
     private ArrayAdapter<String> adapter;
 
-
-    /**
-     * タグ:MainActivity
-     */
     private static String TAG = "MainActivity";
 
     @Override
@@ -91,10 +85,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * ナビゲーションドロワーリスト作成
      */
-    private void setNavigationDrawerListAdapter(){
+    private void setNavigationDrawerListAdapter() {
 
         // ナビゲーションドロワーに設定するリストを作成
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
         adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, TITLE_NAME);
         mDrawerList.setAdapter(adapter);
 
@@ -102,9 +96,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     /**
      * ナビゲーションドロワー設定
-     * @param toolbar
+     *
+     * @param toolbar Toolbar
      */
-    private void setNavigationDrawer(Toolbar toolbar){
+    private void setNavigationDrawer(Toolbar toolbar) {
 
         // ナビゲーションドロワーの設定
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -123,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * フローティングアクションボタンのクリックイベントを定義
      */
-    private void setFabEvent(){
+    private void setFabEvent() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,67 +130,70 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     /**
      * 全コンテンツを取得
-     * @return
+     *
+     * @return HashMap
      */
-    private HashMap<String, ArrayList<String>> getAllContents(){
+    private HashMap<String, ArrayList<String>> getAllContents() {
         // DBからカテゴリー名を取得する
-        Cursor cursor = null;
+        Cursor cursor;
+
+        HashMap<String, ArrayList<String>> result = new HashMap<>();
+
         try {
             dBhelper = new DBHelper(this.getApplicationContext());
             cursor = dBhelper.selectAllContents();
 
+            boolean isEof = cursor.moveToFirst();
+
+            String mapKey;
+            while (isEof) {
+                mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
+                ArrayList<String> contentsList = new ArrayList<>();
+
+                // 同一カテゴリーのリストを作成する。
+                // カテゴリー名でソートされていることが前提
+                while (isEof) {
+                    if (!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))) {
+                        break;
+                    }
+                    contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
+                    isEof = cursor.moveToNext();
+                }
+                result.put(mapKey, contentsList);
+            }
+            cursor.close();
+
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
-
-        HashMap<String, ArrayList<String>> result = new HashMap<>();
-
-        boolean isEof = cursor.moveToFirst();
-
-        String mapKey;
-        while (isEof) {
-            mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
-            ArrayList<String> contentsList = new ArrayList<>();
-
-            // 同一カテゴリーのリストを作成する。
-			// カテゴリー名でソートされていることが前提
-            while (isEof) {
-				if(!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))){
-					break;
-				}
-                contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
-                isEof = cursor.moveToNext();
-            }
-            result.put(mapKey, contentsList);
-        }
-        cursor.close();
 
         return result;
     }
 
     /**
      * カテゴリー名取得
-     * @return
+     *
+     * @return ArrayList
      */
-    private ArrayList<String> getAllCategory(){
+    private ArrayList<String> getAllCategory() {
         // DBからカテゴリー名を取得する
-        Cursor cursor = null;
+        Cursor cursor;
+        ArrayList<String> result = new ArrayList<>();
+
         try {
             dBhelper = new DBHelper(this.getApplicationContext());
             cursor = dBhelper.selectCategory(BLANK_STRING);
 
+            boolean isEof = cursor.moveToFirst();
+            while (isEof) {
+                result.add(cursor.getString(cursor.getColumnIndex("category_name")));
+                isEof = cursor.moveToNext();
+            }
+            cursor.close();
+
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
-
-        ArrayList<String> result = new ArrayList<>();
-
-        boolean isEof = cursor.moveToFirst();
-        while (isEof) {
-            result.add(cursor.getString(cursor.getColumnIndex("category_name")));
-            isEof = cursor.moveToNext();
-        }
-        cursor.close();
 
         return result;
     }
@@ -203,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * フラグメントを初期化し画面を再描画する
      */
-    private void initFragmentView(){
+    private void initFragmentView() {
         // フラグメントを取得する
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -289,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 int position = mViewPager.getCurrentItem();
 
                 // デフォルトタブでなければ削除
-                if(position == 0){
+                if (position == 0) {
                     Snackbar.make(findViewById(R.id.activity_main), "Default Category cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
@@ -347,9 +345,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
                     ArrayList<String> contentsList;
-                    if(!CONTENTS.containsKey(TITLE_NAME.get(position))){
+                    if (!CONTENTS.containsKey(TITLE_NAME.get(position))) {
                         // 新規コンテンツ追加
-                        contentsList = new ArrayList<String>();
+                        contentsList = new ArrayList<>();
                     } else {
                         // 既存コンテンツに追加
                         contentsList = CONTENTS.get(TITLE_NAME.get(position));
@@ -380,16 +378,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * FragmentPagerAdapter呼び出し
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         /**
          * フラグメントを取得
-         * @param position
-         * @return
+         *
+         * @param position int
+         * @return MainActivityFragment
          */
         @Override
         public Fragment getItem(int position) {
@@ -398,8 +397,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         /**
          * タブにタイトルを設定
-         * @param position
-         * @return
+         *
+         * @param position int
+         * @return CharSequence
          */
         @Override
         public CharSequence getPageTitle(int position) {
@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         /**
          * 生成するページ数
          *
-         * @return
+         * @return int
          */
         @Override
         public int getCount() {
@@ -430,9 +430,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
 
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_item1:
                 Log.d(TAG, "Item 1 Selected!");
                 break;

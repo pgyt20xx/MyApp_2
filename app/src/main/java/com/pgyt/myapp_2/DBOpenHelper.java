@@ -5,19 +5,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class DBOpenHelper extends SQLiteOpenHelper
-{
-	public Context m_context;
-    public static final String TAG = "DBOpenHelper";
-    public static final String DB_NAME = "android_sqlite";
-    public static final int DB_VERSION = 1;
+class DBOpenHelper extends SQLiteOpenHelper {
+    private Context m_context;
+    private static final String TAG = "DBOpenHelper";
+    private static final String DB_NAME = "android_sqlite";
+    private static final int DB_VERSION = 1;
 
-    public DBOpenHelper(final Context context) {
+    DBOpenHelper(final Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.m_context = context;
     }
@@ -50,33 +50,33 @@ public class DBOpenHelper extends SQLiteOpenHelper
             while ((s = reader.readLine()) != null) {
                 s = s.trim();
 
-                if(0 < s.length()){
+                if (0 < s.length()) {
                     sqLiteDataBase.execSQL(s);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(in != null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(inReader != null){
-                try{
+            if (inReader != null) {
+                try {
                     inReader.close();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(reader != null){
-                try{
+            if (reader != null) {
+                try {
                     reader.close();
-                } catch(IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

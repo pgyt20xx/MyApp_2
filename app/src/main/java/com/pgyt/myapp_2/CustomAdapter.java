@@ -8,27 +8,26 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>
-{
+class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private List<String> mDataset;
 
-	// Provide a reference to the views for each data item
+    // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         // each data item is just a string in this case
-        public TextView mTextView;
+        private TextView mTextView;
 
-        public ViewHolder(View v) {
+        private ViewHolder(View v) {
             super(v);
-            mTextView = (TextView)v.findViewById(R.id.text_view);
+            mTextView = (TextView) v.findViewById(R.id.text_view);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public CustomAdapter(List<String> item) {
+    CustomAdapter(List<String> item) {
         this.mDataset = item;
     }
 
@@ -37,13 +36,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View view = LayoutInflater.from(parent.getContext())
-			.inflate(R.layout.text_view, parent, false);
+                .inflate(R.layout.text_view, parent, false);
 
         // set the view's size, margins, paddings and layout parameters
-
-
-        ViewHolder vh = new ViewHolder(view);
-        return vh;
+        return new ViewHolder(view);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -59,5 +55,5 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public int getItemCount() {
         return mDataset.size();
     }
-	
+
 }

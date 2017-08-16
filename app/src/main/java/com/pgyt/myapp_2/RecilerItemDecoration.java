@@ -8,11 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-/**
- * Created by pgyt20xx on 2017/08/15.
- */
 
-public class RecilerItemDecoration extends RecyclerView.ItemDecoration {
+class RecilerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{
             android.R.attr.listDivider
@@ -21,23 +18,23 @@ public class RecilerItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
 
 
-    public RecilerItemDecoration(Context context) {
+    RecilerItemDecoration(Context context) {
         final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = a.getDrawable(0);
         a.recycle();
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, int itemPosition, RecyclerView parent) {
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
     }
 
     @Override
-    public void onDraw(Canvas c, RecyclerView parent) {
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         drawVertical(c, parent);
     }
 
-    public void drawVertical(Canvas c, RecyclerView parent) {
+    private void drawVertical(Canvas c, RecyclerView parent) {
         final int left = parent.getPaddingLeft();
         final int right = parent.getWidth() - parent.getPaddingRight();
 

@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -47,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static ArrayList<String> TITLE_NAME;
 
     private static HashMap<String, ArrayList<String>> CONTENTS;
+
+    private ListView mDrawerList;
+
+    private ArrayAdapter<String> adapter;
 
 
     /**
@@ -72,10 +77,37 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // フローティングアクションボタンを設定
         setFabEvent();
 
-        /** サンプル */
-        // DrawerToggle
-        DrawerLayout drawer =
-                (DrawerLayout) findViewById(R.id.drawerLayout);
+        // ナビゲーションドロワーのリスト作成
+        setNavigationDrawerListAdapter();
+
+        // ナビゲーションドロワー設定
+        setNavigationDrawer(toolbar);
+
+        // フラグメントの初期化
+        initFragmentView();
+
+    }
+
+    /**
+     * ナビゲーションドロワーリスト作成
+     */
+    private void setNavigationDrawerListAdapter(){
+
+        // ナビゲーションドロワーに設定するリストを作成
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, TITLE_NAME);
+        mDrawerList.setAdapter(adapter);
+
+    }
+
+    /**
+     * ナビゲーションドロワー設定
+     * @param toolbar
+     */
+    private void setNavigationDrawer(Toolbar toolbar){
+
+        // ナビゲーションドロワーの設定
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar,
                 R.string.drawer_open,
@@ -83,13 +115,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        // NavigationView Listener
+        // リスナー設定
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
-
-        // フラグメントの初期化
-        initFragmentView();
-
     }
 
     /**
@@ -218,6 +246,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                     // 新規タブ追加
                     TITLE_NAME.add((editView.getText()).toString());
+
+                    // ナビゲーションドロワーの更新
+                    adapter.notifyDataSetChanged();
 
                     // フラグメントの初期化
                     initFragmentView();

@@ -8,8 +8,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello, Drawer!"
-        android:id="@+id/textView"
+        android:text="CATEGORY_NAME"
+        android:id="@+id/navigation_hedder"
         android:padding="16dp"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>

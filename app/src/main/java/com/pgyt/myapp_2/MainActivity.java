@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     ArrayList<String> contentsList;
                     if(!CONTENTS.containsKey(TITLE_NAME.get(position))){
                         // 新規コンテンツ追加
-                        contentsList = new ArrayList();
+                        contentsList = new ArrayList<String>();
                     } else {
                         // 既存コンテンツに追加
                         contentsList = CONTENTS.get(TITLE_NAME.get(position));

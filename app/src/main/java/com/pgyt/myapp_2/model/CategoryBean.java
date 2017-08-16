@@ -53,7 +53,6 @@ public class CategoryBean
      */
     public ContentValues getParams(){
         ContentValues contentValues = new ContentValues();
-        contentValues.put("id", getId());
         contentValues.put("category_name", getCategory_name());
         return contentValues;
     }

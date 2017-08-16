@@ -1,3 +1,3 @@
-CREATE TABLE IF NOT EXISTS CONTENTS(id integer, category_name text, contents text, PRIMARY KEY(id, category_name));
-CREATE TABLE IF NOT EXISTS CATEGORY(id integer, category_name text, PRIMARY KEY(id, category_name));/
-INSERT INTO CATEGORY VALUES(1,"MY_CLIP");
+CREATE TABLE IF NOT EXISTS CONTENTS(id integer primary key, category_name text not null, contents text not null);
+CREATE TABLE IF NOT EXISTS CATEGORY(id integer primary key, category_name text not null);/
+INSERT INTO CATEGORY VALUES(0,"MY_CLIP");

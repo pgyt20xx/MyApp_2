@@ -75,7 +75,6 @@ public class ContentsBean
      */
     public ContentValues getParams(){
         ContentValues contentValues = new ContentValues();
-        contentValues.put("id", getId());
         contentValues.put("category_name", getCategory_name());
         contentValues.put("contents", getContents());
         return contentValues;

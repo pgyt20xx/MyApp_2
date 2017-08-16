@@ -128,15 +128,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         while (isEof) {
             mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
             ArrayList<String> contentsList = new ArrayList<>();
-            boolean isTmpEof = cursor.moveToFirst();
 
             // 同一カテゴリーのリストを作成する。
-            while (isTmpEof) {
+			// カテゴリー名でソートされていることが前提
+            while (isEof) {
+				if(!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))){
+					break;
+				}
                 contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
-                isTmpEof = cursor.moveToNext();
+                isEof = cursor.moveToNext();
             }
             result.put(mapKey, contentsList);
-            isEof = cursor.moveToNext();
         }
         cursor.close();
 

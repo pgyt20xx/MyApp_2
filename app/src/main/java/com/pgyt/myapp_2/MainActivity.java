@@ -1,6 +1,10 @@
 package com.pgyt.myapp_2;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static String TAG = "MainActivity";
 
+    private static final int NOTIFICATION_ID = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // ステータスバーに表示
+        setNotification();
 
         // フローティングアクションボタンを設定
         setFabEvent();
@@ -374,6 +384,39 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         dialog.show();
     }
+
+    /**
+     * ステータスバーに常駐
+     */
+    private void setNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setContentTitle(getString(R.string.app_name));
+        mBuilder.setContentText("CLIP_BOARD");
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setOngoing(true);
+        mBuilder.setAutoCancel(false);
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        Notification notification = mBuilder.build();
+        notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
+
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(NOTIFICATION_ID, notification);
+
+    }
+
+//    /**
+//     * ステータスバーの常駐解除
+//     * TODO:不要な場合は削除する
+//     */
+//    private void cancelNotification() {
+//        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+//        notificationManager.cancel(R.string.app_name);
+//    }
 
     /**
      * FragmentPagerAdapter呼び出し

@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * ステータスバーに常駐
      */
-    private void setNotification() {
+    void setNotification() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle(getString(R.string.app_name));
         mBuilder.setContentText("CLIP_BOARD");

@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -81,14 +82,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // フローティングアクションボタンを設定
         setFabEvent();
 
+        // フラグメントの初期化
+        initFragmentView();
+
         // ナビゲーションドロワーのリスト作成
         setNavigationDrawerListAdapter();
 
         // ナビゲーションドロワー設定
         setNavigationDrawer(toolbar);
 
-        // フラグメントの初期化
-        initFragmentView();
+
 
     }
 
@@ -101,6 +104,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
         adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, TITLE_NAME);
         mDrawerList.setAdapter(adapter);
+
+        //リスト項目が選択された時のイベントを追加
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mViewPager = (ViewPager) findViewById(R.id.pager);
+                mViewPager.setCurrentItem(position);
+            }
+        });
 
     }
 

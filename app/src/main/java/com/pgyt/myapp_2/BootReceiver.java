@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 public class BootReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "StartupReceiver";
+    private static final String TAG = "BootReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -16,14 +16,12 @@ public class BootReceiver extends BroadcastReceiver {
 
         if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             Log.d(TAG, "onReceive Application Start MyApp_2");
-//            Intent intentActivity = new Intent(context, MainActivity.class);
-//            intentActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            context.startActivity(intentActivity);
 
+            //TODO: 完成後削除
             Toast.makeText(context, "Application Start", Toast.LENGTH_LONG).show();
 
-            // ステータスバーに表示
-            new MainActivity().setNotification();
+            // サービスを起動
+            context.startService(new Intent(context, MainService.class));
         }
     }
 }

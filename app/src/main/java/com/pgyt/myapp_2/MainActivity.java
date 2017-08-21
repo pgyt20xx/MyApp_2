@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager = (ViewPager) findViewById(R.id.pager);
                 mViewPager.setCurrentItem(position);
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
+                drawer.closeDrawers();
             }
         });
 

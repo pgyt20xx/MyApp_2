@@ -1,16 +1,28 @@
 package com.pgyt.myapp_2;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private List<String> mDataset;
+
+    private static final String TAG = "CustomAdapter";
+
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -22,7 +34,28 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         private ViewHolder(View v) {
             super(v);
+
+            // reciclerViewのクリックイベント
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "Element " + getTextView().getText() + " clicked.");
+
+                    // クリップボードにコピー
+                    ClipData.Item item = new ClipData.Item(getTextView().getText());
+                    ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
+                    ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(clipData);
+
+                    Toast.makeText(v.getContext(), "\"" + getTextView().getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
+
+                }
+            });
             mTextView = (TextView) v.findViewById(R.id.text_view);
+        }
+
+        private TextView getTextView() {
+            return mTextView;
         }
     }
 

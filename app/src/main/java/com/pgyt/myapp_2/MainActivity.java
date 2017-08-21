@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         final EditText editView = new EditText(MainActivity.this);
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.menu_item1);
+        dialog.setTitle(R.string.add_category);
         dialog.setView(editView);
 
         // OKボタン押下時
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private void categoryDeletetEvent() {
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.menu_item2);
+        dialog.setTitle(R.string.delete_category);
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -489,13 +489,19 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public boolean onOptionsItemSelected(MenuItem item) {
         // 押下されたメニューで分岐
         switch (item.getItemId()) {
-            case R.id.item1:
+            case R.id.add_category:
                 categoryInsertEvent();
                 return true;
 
-            case R.id.item2:
+            case R.id.delete_category:
                 categoryDeletetEvent();
                 return true;
+
+            case R.id.action_settings:
+                Intent intent = new android.content.Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

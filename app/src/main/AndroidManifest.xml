@@ -25,6 +25,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".SettingsActivity"
+            android:label="@string/preference_title"
+            android:screenOrientation="nosensor">
+            <intent-filer>
+                <action android:name=".Preferences" />
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filer>
+        </activity>
+
         <receiver
             android:name=".BootReceiver"
             android:enabled="true">

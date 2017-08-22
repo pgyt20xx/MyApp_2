@@ -88,7 +88,7 @@ class DBHelper {
      */
     Cursor selectAllContents() {
         SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
-        String sql = "SELECT id, category_name, contents FROM CONTENTS ORDER BY category_name, id;";
+        String sql = "SELECT id, category_name, contents FROM CONTENTS ORDER BY category_name, id DESC;";
         return readDb.rawQuery(sql, null);
     }
 

@@ -39,21 +39,22 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
-    DBHelper dBhelper = null;
-
-    private ViewPager mViewPager;
-
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
     private static final String BLANK_STRING = "";
 
-    private static ArrayList<String> TITLE_NAME;
+    private static final String TAG = "MainActivity";
 
-    private static HashMap<String, ArrayList<String>> CONTENTS;
+    public static ArrayList<String> TITLE_NAME;
+
+    public static HashMap<String, ArrayList<String>> CONTENTS;
 
     private ArrayAdapter<String> adapter;
 
-    private static String TAG = "MainActivity";
+    private DBHelper dBhelper = null;
+
+    private ViewPager mViewPager;
+
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // ナビゲーションドロワー設定
         setNavigationDrawer(toolbar);
-
 
 
     }
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return HashMap
      */
-    private HashMap<String, ArrayList<String>> getAllContents() {
+    HashMap<String, ArrayList<String>> getAllContents() {
         // DBからカテゴリー名を取得する
         Cursor cursor;
 
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                 // デフォルトタブでなければ削除
                 if (position == 0) {
-                    Snackbar.make(findViewById(R.id.activity_main), "Default Category cannot Delete", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
                     String param = TITLE_NAME.get(position);
@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                         // 既存コンテンツに追加
                         contentsList = CONTENTS.get(TITLE_NAME.get(position));
                     }
-                    contentsList.add(editView.getText().toString());
+                    contentsList.add(0, editView.getText().toString());
                     CONTENTS.put(TITLE_NAME.get(position), contentsList);
 
                     // フラグメントの初期化
@@ -392,15 +392,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         dialog.show();
     }
-
-//    /**
-//     * ステータスバーの常駐解除
-//     * TODO:不要な場合は削除する
-//     */
-//    private void cancelNotification() {
-//        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-//        notificationManager.cancel(R.string.app_name);
-//    }
 
     /**
      * FragmentPagerAdapter呼び出し
@@ -504,6 +495,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        // フラグメントの初期化
+        initFragmentView();
     }
 
     @Override

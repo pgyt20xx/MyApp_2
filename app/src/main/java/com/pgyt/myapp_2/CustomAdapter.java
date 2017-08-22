@@ -3,7 +3,6 @@ package com.pgyt.myapp_2;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,8 +20,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private List<String> mDataset;
 
     private static final String TAG = "CustomAdapter";
-
-    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -47,7 +44,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                     ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
                     clipboardManager.setPrimaryClip(clipData);
 
-                    Toast.makeText(v.getContext(), "\"" + getTextView().getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "\"" + getTextView().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
 
                 }
             });

@@ -8,7 +8,7 @@
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
 
-    <string name="preference_title">simple設定画面</string>
+    <string name="preference_title">Setting</string>
 
     <string name="checkbox_01_title">ネットワーク通信許可</string>
     <string name="checkbox_01_summary">ネットワーク通信を有効にします</string>

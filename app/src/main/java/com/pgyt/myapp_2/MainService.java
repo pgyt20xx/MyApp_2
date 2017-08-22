@@ -11,6 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 
 public class MainService extends Service{
 
@@ -18,10 +21,21 @@ public class MainService extends Service{
 
     private static final int NOTIFICATION_ID = 10;
 
+	private ClipboardManager mClipboardManager;
+	
+	String mPreviousText = "";
+	
 
     @Override
     public void onCreate() {
         super.onCreate();
+		mClipboardManager = (ClipboardManager) getSystemService(getApplicationContext().CLIPBOARD_SERVICE);
+        if (mClipboardManager != null) {
+            mClipboardManager.addPrimaryClipChangedListener(clipListener);
+        } else {
+            Log.e(TAG, "ClipboardServiceの取得に失敗しました。サービスを終了します。");
+            this.stopSelf();
+        }
 
     }
 
@@ -35,6 +49,27 @@ public class MainService extends Service{
 
         // 通知を設定
         setNotification();
+//		
+//		cm = (ClipboardManager) getSystemService(this.CLIPBOARD_SERVICE);
+//
+//		cm.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+//				@Override
+//				public void onPrimaryClipChanged() {
+//					if (cm != null && cm.hasPrimaryClip()) {
+//						ClipData data = cm.getPrimaryClip();
+//						ClipData.Item item = data.getItemAt(0);
+//						Toast
+//							.makeText(
+//							getApplicationContext(),
+//							"コピーあるいはカットされた文字列:\n"
+//                            + item.coerceToText(getApplicationContext()),
+//							Toast.LENGTH_SHORT)
+//							.show();
+//					}				
+//				}
+//			}
+//		);
+		
 
         // 強制終了時に再起動
         return START_STICKY;
@@ -42,9 +77,37 @@ public class MainService extends Service{
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onReceive Application Start MyApp_2");
+		super.onDestroy();
+        if (mClipboardManager != null) {
+            mClipboardManager.removePrimaryClipChangedListener(clipListener);
+        }
+		Log.d(TAG, "onReceive Application Start MyApp_2");
         Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
     }
+	
+	private OnPrimaryClipChangedListener clipListener = new OnPrimaryClipChangedListener() {
+        public void onPrimaryClipChanged() {
+			
+            if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
+                ClipData data = mClipboardManager.getPrimaryClip();
+                ClipData.Item item = data.getItemAt(0);
+				
+				if(mPreviousText.equals(item.getText().toString())) {
+					return;
+				} else{
+					/// do something
+					mPreviousText = item.getText().toString();
+				}
+                Toast
+                    .makeText(
+					getApplicationContext(),
+					"コピーあるいはカットされた文字列:\n"
+					+ mPreviousText,
+					Toast.LENGTH_SHORT)
+                    .show();
+            }
+        }
+    };
 
     /**
      * ステータスバーに常駐

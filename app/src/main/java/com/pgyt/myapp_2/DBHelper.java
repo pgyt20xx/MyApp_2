@@ -36,8 +36,9 @@ class DBHelper {
      *
      * @param params CategoryBean
      */
-    void insertCategory(CategoryBean params) {
-        this.sqLiteDatabase.insert(TABLE_NAME_CATEGORY, BLANK_STRING, params.getParams());
+    long insertCategory(CategoryBean params) {
+        long id = this.sqLiteDatabase.insert(TABLE_NAME_CATEGORY, BLANK_STRING, params.getParams());
+        return id;
     }
 
     /**
@@ -45,8 +46,9 @@ class DBHelper {
      *
      * @param params ContentsBean
      */
-    void insertContents(ContentsBean params) {
-        this.sqLiteDatabase.insert(TABLE_NAME_CONTENTS, BLANK_STRING, params.getParams());
+    long insertContents(ContentsBean params) {
+        long id = this.sqLiteDatabase.insert(TABLE_NAME_CONTENTS, BLANK_STRING, params.getParams());
+        return id;
     }
 
 
@@ -63,7 +65,7 @@ class DBHelper {
             String sql = "SELECT id, category_name FROM CATEGORY ORDER BY id;";
             cursor = readDb.rawQuery(sql, null);
         } else {
-            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = '" + param + "' ORDER BY id;";
+            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = ? ORDER BY id;";
             cursor = readDb.rawQuery(sql, new String[]{param});
         }
         return cursor;
@@ -79,6 +81,16 @@ class DBHelper {
         SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
         readDb.delete("CATEGORY", "category_name = ?", new String[]{param});
         readDb.delete("CONTENTS", "category_name = ?", new String[]{param});
+    }
+
+    /**
+     * コンテンツテーブルの削除
+     *
+     * @param param String
+     */
+    void deletetContents(String param) {
+        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
+        readDb.delete("CONTENTS", "id = ?", new String[]{param});
     }
 
     /**

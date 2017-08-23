@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private ViewPager mViewPager;
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void initFragmentView() {
         // フラグメントを取得する
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // xmlからTabLayoutの取得
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -232,13 +230,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ViewPagerにページを設定
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
-		
-		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				Snackbar.make(findViewById(R.id.activity_main), "onPageSelected position=" + position, Snackbar.LENGTH_SHORT).show();				
-			}
-		});
+
+        // ViewPagerのページ遷移イベント
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
 
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);

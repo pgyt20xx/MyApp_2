@@ -232,6 +232,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ViewPagerにページを設定
         viewPager.setAdapter(mSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
+		
+		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				Snackbar.make(findViewById(R.id.activity_main), "onPageSelected position=" + position, Snackbar.LENGTH_SHORT).show();				
+			}
+		});
 
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);

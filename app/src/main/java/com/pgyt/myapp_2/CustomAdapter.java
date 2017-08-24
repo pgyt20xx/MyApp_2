@@ -14,10 +14,15 @@ import android.widget.Toast;
 import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import java.util.*;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private List<String> mDataset;
+	
+	private List<String> mRowIdset;
+	
+	private LinkedHashMap<String, String> contentsMap;
 
     private static final String TAG = "CustomAdapter";
 
@@ -28,6 +33,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         // each data item is just a string in this case
         private TextView mTextView;
+		private TextView mRowId;
 
         private ViewHolder(View v) {
             super(v);
@@ -49,16 +55,23 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                 }
             });
             mTextView = (TextView) v.findViewById(R.id.text_view);
+			mRowId = (TextView) v.findViewById(R.id.row_id);
         }
 
         private TextView getTextView() {
             return mTextView;
         }
+		
+		private TextView getRowId() {
+            return mRowId;
+        }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(List<String> item) {
-        this.mDataset = item;
+    CustomAdapter(LinkedHashMap<String, String> item) {
+		this.contentsMap = item;
+		this.mRowIdset = new ArrayList<String>(item.keySet());
+		this.mDataset = new ArrayList<String>(item.values());
     }
 
     // Create new views (invoked by the layout manager)
@@ -78,6 +91,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.mTextView.setText(mDataset.get(position));
+		holder.mRowId.setText(mRowIdset.get(position));
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -1,23 +1,16 @@
 package com.pgyt.myapp_2;
 
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
-import android.content.ClipboardManager;
-import android.content.ClipData;
-import android.content.ClipboardManager.OnPrimaryClipChangedListener;
-
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
+import android.app.*;
+import android.content.*;
+import android.content.ClipboardManager.*;
+import android.os.*;
+import android.support.annotation.*;
+import android.support.v7.app.*;
+import android.util.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
+import java.util.*;
 
 
 public class MainService extends Service {
@@ -88,31 +81,33 @@ public class MainService extends Service {
      */
     private void insertNewContents(ClipData.Item item){
         // 追加したコンテンツを格納
-        ArrayList<String> contentsList;
+        LinkedHashMap<String, String> contentsMap;
         if (!MainActivity.CONTENTS.containsKey(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON))) {
             // 新規コンテンツ追加
-            contentsList = new ArrayList<>();
+            contentsMap = new LinkedHashMap<>();
         } else {
             // 既存コンテンツに追加
-            contentsList = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
+            contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
         }
 
         // 既に登録されているものは登録しない。
-        if(contentsList.lastIndexOf(item.getText().toString()) < 0){
+		List<String> tContents = new ArrayList<String>(contentsMap.values());
+        if(tContents.lastIndexOf(item.getText().toString()) < 0){
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             try {
                 DBHelper dBhelper = new DBHelper(getApplicationContext());
                 ContentsBean param = new ContentsBean();
                 param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
                 param.setContents(item.getText().toString());
-                dBhelper.insertContents(param);
+                Long id = dBhelper.insertContents(param);
+				// TODO: sort
+				contentsMap.put(id.toString(), item.getText().toString());
 
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
             }
-
-            contentsList.add(0, item.getText().toString());
-            MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsList);
+ 
+            MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
         }
     }
 

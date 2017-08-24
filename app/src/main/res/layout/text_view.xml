@@ -5,7 +5,11 @@
 	android:focusable="true"
 	android:background="?android:attr/selectableItemBackground"
 	>
-	
+	<TextView
+        android:id="@+id/row_id"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+		android:visibility="gone"/>	
 	<TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"

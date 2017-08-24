@@ -1,18 +1,13 @@
 package com.pgyt.myapp_2;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import android.content.*;
+import android.net.*;
+import android.os.*;
+import android.support.v4.app.*;
+import android.support.v7.widget.*;
+import android.util.*;
+import android.view.*;
+import java.util.*;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -22,7 +17,7 @@ public class MainActivityFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
-    private static HashMap<String, ArrayList<String>> CONTENTS_MAP;
+    private static HashMap<String, LinkedHashMap<String, String>> CONTENTS_MAP;
 
 
     private static final String TAG = "MainActivityFragment";
@@ -32,7 +27,7 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    static MainActivityFragment newInstance(int page, String title, HashMap<String, ArrayList<String>> contentsMap) {
+    static MainActivityFragment newInstance(int page, String title, HashMap<String, LinkedHashMap<String, String>> contentsMap) {
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
@@ -47,7 +42,7 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             // param取得
-            Log.d(TAG, "Item 1 Selected!");
+            Log.d(TAG, "OnCreate");
 
         }
     }
@@ -58,7 +53,7 @@ public class MainActivityFragment extends Fragment {
 
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
-        ArrayList<String> contentsList = CONTENTS_MAP.get(title);
+        LinkedHashMap contentsMap = CONTENTS_MAP.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -67,8 +62,8 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(view.getContext()));
 
         // 表示内容があるときだけ設定
-        if (contentsList != null) {
-            RecyclerView.Adapter mAdapter = new CustomAdapter(contentsList);
+        if (contentsMap != null) {
+            RecyclerView.Adapter mAdapter = new CustomAdapter(contentsMap);
             mRecyclerView.setAdapter(mAdapter);
         }
         return view;

@@ -1,40 +1,25 @@
 package com.pgyt.myapp_2;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
+import android.content.*;
+import android.database.*;
+import android.net.*;
+import android.os.*;
+import android.support.annotation.*;
+import android.support.design.widget.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
+import java.util.*;
+
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
@@ -45,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public static ArrayList<String> TITLE_NAME;
 
-    public static HashMap<String, ArrayList<String>> CONTENTS;
+    public static HashMap<String, LinkedHashMap<String, String>> CONTENTS;
 
     private ArrayAdapter<String> adapter;
 
@@ -149,11 +134,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return HashMap
      */
-    HashMap<String, ArrayList<String>> getAllContents() {
+    HashMap<String, LinkedHashMap<String, String>> getAllContents() {
         // DBからカテゴリー名を取得する
         Cursor cursor;
 
-        HashMap<String, ArrayList<String>> result = new HashMap<>();
+        HashMap<String, LinkedHashMap<String, String>> result = new HashMap<>();
 
         try {
             dBhelper = new DBHelper(this.getApplicationContext());
@@ -164,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             String mapKey;
             while (isEof) {
                 mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
-                ArrayList<String> contentsList = new ArrayList<>();
+                LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
 
                 // 同一カテゴリーのリストを作成する。
                 // カテゴリー名でソートされていることが前提
@@ -172,10 +157,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     if (!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))) {
                         break;
                     }
-                    contentsList.add(cursor.getString(cursor.getColumnIndex("contents")));
+                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), cursor.getString(cursor.getColumnIndex("contents")));
                     isEof = cursor.moveToNext();
                 }
-                result.put(mapKey, contentsList);
+                result.put(mapKey, contentsMap);
             }
             cursor.close();
 
@@ -369,21 +354,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     ContentsBean param = new ContentsBean();
                     param.setCategory_name(TITLE_NAME.get(position));
                     param.setContents(editView.getText().toString());
-                    dBhelper.insertContents(param);
+                    Long id = dBhelper.insertContents(param);
 
                     // TODO: Exception
                     Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
-                    ArrayList<String> contentsList;
+                    LinkedHashMap<String, String> contentsMap;
                     if (!CONTENTS.containsKey(TITLE_NAME.get(position))) {
                         // 新規コンテンツ追加
-                        contentsList = new ArrayList<>();
+                        contentsMap = new LinkedHashMap<>();
                     } else {
                         // 既存コンテンツに追加
-                        contentsList = CONTENTS.get(TITLE_NAME.get(position));
+                        contentsMap = CONTENTS.get(TITLE_NAME.get(position));
                     }
-                    contentsList.add(0, editView.getText().toString());
-                    CONTENTS.put(TITLE_NAME.get(position), contentsList);
+                    contentsMap.put(id.toString(), editView.getText().toString());
+                    CONTENTS.put(TITLE_NAME.get(position), contentsMap);
 
                     // フラグメントの初期化
                     initFragmentView();

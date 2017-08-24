@@ -99,7 +99,7 @@ public class MainService extends Service {
             boolean isEof = cursor.moveToFirst();
             ArrayList<String> allContents = new ArrayList<>();
             while (isEof) {
-                allContents.add(cursor.getString(cursor.getColumnIndex("category_name")));
+                allContents.add(cursor.getString(cursor.getColumnIndex("contents")));
                 isEof = cursor.moveToNext();
             }
             cursor.close();

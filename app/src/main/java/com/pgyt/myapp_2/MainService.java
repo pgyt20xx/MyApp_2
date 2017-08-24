@@ -4,6 +4,7 @@ package com.pgyt.myapp_2;
 import android.app.*;
 import android.content.*;
 import android.content.ClipboardManager.*;
+import android.database.Cursor;
 import android.os.*;
 import android.support.annotation.*;
 import android.support.v7.app.*;
@@ -79,36 +80,62 @@ public class MainService extends Service {
      * @param item ClipData.Item
      */
     private void insertNewContents(ClipData.Item item){
-        // 追加したコンテンツを格納
-        LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
-		
+
         // 既存コンテンツ
-        contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
+        LinkedHashMap<String, String> contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
 
-        // 既に登録されているものは登録しない。
-		List<String> tContents = new ArrayList<String>(contentsMap.values());
-        if(tContents.lastIndexOf(item.getText().toString()) < 0){
-            Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
-            try {
-                DBHelper dBhelper = new DBHelper(getApplicationContext());
-                ContentsBean param = new ContentsBean();
-                param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
-                param.setContents(item.getText().toString());
-                Long id = dBhelper.insertContents(param);
-				
-				// 1行目に追加
-				LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
-				tContentsMap.put(id.toString(), item.getText().toString());
-				if (contentsMap.size() != 0) {
-					// 既存コンテンツ追加
-					tContentsMap.putAll(contentsMap);
-				}
-				contentsMap = tContentsMap;
-				MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
+//        // 既に登録されているものは登録しない。
+//		List<String> tContents = new ArrayList<String>(contentsMap.values());
+//        if(tContents.lastIndexOf(item.getText().toString()) > 0){
+//            return;
+//        }
 
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+        // アプリ内のコンテンツは登録しない。TODO : 要改善
+        try {
+
+            DBHelper dBhelper = new DBHelper(this.getApplicationContext());
+            Cursor cursor = dBhelper.selectAllContents();
+
+            boolean isEof = cursor.moveToFirst();
+            ArrayList<String> allContents = new ArrayList<>();
+            while (isEof) {
+                allContents.add(cursor.getString(cursor.getColumnIndex("category_name")));
+                isEof = cursor.moveToNext();
             }
+            cursor.close();
+
+            // アプリ内登録コンテンツは登録しない。
+            if(allContents.lastIndexOf(item.getText().toString()) > 0){
+                return;
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+
+        }
+
+
+        // コンテンツの登録
+        Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
+        try {
+            DBHelper dBhelper = new DBHelper(getApplicationContext());
+            ContentsBean param = new ContentsBean();
+            param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
+            param.setContents(item.getText().toString());
+            Long id = dBhelper.insertContents(param);
+
+            // 1行目に追加
+            LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
+            tContentsMap.put(id.toString(), item.getText().toString());
+            if (contentsMap.size() != 0) {
+                // 既存コンテンツ追加
+                tContentsMap.putAll(contentsMap);
+            }
+            contentsMap = tContentsMap;
+            MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
         }
     }
 

@@ -351,25 +351,30 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     mViewPager = (ViewPager) findViewById(R.id.pager);
                     int position = mViewPager.getCurrentItem();
 
-                    ContentsBean param = new ContentsBean();
-                    param.setCategory_name(TITLE_NAME.get(position));
-                    param.setContents(editView.getText().toString());
-                    Long id = dBhelper.insertContents(param);
+					try {
+						ContentsBean param = new ContentsBean();
+						param.setCategory_name(TITLE_NAME.get(position));
+						param.setContents(editView.getText().toString());
+						Long id = dBhelper.insertContents(param);
 
-                    // TODO: Exception
-                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+						// 1行目に追加する
+						LinkedHashMap<String, String> contentsMap;
+						LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
+						tContentsMap.put(id.toString(), editView.getText().toString());
+						if (CONTENTS.containsKey(TITLE_NAME.get(position))) {
+							// 既存コンテンツ追加
+							tContentsMap.putAll(CONTENTS.get(TITLE_NAME.get(position)));
 
-                    LinkedHashMap<String, String> contentsMap;
-                    if (!CONTENTS.containsKey(TITLE_NAME.get(position))) {
-                        // 新規コンテンツ追加
-                        contentsMap = new LinkedHashMap<>();
-                    } else {
-                        // 既存コンテンツに追加
-                        contentsMap = CONTENTS.get(TITLE_NAME.get(position));
-                    }
-                    contentsMap.put(id.toString(), editView.getText().toString());
-                    CONTENTS.put(TITLE_NAME.get(position), contentsMap);
-
+						}
+						contentsMap = tContentsMap;
+						CONTENTS.put(TITLE_NAME.get(position), contentsMap);
+						
+					} catch (Exception e) {
+						Log.d(TAG, e.getMessage());
+					}
+					
+					Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+                    
                     // フラグメントの初期化
                     initFragmentView();
 

@@ -61,15 +61,14 @@ public class MainService extends Service {
                 ClipData data = mClipboardManager.getPrimaryClip();
                 ClipData.Item item = data.getItemAt(0);
 
+				// 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
                 if (mPreviousText.equals(item.getText().toString())) {
                     return;
-                } else {
-                    /// do something
-                    mPreviousText = item.getText().toString();
                 }
+				
+				mPreviousText = item.getText().toString();
                 // コピーしたテキストの登録
                 insertNewContents(item);
-
 
             }
         }
@@ -81,14 +80,10 @@ public class MainService extends Service {
      */
     private void insertNewContents(ClipData.Item item){
         // 追加したコンテンツを格納
-        LinkedHashMap<String, String> contentsMap;
-        if (!MainActivity.CONTENTS.containsKey(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON))) {
-            // 新規コンテンツ追加
-            contentsMap = new LinkedHashMap<>();
-        } else {
-            // 既存コンテンツに追加
-            contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
-        }
+        LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
+		
+        // 既存コンテンツ
+        contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
 
         // 既に登録されているものは登録しない。
 		List<String> tContents = new ArrayList<String>(contentsMap.values());
@@ -100,14 +95,20 @@ public class MainService extends Service {
                 param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
                 param.setContents(item.getText().toString());
                 Long id = dBhelper.insertContents(param);
-				// TODO: sort
-				contentsMap.put(id.toString(), item.getText().toString());
+				
+				// 1行目に追加
+				LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
+				tContentsMap.put(id.toString(), item.getText().toString());
+				if (contentsMap.size() != 0) {
+					// 既存コンテンツ追加
+					tContentsMap.putAll(contentsMap);
+				}
+				contentsMap = tContentsMap;
+				MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
 
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
             }
- 
-            MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
         }
     }
 

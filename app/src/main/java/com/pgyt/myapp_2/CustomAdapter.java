@@ -42,7 +42,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "Element " + getTextView().getText() + " clicked.");
+                    Log.d(TAG, "ID: " + getRowId().getText() + "ELEMENT " + getTextView().getText() + " clicked.");
 
                     // クリップボードにコピー
                     ClipData.Item item = new ClipData.Item(getTextView().getText());

@@ -42,12 +42,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 登録されているカテゴリー名を保持する
-        TITLE_NAME = getAllCategory();
-
-        // 登録されているコンテンツを取得
-        CONTENTS = getAllContents();
+		
+		// データ取得
+		//initAllData();
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
@@ -71,6 +68,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
 
     }
+	
+	private void initAllData() {
+		// 登録されているカテゴリー名を保持する
+        TITLE_NAME = getAllCategory();
+
+        // 登録されているコンテンツを取得
+        CONTENTS = getAllContents();
+		
+	}
 
     /**
      * ナビゲーションドロワーリスト作成
@@ -203,6 +209,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * フラグメントを初期化し画面を再描画する
      */
     private void initFragmentView() {
+		
+		initAllData();
+		
         // フラグメントを取得する
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -326,6 +335,45 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
             }
         });
+
+        dialog.show();
+    }
+	
+	private void deletetAllEvent() {
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle(R.string.menu_delete_all);
+
+        // OKボタン押下時
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialogInterface, int i) {
+					
+					try {
+						dBhelper.deletetAll();
+						initAllData();
+					} catch (Exception e) {
+						Log.d(TAG, e.getMessage());
+					}
+
+					Snackbar.make(findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
+
+					// フラグメントの初期化
+					initFragmentView();
+
+                    // 追加したページを開く
+                    mViewPager = (ViewPager) findViewById(R.id.pager);
+                    mViewPager.setCurrentItem(0);
+					
+				}
+			});
+        // Cancelボタン押下時
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int whichButton) {
+
+				}
+			});
 
         dialog.show();
     }
@@ -489,6 +537,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             case R.id.delete_category:
                 categoryDeletetEvent();
                 return true;
+				
+			case R.id.all_delete:
+                deletetAllEvent();
+                return true;
 
             case R.id.action_settings:
                 Intent intent = new android.content.Intent(this, SettingsActivity.class);
@@ -502,6 +554,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onRestart(){
         super.onRestart();
+		
+		Toast.makeText(getApplicationContext(), "restart", Toast.LENGTH_SHORT).show();
 
         // フラグメントの初期化
         initFragmentView();

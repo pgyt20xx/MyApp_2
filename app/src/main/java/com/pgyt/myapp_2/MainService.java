@@ -105,7 +105,7 @@ public class MainService extends Service {
             cursor.close();
 
             // アプリ内登録コンテンツは登録しない。
-            if(allContents.lastIndexOf(item.getText().toString()) > 0){
+            if(allContents.lastIndexOf(item.getText().toString()) >= 0){
                 return;
             }
 

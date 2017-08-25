@@ -13,6 +13,12 @@
         android:title="@string/delete_category"
         android:orderInCategory="100"
         app:showAsAction="never" />
+	
+	<item
+        android:id="@+id/all_delete"
+        android:title="@string/menu_delete_all"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"

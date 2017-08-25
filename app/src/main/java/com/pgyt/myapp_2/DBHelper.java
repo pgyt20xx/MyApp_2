@@ -72,6 +72,15 @@ class DBHelper {
     }
 
     /**
+     * 全テーブルの削除
+     */
+    void deletetAll() {
+        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
+        readDb.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
+        readDb.delete("CONTENTS", null, null);
+    }
+
+	/**
      * カテゴリーテーブルの削除
      * 紐づくコンテンツテーブルの削除も行う。
      *
@@ -82,7 +91,7 @@ class DBHelper {
         readDb.delete("CATEGORY", "category_name = ?", new String[]{param});
         readDb.delete("CONTENTS", "category_name = ?", new String[]{param});
     }
-
+	
     /**
      * コンテンツテーブルの削除
      *

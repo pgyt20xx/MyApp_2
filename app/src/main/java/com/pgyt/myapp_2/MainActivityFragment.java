@@ -7,6 +7,7 @@ import android.support.v4.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
+import android.widget.*;
 import java.util.*;
 
 /**
@@ -51,11 +52,13 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+		
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
         LinkedHashMap contentsMap = CONTENTS_MAP.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
+		Toast.makeText(view.getContext(), "onCreateView", Toast.LENGTH_SHORT).show();
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

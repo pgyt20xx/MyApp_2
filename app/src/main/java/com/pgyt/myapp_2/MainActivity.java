@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onCreate(savedInstanceState);
 		
 		// データ取得
-		//initAllData();
+		initAllData();
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
@@ -209,8 +209,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * フラグメントを初期化し画面を再描画する
      */
     private void initFragmentView() {
-		
-		initAllData();
 		
         // フラグメントを取得する
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

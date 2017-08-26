@@ -5,6 +5,7 @@ import android.app.*;
 import android.content.*;
 import android.content.ClipboardManager.*;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.*;
 import android.support.annotation.*;
 import android.support.v7.app.*;
@@ -24,7 +25,11 @@ public class MainService extends Service {
 
     private static final int CLIPBOARD_TAB_POSITON = 0;
 
-    String mPreviousText = "";
+    String mPreviousText;
+
+    public MainService() {
+        mPreviousText = "";
+    }
 
 
     @Override
@@ -32,7 +37,7 @@ public class MainService extends Service {
         super.onCreate();
         Log.d(TAG, "onCreate Start");
 
-        mClipboardManager = (ClipboardManager) getSystemService(getApplicationContext().CLIPBOARD_SERVICE);
+        mClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (mClipboardManager != null) {
             mClipboardManager.addPrimaryClipChangedListener(clipListener);
         } else {
@@ -40,7 +45,6 @@ public class MainService extends Service {
             this.stopSelf();
         }
         Log.d(TAG, "onCreate End");
-
     }
 
     @Override
@@ -52,7 +56,6 @@ public class MainService extends Service {
         setNotification();
 
         Log.d(TAG, "onStartCommand End");
-
         // 強制終了時に再起動
         return START_STICKY;
     }
@@ -62,8 +65,8 @@ public class MainService extends Service {
      * クリップボードの監視
      */
     private OnPrimaryClipChangedListener clipListener = new OnPrimaryClipChangedListener() {
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         public void onPrimaryClipChanged() {
-
             Log.d(TAG, "OnPrimaryClipChangedListener Start");
 
             if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
@@ -81,7 +84,6 @@ public class MainService extends Service {
 
             }
             Log.d(TAG, "OnPrimaryClipChangedListener End");
-
         }
     };
 
@@ -89,8 +91,8 @@ public class MainService extends Service {
      * テキストをDBに登録
      * @param item ClipData.Item
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void insertNewContents(ClipData.Item item){
-
         Log.d(TAG, "insertNewContents Start");
 
         // 既存コンテンツ
@@ -103,11 +105,8 @@ public class MainService extends Service {
 //        }
 
         // アプリ内のコンテンツは登録しない。TODO : 要改善
-        try {
-
-            DBHelper dBhelper = new DBHelper(this.getApplicationContext());
-            Cursor cursor = dBhelper.selectAllContents();
-
+        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents()) {
             boolean isEof = cursor.moveToFirst();
             ArrayList<String> allContents = new ArrayList<>();
             while (isEof) {
@@ -120,21 +119,18 @@ public class MainService extends Service {
             if(allContents.lastIndexOf(item.getText().toString()) >= 0){
                 return;
             }
-
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
 
         }
 
-
         // コンテンツの登録
-        Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
-        try {
-            DBHelper dBhelper = new DBHelper(getApplicationContext());
+        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase()) {
+            Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean param = new ContentsBean();
             param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
             param.setContents(item.getText().toString());
-            Long id = dBhelper.insertContents(param);
+            Long id = new DBHelper(sqLiteDatabase).insertContents(param);
 
             // 1行目に追加
             LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
@@ -150,7 +146,6 @@ public class MainService extends Service {
             Log.d(TAG, e.getMessage());
         }
         Log.d(TAG, "insertNewContents End");
-
     }
 
     /**
@@ -176,9 +171,7 @@ public class MainService extends Service {
 
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(NOTIFICATION_ID, notification);
-
         Log.d(TAG, "setNotification End");
-
     }
 
     /**

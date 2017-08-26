@@ -10,25 +10,13 @@ import com.pgyt.myapp_2.model.ContentsBean;
 
 class DBHelper {
     private SQLiteDatabase sqLiteDatabase;
-    private final DBOpenHelper dbOpenHelper;
-
     private static final String BLANK_STRING = "";
     private static final String TABLE_NAME_CATEGORY = "CATEGORY";
     private static final String TABLE_NAME_CONTENTS = "CONTENTS";
 
 
-    DBHelper(final Context context) {
-        this.dbOpenHelper = new DBOpenHelper(context);
-        establishDb();
-    }
-
-    private void establishDb() {
-        if (this.sqLiteDatabase == null) {
-            this.sqLiteDatabase = this.dbOpenHelper.getWritableDatabase();
-        }
-
-        // TODO;完成したら削除する
-//        isDatabaseDelete(dbOpenHelper.m_context);
+    DBHelper(final SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
     }
 
     /**
@@ -59,14 +47,13 @@ class DBHelper {
      * @return Cursor
      */
     Cursor selectCategory(String param) {
-        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
         Cursor cursor;
         if (param.isEmpty()) {
             String sql = "SELECT id, category_name FROM CATEGORY ORDER BY id;";
-            cursor = readDb.rawQuery(sql, null);
+            cursor = sqLiteDatabase.rawQuery(sql, null);
         } else {
             String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = ? ORDER BY id;";
-            cursor = readDb.rawQuery(sql, new String[]{param});
+            cursor = sqLiteDatabase.rawQuery(sql, new String[]{param});
         }
         return cursor;
     }
@@ -75,9 +62,8 @@ class DBHelper {
      * 全テーブルの削除
      */
     void deletetAll() {
-        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
-        readDb.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
-        readDb.delete("CONTENTS", null, null);
+        sqLiteDatabase.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
+        sqLiteDatabase.delete("CONTENTS", null, null);
     }
 
 	/**
@@ -87,9 +73,8 @@ class DBHelper {
      * @param param String
      */
     void deletetCategory(String param) {
-        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
-        readDb.delete("CATEGORY", "category_name = ?", new String[]{param});
-        readDb.delete("CONTENTS", "category_name = ?", new String[]{param});
+        sqLiteDatabase.delete("CATEGORY", "category_name = ?", new String[]{param});
+        sqLiteDatabase.delete("CONTENTS", "category_name = ?", new String[]{param});
     }
 	
     /**
@@ -98,8 +83,7 @@ class DBHelper {
      * @param param String
      */
     void deletetContents(String param) {
-        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
-        readDb.delete("CONTENTS", "id = ?", new String[]{param});
+        sqLiteDatabase.delete("CONTENTS", "id = ?", new String[]{param});
     }
 
     /**
@@ -108,9 +92,8 @@ class DBHelper {
      * @return Cursor
      */
     Cursor selectAllContents() {
-        SQLiteDatabase readDb = dbOpenHelper.getReadableDatabase();
         String sql = "SELECT id, category_name, contents FROM CONTENTS ORDER BY category_name, id DESC;";
-        return readDb.rawQuery(sql, null);
+        return sqLiteDatabase.rawQuery(sql, null);
     }
 
 //    /**

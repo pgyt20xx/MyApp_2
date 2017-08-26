@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		
+		Log.d(TAG, "onCreate Start");
+		
 		// データ取得
 		initAllData();
 
@@ -66,15 +68,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ナビゲーションドロワー設定
         setNavigationDrawer(toolbar);
 
+		Log.d(TAG, "onCreate End");
 
     }
 	
 	private void initAllData() {
+		Log.d(TAG, "initData Start");
+		
 		// 登録されているカテゴリー名を保持する
         TITLE_NAME = getAllCategory();
 
         // 登録されているコンテンツを取得
         CONTENTS = getAllContents();
+		
+		Log.d(TAG, "initData End");
 		
 	}
 
@@ -82,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * ナビゲーションドロワーリスト作成
      */
     private void setNavigationDrawerListAdapter() {
+		
+		Log.d(TAG, "setNavigationDrawerList Start");
 
         // ナビゲーションドロワーに設定するリストを作成
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -98,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 drawer.closeDrawers();
             }
         });
+		
+		Log.d(TAG, "setNavigationDrawerList End");
 
     }
 
@@ -108,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void setNavigationDrawer(Toolbar toolbar) {
 
+		Log.d(TAG, "setNavigationDrawer Start");
+		
         // ナビゲーションドロワーの設定
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // リスナー設定
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
+		
+		Log.d(TAG, "setNavigationDrawerList End");
     }
 
     /**
@@ -141,6 +156,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * @return HashMap
      */
     HashMap<String, LinkedHashMap<String, String>> getAllContents() {
+		
+		Log.d(TAG, "getAllContents Start");
+		
         // DBからカテゴリー名を取得する
         Cursor cursor;
 
@@ -174,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, e.getMessage());
         }
 
+		Log.d(TAG, "getAllContents End");
+		
         return result;
     }
 
@@ -183,6 +203,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * @return ArrayList
      */
     private ArrayList<String> getAllCategory() {
+		
+		Log.d(TAG, "getAllCategory Start");
+		
         // DBからカテゴリー名を取得する
         Cursor cursor;
         ArrayList<String> result = new ArrayList<>();
@@ -201,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
+		
+		Log.d(TAG, "getAllCategory End");
 
         return result;
     }
@@ -209,6 +234,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      * フラグメントを初期化し画面を再描画する
      */
     private void initFragmentView() {
+		
+		Log.d(TAG, "initFragment Start");
 		
         // フラグメントを取得する
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -239,12 +266,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);
+		
+		Log.d(TAG, "initFragment End");
     }
 
     /**
      * カテゴリ追加のダイアログイベント
      */
     private void categoryInsertEvent() {
+		
+		Log.d(TAG, "categoryInsertEvent Start");
+		
         final EditText editView = new EditText(MainActivity.this);
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
@@ -255,6 +287,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+				
+				Log.d(TAG, "categoryInsertEvent Click OK");
                 // 値が入力された場合はDBに登録
                 if (!TextUtils.isEmpty(editView.getText())) {
                     CategoryBean param = new CategoryBean();
@@ -285,16 +319,22 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
 
+				Log.d(TAG, "categoryInsertEvent Click cancel");
+				
             }
         });
 
         dialog.show();
+		
+		Log.d(TAG, "categoryInsertEvent End");
     }
 
     /**
      * カテゴリ削除のダイアログイベント
      */
     private void categoryDeletetEvent() {
+		
+		Log.d(TAG, "categoryDeleteEvent Start");
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
         dialog.setTitle(R.string.delete_category);
@@ -303,6 +343,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+				
+				Log.d(TAG, "categoryDeleteEvent Click OK");
 
                 // 現在のフラグメントのpositionを取得
                 mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -330,14 +372,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
+				
+				Log.d(TAG, "categoryDeleteEvent Click cancel");
 
             }
         });
 
         dialog.show();
+		
+		Log.d(TAG, "categoryDeleteEvent End");
     }
 	
 	private void deletetAllEvent() {
+		
+		Log.d(TAG, "deleteAllEvent Start");
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
         dialog.setTitle(R.string.menu_delete_all);
@@ -346,6 +394,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialogInterface, int i) {
+					
+					Log.d(TAG, "deleteAllEvent Click OK");
 					
 					try {
 						dBhelper.deletetAll();
@@ -370,16 +420,24 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
 
+					Log.d(TAG, "deleteAllEvent Click cancel");
+					
 				}
 			});
 
         dialog.show();
+		
+		Log.d(TAG, "deleteAllEvent Click End");
+		
     }
 
     /**
      * コンテンツ追加のダイアログイベント
      */
     private void contentsInsertEvent() {
+		
+		Log.d(TAG, "contentsInsertEvent Start");
+		
         final EditText editView = new EditText(MainActivity.this);
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
@@ -390,6 +448,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+				Log.d(TAG, "contentsInsertEvent Click OK");
+				
                 // 値が入力された場合はDBに登録
                 if (!TextUtils.isEmpty(editView.getText())) {
 
@@ -434,11 +494,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
-
+				Log.d(TAG, "contentsInsertEvent Click Cancel");
+				
             }
         });
 
         dialog.show();
+		Log.d(TAG, "contentsInsertEvent End");
     }
 
     /**
@@ -458,6 +520,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public Fragment getItem(int position) {
+			Log.d(TAG, "SectionsPagerAdapter getItem Start");
+			
+			Log.d(TAG, "SectionsPagerAdapter getItem End");
             return MainActivityFragment.newInstance(position, TITLE_NAME.get(position), CONTENTS);
         }
 
@@ -469,6 +534,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public CharSequence getPageTitle(int position) {
+			Log.d(TAG, "SectionsPagerAdapter getTitle Start");
+
+			Log.d(TAG, "SectionsPagerAdapter getTitle End");
             return TITLE_NAME.get(position);
         }
 
@@ -479,11 +547,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public int getCount() {
+			Log.d(TAG, "SectionsPagerAdapter getCount Start");
+
+			Log.d(TAG, "SectionsPagerAdapter getCount End");
             return TITLE_NAME.size();
         }
 
         @Override
         public int getItemPosition(Object object) {
+			Log.d(TAG, "SectionsPagerAdapter getItemPosition Start");
+
+			Log.d(TAG, "SectionsPagerAdapter getItemPosition End");
             return POSITION_NONE;
         }
     }
@@ -496,6 +570,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+		Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected Start");
 
         switch (item.getItemId()) {
             case R.id.menu_item1:
@@ -514,18 +589,26 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         drawer.closeDrawer(GravityCompat.START);
+		
+		Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected End");
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+		Log.d(TAG, "onCreareOptionMenu Start");
+		
         getMenuInflater().inflate(R.menu.menu_main, menu);
+		
+		Log.d(TAG, "onCreareOptionMenu getItemPosition End");
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "onOptionsItemSelected getItemPosition Start");
+		
         // 押下されたメニューで分岐
         switch (item.getItemId()) {
             case R.id.add_category:
@@ -546,33 +629,49 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 return true;
 
         }
+		Log.d(TAG, "onOptionsItemSelected getItemPosition End");
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onRestart(){
         super.onRestart();
+		Log.d(TAG, "onRestsrt Start");
 		
 		Toast.makeText(getApplicationContext(), "restart", Toast.LENGTH_SHORT).show();
 
         // フラグメントの初期化
         initFragmentView();
+		
+		Log.d(TAG, "onRestsrt End");
     }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		Log.d(TAG, "onPageScrolled Start");
+
+		Log.d(TAG, "onPageScrolled End");
     }
 
     @Override
     public void onPageSelected(int position) {
+		Log.d(TAG, "onPageSelected Start");
+
+		Log.d(TAG, "onPageSelected End");
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+		Log.d(TAG, "onPageScrollStateChanged Start");
+
+		Log.d(TAG, "onPageScrollStateChanged End");
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+		Log.d(TAG, "onFragmentInteraction Start");
+
+		Log.d(TAG, "onFragmentInteraction End");
 
     }
 }

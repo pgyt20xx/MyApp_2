@@ -30,6 +30,8 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate Start");
+
         mClipboardManager = (ClipboardManager) getSystemService(getApplicationContext().CLIPBOARD_SERVICE);
         if (mClipboardManager != null) {
             mClipboardManager.addPrimaryClipChangedListener(clipListener);
@@ -37,15 +39,19 @@ public class MainService extends Service {
             Log.e(TAG, "error get clipboard. service end.");
             this.stopSelf();
         }
+        Log.d(TAG, "onCreate End");
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d(TAG, "MyService#onStartCommand");
+        Log.d(TAG, "onStartCommand Start");
 
         // 通知を設定
         setNotification();
+
+        Log.d(TAG, "onStartCommand End");
 
         // 強制終了時に再起動
         return START_STICKY;
@@ -57,6 +63,8 @@ public class MainService extends Service {
      */
     private OnPrimaryClipChangedListener clipListener = new OnPrimaryClipChangedListener() {
         public void onPrimaryClipChanged() {
+
+            Log.d(TAG, "OnPrimaryClipChangedListener Start");
 
             if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
                 ClipData data = mClipboardManager.getPrimaryClip();
@@ -72,6 +80,8 @@ public class MainService extends Service {
                 insertNewContents(item);
 
             }
+            Log.d(TAG, "OnPrimaryClipChangedListener End");
+
         }
     };
 
@@ -80,6 +90,8 @@ public class MainService extends Service {
      * @param item ClipData.Item
      */
     private void insertNewContents(ClipData.Item item){
+
+        Log.d(TAG, "insertNewContents Start");
 
         // 既存コンテンツ
         LinkedHashMap<String, String> contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
@@ -137,12 +149,16 @@ public class MainService extends Service {
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
+        Log.d(TAG, "insertNewContents End");
+
     }
 
     /**
      * ステータスバーに常駐
      */
     void setNotification() {
+        Log.d(TAG, "setNotification Start");
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle(getString(R.string.app_name));
         mBuilder.setContentText("CLIP_BOARD");
@@ -161,29 +177,41 @@ public class MainService extends Service {
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(NOTIFICATION_ID, notification);
 
+        Log.d(TAG, "setNotification End");
+
     }
 
     /**
      * 通知バーの常駐解除
      */
     private void cancelNotification() {
+        Log.d(TAG, "cancelNotification Start");
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(R.string.app_name);
+
+        Log.d(TAG, "cancelNotification End");
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onReceive Application Start MyApp_2");
+        Log.d(TAG, "onDestroy Start");
         super.onDestroy();
         cancelNotification();
         if (mClipboardManager != null) {
             mClipboardManager.removePrimaryClipChangedListener(clipListener);
         }
+
+        Log.d(TAG, "onDestroy End");
+
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind Start");
+
+        Log.d(TAG, "onBind End");
 
         return null;
     }

@@ -29,29 +29,38 @@ public class MainActivityFragment extends Fragment {
     }
 
     static MainActivityFragment newInstance(int page, String title, HashMap<String, LinkedHashMap<String, String>> contentsMap) {
+        Log.d(TAG, "newInstance Start");
+
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
         args.putString(ARG_TITLE_NAME, title);
         CONTENTS_MAP = contentsMap;
         fragment.setArguments(args);
+
+        Log.d(TAG, "newInstance End");
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate Start");
+
         if (getArguments() != null) {
             // param取得
             Log.d(TAG, "OnCreate");
 
         }
+        Log.d(TAG, "onCreate End");
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreateView Start");
 		
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
@@ -69,24 +78,33 @@ public class MainActivityFragment extends Fragment {
             RecyclerView.Adapter mAdapter = new CustomAdapter(contentsMap);
             mRecyclerView.setAdapter(mAdapter);
         }
+        Log.d(TAG, "onCreateView End");
+
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d(TAG, "onAttach Start");
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        Log.d(TAG, "onAttach End");
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d(TAG, "onDetach Start");
+
         mListener = null;
+        Log.d(TAG, "onDetach End");
     }
 
     interface OnFragmentInteractionListener {

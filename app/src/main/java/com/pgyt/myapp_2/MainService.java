@@ -23,8 +23,6 @@ public class MainService extends Service {
 
     private ClipboardManager mClipboardManager;
 
-    private static final int CLIPBOARD_TAB_POSITON = 0;
-
     String mPreviousText;
 
     public MainService() {
@@ -95,9 +93,6 @@ public class MainService extends Service {
     private void insertNewContents(ClipData.Item item){
         Log.d(TAG, "insertNewContents Start");
 
-        // 既存コンテンツ
-        LinkedHashMap<String, String> contentsMap = MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
-
 //        // 既に登録されているものは登録しない。
 //		List<String> tContents = new ArrayList<String>(contentsMap.values());
 //        if(tContents.lastIndexOf(item.getText().toString()) > 0){
@@ -121,12 +116,25 @@ public class MainService extends Service {
                 return;
             }
 
+            // 既存コンテンツ
+            LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
+            if (MainActivity.CONTENTS.containsKey(MainActivity.CLIPBOARD_TAB_NAME)) {
+                contentsMap = MainActivity.CONTENTS.get(MainActivity.CLIPBOARD_TAB_NAME);
+            }
+
+            // 既に登録されているものは登録しない。
+            List<String> tContents = new ArrayList<>(contentsMap.values());
+            if(tContents.lastIndexOf(item.getText().toString()) > 0){
+                return;
+            }
+
             // コンテンツの登録
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean param = new ContentsBean();
-            param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
+            param.setCategory_name(MainActivity.CLIPBOARD_TAB_NAME);
             param.setContents(item.getText().toString());
             Long id = new DBHelper(sqLiteDatabase).insertContents(param);
+
             // 1行目に追加
             LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
             tContentsMap.put(id.toString(), item.getText().toString());
@@ -135,7 +143,7 @@ public class MainService extends Service {
                 tContentsMap.putAll(contentsMap);
             }
             contentsMap = tContentsMap;
-            MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
+            MainActivity.CONTENTS.put(MainActivity.CLIPBOARD_TAB_NAME, contentsMap);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
 

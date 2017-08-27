@@ -18,8 +18,6 @@ public class MainActivityFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
-    private static HashMap<String, LinkedHashMap<String, String>> CONTENTS_MAP;
-
 
     private static final String TAG = "MainActivityFragment";
 
@@ -28,14 +26,13 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
-    static MainActivityFragment newInstance(int page, String title, HashMap<String, LinkedHashMap<String, String>> contentsMap) {
+    static MainActivityFragment newInstance(int page, String title) {
         Log.d(TAG, "newInstance Start");
 
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
         args.putString(ARG_TITLE_NAME, title);
-        CONTENTS_MAP = contentsMap;
         fragment.setArguments(args);
 
         Log.d(TAG, "newInstance End");
@@ -64,7 +61,7 @@ public class MainActivityFragment extends Fragment {
 		
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
-        LinkedHashMap contentsMap = CONTENTS_MAP.get(title);
+        LinkedHashMap contentsMap = MainActivity.CONTENTS.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 		Toast.makeText(view.getContext(), "onCreateView", Toast.LENGTH_SHORT).show();

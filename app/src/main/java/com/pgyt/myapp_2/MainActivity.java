@@ -28,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static final String TAG = "MainActivity";
 
+    public static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
+
+    public static final int CLIPBOARD_TAB_POSITON = 0;
+
     public static ArrayList<String> TITLE_NAME;
 
     public static HashMap<String, LinkedHashMap<String, String>> CONTENTS;
@@ -249,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) {
+                if (position == CLIPBOARD_TAB_POSITON) {
                     fab.hide();
                 } else {
                     fab.show();
@@ -347,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 int position = mViewPager.getCurrentItem();
 
                 // デフォルトタブでなければ削除
-                if (position == 0) {
+                if (position == CLIPBOARD_TAB_POSITON) {
                     Snackbar.make(findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
@@ -420,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 //
 //                    // 追加したページを開く
 //                    mViewPager = (ViewPager) findViewById(R.id.pager);
-//                    mViewPager.setCurrentItem(0);
+//                    mViewPager.setCurrentItem(CLIPBOARD_TAB_POSITON);
 					
 				}
 			});
@@ -533,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 			Log.d(TAG, "SectionsPagerAdapter getItem Start");
 			
 			Log.d(TAG, "SectionsPagerAdapter getItem End");
-            return MainActivityFragment.newInstance(position, TITLE_NAME.get(position), CONTENTS);
+            return MainActivityFragment.newInstance(position, TITLE_NAME.get(position));
         }
 
         /**

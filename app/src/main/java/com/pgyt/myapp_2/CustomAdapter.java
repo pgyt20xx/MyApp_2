@@ -21,7 +21,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private List<String> mDataset;
 	
 	private List<String> mRowIdset;
-	
+
 	private LinkedHashMap<String, String> contentsMap;
 
     private static final String TAG = "CustomAdapter";
@@ -54,14 +54,33 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
                 }
             });
+
+            // reciclerViewのロングクリックイベント
+            v.setOnLongClickListener(new View.OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(View view) {
+                    Toast.makeText(view.getContext(), "call onLongClick", Toast.LENGTH_SHORT).show();
+
+                    return true;
+                }
+            });
             mTextView = (TextView) v.findViewById(R.id.text_view);
 			mRowId = (TextView) v.findViewById(R.id.row_id);
         }
 
+        /**
+         * クリックされたコンテンツを返す。
+         * @return
+         */
         private TextView getTextView() {
             return mTextView;
         }
-		
+
+        /**
+         * クリックされたコンテンツのIDを返す。
+         * @return
+         */
 		private TextView getRowId() {
             return mRowId;
         }
@@ -70,8 +89,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(LinkedHashMap<String, String> item) {
 		this.contentsMap = item;
-		this.mRowIdset = new ArrayList<String>(item.keySet());
-		this.mDataset = new ArrayList<String>(item.values());
+		this.mRowIdset = new ArrayList<>(item.keySet());
+		this.mDataset = new ArrayList<>(item.values());
     }
 
     // Create new views (invoked by the layout manager)

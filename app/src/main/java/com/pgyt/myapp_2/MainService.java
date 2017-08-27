@@ -115,12 +115,6 @@ public class MainService extends Service {
                 contentsMap = MainActivity.CONTENTS.get(MainActivity.CLIPBOARD_TAB_NAME);
             }
 
-            // 既に登録されているものは登録しない。
-            List<String> tContents = new ArrayList<>(contentsMap.values());
-            if(tContents.lastIndexOf(item.getText().toString()) > 0){
-                return;
-            }
-
             // コンテンツの登録
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean param = new ContentsBean();

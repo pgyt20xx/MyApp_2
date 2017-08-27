@@ -17,9 +17,6 @@ public class BootReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             Log.d(TAG, "onReceive Application Start MyApp_2");
 
-            //TODO: 完成後削除
-            Toast.makeText(context, "Application Start", Toast.LENGTH_LONG).show();
-
             // サービスを起動
             context.startService(new Intent(context, MainService.class));
         }

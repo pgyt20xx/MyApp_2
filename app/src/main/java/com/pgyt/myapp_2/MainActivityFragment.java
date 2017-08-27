@@ -64,7 +64,6 @@ public class MainActivityFragment extends Fragment {
         LinkedHashMap contentsMap = MainActivity.CONTENTS.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
-		Toast.makeText(view.getContext(), "onCreateView", Toast.LENGTH_SHORT).show();
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

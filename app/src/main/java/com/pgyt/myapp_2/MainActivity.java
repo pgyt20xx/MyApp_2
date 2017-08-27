@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager mViewPager;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 		Log.d(TAG, "onCreate End");
     }
 	
-	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void initAllData() {
 		Log.d(TAG, "initData Start");
 		
@@ -156,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return HashMap
      */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     HashMap<String, LinkedHashMap<String, String>> getAllContents() {
         Log.d(TAG, "getAllContents Start");
 
@@ -201,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return ArrayList
      */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private ArrayList<String> getAllCategory() {
 		Log.d(TAG, "getAllCategory Start");
 		
@@ -280,41 +276,43 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 				
 				Log.d(TAG, "categoryInsertEvent Click OK");
-                // 値が入力された場合はDBに登録
-                if (!TextUtils.isEmpty(editView.getText())) {
-                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
-                    try {
-                        CategoryBean param = new CategoryBean();
-                        param.setCategory_name(editView.getText().toString());
-                        new DBHelper(sqLiteDatabase).insertCategory(param);
 
-                        // 新規タブ追加
-                        TITLE_NAME.add((editView.getText()).toString());
-                        Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
-
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
-
-                    } finally {
-                        sqLiteDatabase.close();
-                    }
-
-                    // ナビゲーションドロワーの更新
-                    adapter.notifyDataSetChanged();
-
-                    // フラグメントの初期化
-                    initFragmentView();
-
-                    // 追加したページを開く
-                    mViewPager = (ViewPager) findViewById(R.id.pager);
-                    mViewPager.setCurrentItem(TITLE_NAME.size() - 1);
-
+                // 値が入力されていない場合は何もしない
+                if (TextUtils.isEmpty(editView.getText())) {
+                    Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
+                    return;
                 }
+
+                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                try {
+                    CategoryBean param = new CategoryBean();
+                    param.setCategory_name(editView.getText().toString());
+                    new DBHelper(sqLiteDatabase).insertCategory(param);
+
+                    // 新規タブ追加
+                    TITLE_NAME.add((editView.getText()).toString());
+                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+
+                } finally {
+                    sqLiteDatabase.close();
+                }
+
+                // ナビゲーションドロワーの更新
+                adapter.notifyDataSetChanged();
+
+                // フラグメントの初期化
+                initFragmentView();
+
+                // 追加したページを開く
+                mViewPager = (ViewPager) findViewById(R.id.pager);
+                mViewPager.setCurrentItem(TITLE_NAME.size() - 1);
             }
         });
         // Cancelボタン押下時
@@ -341,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 				Log.d(TAG, "categoryDeleteEvent Click OK");
@@ -401,8 +398,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				@RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                @Override
+             @Override
 				public void onClick(DialogInterface dialogInterface, int i) {
 					Log.d(TAG, "deleteAllEvent Click OK");
 
@@ -455,54 +451,55 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 				Log.d(TAG, "contentsInsertEvent Click OK");
 				
-                // 値が入力された場合はDBに登録
-                if (!TextUtils.isEmpty(editView.getText())) {
-
-                    // 現在のフラグメントのpositionを取得
-                    mViewPager = (ViewPager) findViewById(R.id.pager);
-                    int position = mViewPager.getCurrentItem();
-
-                    // コンテンツ登録
-                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
-                    try {
-                        ContentsBean param = new ContentsBean();
-                        param.setCategory_name(TITLE_NAME.get(position));
-                        param.setContents(editView.getText().toString());
-                        Long id = new DBHelper(sqLiteDatabase).insertContents(param);
-
-                        // 1行目に追加する
-                        LinkedHashMap<String, String> contentsMap;
-                        LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
-                        tContentsMap.put(id.toString(), editView.getText().toString());
-                        if (CONTENTS.containsKey(TITLE_NAME.get(position))) {
-                            // 既存コンテンツ追加
-                            tContentsMap.putAll(CONTENTS.get(TITLE_NAME.get(position)));
-
-                        }
-                        contentsMap = tContentsMap;
-                        CONTENTS.put(TITLE_NAME.get(position), contentsMap);
-
-                    } catch (Exception e) {
-                        Log.d(TAG, e.getMessage());
-
-                    } finally {
-                        sqLiteDatabase.close();
-                    }
-
-					Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
-                    
-                    // フラグメントの初期化
-                    initFragmentView();
-
-                    // 元のページを開く
-                    mViewPager.setCurrentItem(position);
-
+                // 値が入力されていない場合は何もしない
+                if (TextUtils.isEmpty(editView.getText())) {
+                    Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
+                    return;
                 }
+
+                // 現在のフラグメントのpositionを取得
+                mViewPager = (ViewPager) findViewById(R.id.pager);
+                int position = mViewPager.getCurrentItem();
+
+                // コンテンツ登録
+                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                try {
+                    ContentsBean param = new ContentsBean();
+                    param.setCategory_name(TITLE_NAME.get(position));
+                    param.setContents(editView.getText().toString());
+                    Long id = new DBHelper(sqLiteDatabase).insertContents(param);
+
+                    // 1行目に追加する
+                    LinkedHashMap<String, String> contentsMap;
+                    LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
+                    tContentsMap.put(id.toString(), editView.getText().toString());
+                    if (CONTENTS.containsKey(TITLE_NAME.get(position))) {
+                        // 既存コンテンツ追加
+                        tContentsMap.putAll(CONTENTS.get(TITLE_NAME.get(position)));
+
+                    }
+                    contentsMap = tContentsMap;
+                    CONTENTS.put(TITLE_NAME.get(position), contentsMap);
+
+                } catch (Exception e) {
+                    Log.d(TAG, e.getMessage());
+
+                } finally {
+                    sqLiteDatabase.close();
+                }
+
+                Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+
+                // フラグメントの初期化
+                initFragmentView();
+
+                // 元のページを開く
+                mViewPager.setCurrentItem(position);
+
             }
         });
         // Cancelボタン押下時
@@ -637,8 +634,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onRestart(){
         super.onRestart();
 		Log.d(TAG, "onRestsrt Start");
-		
-		Toast.makeText(getApplicationContext(), "restart", Toast.LENGTH_SHORT).show();
 
         // フラグメントの初期化
         initFragmentView();

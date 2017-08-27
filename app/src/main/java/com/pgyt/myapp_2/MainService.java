@@ -89,17 +89,10 @@ public class MainService extends Service {
      * テキストをDBに登録
      * @param item ClipData.Item
      */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void insertNewContents(ClipData.Item item){
         Log.d(TAG, "insertNewContents Start");
 
-//        // 既に登録されているものは登録しない。
-//		List<String> tContents = new ArrayList<String>(contentsMap.values());
-//        if(tContents.lastIndexOf(item.getText().toString()) > 0){
-//            return;
-//        }
-
-        // アプリ内のコンテンツは登録しない。TODO : 要改善
+        // アプリ内のコンテンツは登録しない。
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();

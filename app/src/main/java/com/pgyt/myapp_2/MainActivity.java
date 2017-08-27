@@ -11,14 +11,12 @@ import android.support.v4.app.*;
 import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
-import android.support.v7.widget.*;
 import android.text.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.pgyt.myapp_2.model.*;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -160,8 +158,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // DBからカテゴリー名を取得する
         HashMap<String, LinkedHashMap<String, String>> result = new HashMap<>();
-        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents()) {
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+        try {
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
             boolean isEof = cursor.moveToFirst();
 
             String mapKey;
@@ -185,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
 
+        } finally {
+            sqLiteDatabase.close();
         }
 
         Log.d(TAG, "getAllContents End");
@@ -202,8 +203,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 		
         // DBからカテゴリー名を取得する
         ArrayList<String> result = new ArrayList<>();
-        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-             Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(BLANK_STRING)) {
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+        try {
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(BLANK_STRING);
             boolean isEof = cursor.moveToFirst();
             while (isEof) {
                 result.add(cursor.getString(cursor.getColumnIndex("category_name")));
@@ -214,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
 
+        } finally {
+            sqLiteDatabase.close();
         }
 
 		Log.d(TAG, "getAllCategory End");
@@ -279,7 +283,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 				Log.d(TAG, "categoryInsertEvent Click OK");
                 // 値が入力された場合はDBに登録
                 if (!TextUtils.isEmpty(editView.getText())) {
-                    try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase()) {
+                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                    try {
                         CategoryBean param = new CategoryBean();
                         param.setCategory_name(editView.getText().toString());
                         new DBHelper(sqLiteDatabase).insertCategory(param);
@@ -291,6 +296,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
 
+                    } finally {
+                        sqLiteDatabase.close();
                     }
 
                     // ナビゲーションドロワーの更新
@@ -344,7 +351,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     Snackbar.make(findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
-                    try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase()) {
+                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                    try {
                         String param = TITLE_NAME.get(position);
                         new DBHelper(sqLiteDatabase).deletetCategory(param);
 
@@ -355,6 +363,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
 
+                    } finally {
+                        sqLiteDatabase.close();
                     }
 
                     // フラグメントの初期化
@@ -393,7 +403,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 					Log.d(TAG, "deleteAllEvent Click OK");
 
                     // 全データ削除
-                    try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase()) {
+                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                    try {
                         new DBHelper(sqLiteDatabase).deletetAll();
                         initAllData();
                         Snackbar.make(findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
@@ -401,13 +412,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
 
+                    } finally {
+                        sqLiteDatabase.close();
                     }
-					// フラグメントの初期化
+                    // フラグメントの初期化
 					initFragmentView();
-
-                    // 追加したページを開く
-                    mViewPager = (ViewPager) findViewById(R.id.pager);
-                    mViewPager.setCurrentItem(0);
+//
+//                    // 追加したページを開く
+//                    mViewPager = (ViewPager) findViewById(R.id.pager);
+//                    mViewPager.setCurrentItem(0);
 					
 				}
 			});
@@ -451,7 +464,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     int position = mViewPager.getCurrentItem();
 
                     // コンテンツ登録
-                    try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase()) {
+                    SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+                    try {
                         ContentsBean param = new ContentsBean();
                         param.setCategory_name(TITLE_NAME.get(position));
                         param.setContents(editView.getText().toString());
@@ -472,6 +486,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
 
+                    } finally {
+                        sqLiteDatabase.close();
                     }
 
 					Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();

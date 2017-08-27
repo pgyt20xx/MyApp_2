@@ -105,8 +105,9 @@ public class MainService extends Service {
 //        }
 
         // アプリ内のコンテンツは登録しない。TODO : 要改善
-        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents()) {
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+        try {
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
             boolean isEof = cursor.moveToFirst();
             ArrayList<String> allContents = new ArrayList<>();
             while (isEof) {
@@ -119,19 +120,13 @@ public class MainService extends Service {
             if(allContents.lastIndexOf(item.getText().toString()) >= 0){
                 return;
             }
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
 
-        }
-
-        // コンテンツの登録
-        try (SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase()) {
+            // コンテンツの登録
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean param = new ContentsBean();
             param.setCategory_name(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON));
             param.setContents(item.getText().toString());
             Long id = new DBHelper(sqLiteDatabase).insertContents(param);
-
             // 1行目に追加
             LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
             tContentsMap.put(id.toString(), item.getText().toString());
@@ -141,9 +136,11 @@ public class MainService extends Service {
             }
             contentsMap = tContentsMap;
             MainActivity.CONTENTS.put(MainActivity.TITLE_NAME.get(CLIPBOARD_TAB_POSITON), contentsMap);
-
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
+
+        } finally {
+            sqLiteDatabase.close();
         }
         Log.d(TAG, "insertNewContents End");
     }

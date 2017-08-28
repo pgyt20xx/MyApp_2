@@ -61,7 +61,7 @@ public class MainActivityFragment extends Fragment {
 		
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
-        LinkedHashMap contentsMap = MainActivity.CONTENTS.get(title);
+        LinkedHashMap<String, String[]> contentsMap = MainActivity.CONTENTS.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);

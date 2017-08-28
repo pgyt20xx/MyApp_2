@@ -3,6 +3,7 @@ package com.pgyt.myapp_2;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +19,10 @@ import java.util.*;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
-    private List<String> mDataset;
+    private List<String[]> mDataset;
 	
 	private List<String> mRowIdset;
 
-	private LinkedHashMap<String, String> contentsMap;
-	
 	private String title;
 
     private static final String TAG = "CustomAdapter";
@@ -34,7 +33,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         // each data item is just a string in this case
-        private TextView mTextView;
+        private TextView mContentsTitle;
+        private TextView mContents;
 		private TextView mRowId;
 
         private ViewHolder(View v) {
@@ -44,15 +44,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "ID: " + getRowId().getText() + "ELEMENT " + getTextView().getText() + " clicked.");
+                    Log.d(TAG, "ID:" + getRowId().getText() + " TITLE:" + getContentsTitle().getText() + " ELEMENT:" + getContents().getText() + " clicked.");
 
                     // クリップボードにコピー
-                    ClipData.Item item = new ClipData.Item(getTextView().getText());
+                    ClipData.Item item = new ClipData.Item(getContents().getText());
                     ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
                     ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
                     clipboardManager.setPrimaryClip(clipData);
 
-                    Toast.makeText(v.getContext(), "\"" + getTextView().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -67,7 +67,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                     return true;
                 }
             });
-            mTextView = (TextView) v.findViewById(R.id.text_view);
+            mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
+            mContents = (TextView) v.findViewById(R.id.text_contents);
 			mRowId = (TextView) v.findViewById(R.id.row_id);
         }
 
@@ -75,8 +76,16 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
          * クリックされたコンテンツを返す。
          * @return
          */
-        private TextView getTextView() {
-            return mTextView;
+        private TextView getContentsTitle() {
+            return mContentsTitle;
+        }
+
+        /**
+         * クリックされたコンテンツを返す。
+         * @return
+         */
+        private TextView getContents() {
+            return mContents;
         }
 
         /**
@@ -89,8 +98,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(String title, LinkedHashMap<String, String> item) {
-		this.contentsMap = item;
+    CustomAdapter(String title, LinkedHashMap<String, String[]> item) {
 		this.title = title;
 		this.mRowIdset = new ArrayList<>(item.keySet());
 		this.mDataset = new ArrayList<>(item.values());
@@ -112,10 +120,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset.get(position));
+        holder.mContentsTitle.setText(mDataset.get(position)[0]);
+        holder.mContents.setText(mDataset.get(position)[1]);
 		holder.mRowId.setText(mRowIdset.get(position));
 		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
-			holder.mTextView.setTextColor(R.color.colorTextDefault);
+            Resources res = Resources.getSystem();
+			holder.mContents.setTextColor(res.getColor(R.color.colorTextDefault));
 		}
     }
 

@@ -13,7 +13,6 @@ import android.util.*;
 import android.widget.*;
 import com.pgyt.myapp_2.model.*;
 import java.util.*;
-import org.apache.http.util.*;
 
 
 
@@ -117,7 +116,7 @@ public class MainService extends Service {
             }
 
             // 既存コンテンツ
-            LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
+            LinkedHashMap<String, String[]> contentsMap = new LinkedHashMap<>();
             if (MainActivity.CONTENTS.containsKey(MainActivity.CLIPBOARD_TAB_NAME)) {
                 contentsMap = MainActivity.CONTENTS.get(MainActivity.CLIPBOARD_TAB_NAME);
             }
@@ -126,12 +125,13 @@ public class MainService extends Service {
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean param = new ContentsBean();
             param.setCategory_name(MainActivity.CLIPBOARD_TAB_NAME);
+            param.setContents_title("DummyContentsTitle");
             param.setContents(item.getText().toString());
             Long id = new DBHelper(sqLiteDatabase).insertContents(param);
 
             // 1行目に追加
-            LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
-            tContentsMap.put(id.toString(), item.getText().toString());
+            LinkedHashMap<String, String[]> tContentsMap = new LinkedHashMap<>();
+            tContentsMap.put(id.toString(), new String[]{MainActivity.CLIPBOARD_TAB_NAME, item.getText().toString()});
             if (contentsMap.size() != 0) {
                 // 既存コンテンツ追加
                 tContentsMap.putAll(contentsMap);

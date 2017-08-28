@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public static ArrayList<String> TITLE_NAME;
 
-    public static HashMap<String, LinkedHashMap<String, String>> CONTENTS;
+    public static HashMap<String, LinkedHashMap<String, String[]>> CONTENTS;
 
     private ArrayAdapter<String> adapter;
 
@@ -154,20 +154,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return HashMap
      */
-    HashMap<String, LinkedHashMap<String, String>> getAllContents() {
+    HashMap<String, LinkedHashMap<String, String[]>> getAllContents() {
         Log.d(TAG, "getAllContents Start");
 
         // DBからカテゴリー名を取得する
-        HashMap<String, LinkedHashMap<String, String>> result = new HashMap<>();
+        HashMap<String, LinkedHashMap<String, String[]>> result = new HashMap<>();
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
             boolean isEof = cursor.moveToFirst();
 
             String mapKey;
+            String[] contentsArray = new String[2];
             while (isEof) {
                 mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
-                LinkedHashMap<String, String> contentsMap = new LinkedHashMap<>();
+                LinkedHashMap<String, String[]> contentsMap = new LinkedHashMap<>();
 
                 // 同一カテゴリーのリストを作成する。
                 // カテゴリー名でソートされていることが前提
@@ -175,7 +176,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     if (!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))) {
                         break;
                     }
-                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), cursor.getString(cursor.getColumnIndex("contents")));
+                    contentsArray[0] = cursor.getString(cursor.getColumnIndex("contents_title"));
+                    contentsArray[1] = cursor.getString(cursor.getColumnIndex("contents"));
+                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), contentsArray);
                     isEof = cursor.moveToNext();
                 }
                 result.put(mapKey, contentsMap);
@@ -442,12 +445,18 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void contentsInsertEvent() {
 		Log.d(TAG, "contentsInsertEvent Start");
-		
-        final EditText editView = new EditText(MainActivity.this);
 
+        // レイアウトセット
+        LinearLayout layout = new LinearLayout(this);
+        final EditText contentsTitleEditView = new EditText(MainActivity.this);
+        final EditText contentsEditView = new EditText(MainActivity.this);
+        layout.addView(contentsTitleEditView);
+        layout.addView(contentsEditView);
+
+        // ダイアログセット
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
         dialog.setTitle(R.string.fab_title);
-        dialog.setView(editView);
+        dialog.setView(layout);
 
         // OKボタン押下時
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -456,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 				Log.d(TAG, "contentsInsertEvent Click OK");
 				
                 // 値が入力されていない場合は何もしない
-                if (TextUtils.isEmpty(editView.getText())) {
+                if (TextUtils.isEmpty(contentsTitleEditView.getText())) {
                     Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -470,13 +479,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 try {
                     ContentsBean param = new ContentsBean();
                     param.setCategory_name(TITLE_NAME.get(position));
-                    param.setContents(editView.getText().toString());
+                    param.setContents_title(contentsTitleEditView.getText().toString());
+                    param.setContents(contentsEditView.getText().toString());
                     Long id = new DBHelper(sqLiteDatabase).insertContents(param);
 
                     // 1行目に追加する
-                    LinkedHashMap<String, String> contentsMap;
-                    LinkedHashMap<String, String> tContentsMap = new LinkedHashMap<>();
-                    tContentsMap.put(id.toString(), editView.getText().toString());
+                    LinkedHashMap<String, String[]> contentsMap;
+                    LinkedHashMap<String, String[]> tContentsMap = new LinkedHashMap<>();
+                    tContentsMap.put(id.toString(), new String[]{contentsTitleEditView.getText().toString(), contentsEditView.getText().toString()});
                     if (CONTENTS.containsKey(TITLE_NAME.get(position))) {
                         // 既存コンテンツ追加
                         tContentsMap.putAll(CONTENTS.get(TITLE_NAME.get(position)));

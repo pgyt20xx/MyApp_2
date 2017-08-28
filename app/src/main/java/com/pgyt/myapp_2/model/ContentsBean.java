@@ -17,6 +17,11 @@ public class ContentsBean
     private String category_name;
 
     /**
+     * コンテンツタイトル
+     */
+    private String contents_title;
+
+    /**
      * コンテンツ
      */
     private String contents;
@@ -54,6 +59,22 @@ public class ContentsBean
     }
 
     /**
+     * コンテンツタイトルを取得
+     * @return
+     */
+    public String getContents_title() {
+        return contents_title;
+    }
+
+    /**
+     * コンテンツタイトルを設定
+     * @param contents_title
+     */
+    public void setContents_title(String contents_title) {
+        this.contents_title = contents_title;
+    }
+
+    /**
      * コンテンツを取得
      * @return
      */
@@ -76,6 +97,7 @@ public class ContentsBean
     public ContentValues getParams(){
         ContentValues contentValues = new ContentValues();
         contentValues.put("category_name", getCategory_name());
+        contentValues.put("contents_title", getContents_title());
         contentValues.put("contents", getContents());
         return contentValues;
     }

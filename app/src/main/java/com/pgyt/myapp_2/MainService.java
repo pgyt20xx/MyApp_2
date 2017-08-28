@@ -13,6 +13,8 @@ import android.util.*;
 import android.widget.*;
 import com.pgyt.myapp_2.model.*;
 import java.util.*;
+import org.apache.http.util.*;
+
 
 
 public class MainService extends Service {
@@ -23,10 +25,14 @@ public class MainService extends Service {
 
     private ClipboardManager mClipboardManager;
 
-    String mPreviousText;
+    private String mPreviousText;
+	
+	private String mClipBoard;
 
     public MainService() {
         mPreviousText = "";
+		mClipBoard = "";
+		
     }
 
 
@@ -72,12 +78,13 @@ public class MainService extends Service {
                 ClipData.Item item = data.getItemAt(0);
 
 				// 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
-                if (mPreviousText.equals(item.getText().toString())) {
+                if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
 				
 				mPreviousText = item.getText().toString();
                 // コピーしたテキストの登録
+				mClipBoard = item.getText().toString();
                 insertNewContents(item);
 
             }
@@ -145,10 +152,14 @@ public class MainService extends Service {
      */
     void setNotification() {
         Log.d(TAG, "setNotification Start");
-
+		
+		if (mClipboardManager != null) {
+			mClipBoard = mClipboardManager.getText().toString();
+		}
+		
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle(getString(R.string.app_name));
-        mBuilder.setContentText("CLIP_BOARD");
+        mBuilder.setContentTitle(mClipBoard);
+        mBuilder.setContentText(mPreviousText);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setOngoing(true);
         mBuilder.setAutoCancel(false);
@@ -163,6 +174,7 @@ public class MainService extends Service {
 
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(NOTIFICATION_ID, notification);
+		startForeground(NOTIFICATION_ID, notification);
         Log.d(TAG, "setNotification End");
     }
 

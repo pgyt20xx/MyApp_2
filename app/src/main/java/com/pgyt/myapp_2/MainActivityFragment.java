@@ -71,11 +71,13 @@ public class MainActivityFragment extends Fragment {
 
         // 表示内容があるときだけ設定
         if (contentsMap != null) {
-            RecyclerView.Adapter mAdapter = new CustomAdapter(contentsMap);
+            RecyclerView.Adapter mAdapter = new CustomAdapter(title, contentsMap);
             mRecyclerView.setAdapter(mAdapter);
+
         }
         Log.d(TAG, "onCreateView End");
 
+		
         return view;
     }
 

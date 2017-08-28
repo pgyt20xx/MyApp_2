@@ -23,6 +23,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 	private List<String> mRowIdset;
 
 	private LinkedHashMap<String, String> contentsMap;
+	
+	private String title;
 
     private static final String TAG = "CustomAdapter";
 
@@ -87,8 +89,9 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(LinkedHashMap<String, String> item) {
+    CustomAdapter(String title, LinkedHashMap<String, String> item) {
 		this.contentsMap = item;
+		this.title = title;
 		this.mRowIdset = new ArrayList<>(item.keySet());
 		this.mDataset = new ArrayList<>(item.values());
     }
@@ -111,6 +114,9 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         // - replace the contents of the view with that element
         holder.mTextView.setText(mDataset.get(position));
 		holder.mRowId.setText(mRowIdset.get(position));
+		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
+			holder.mTextView.setTextColor(R.color.colorTextDefault);
+		}
     }
 
     // Return the size of your dataset (invoked by the layout manager)

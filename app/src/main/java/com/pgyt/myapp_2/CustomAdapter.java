@@ -125,7 +125,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		holder.mRowId.setText(mRowIdset.get(position));
 		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
 			holder.mContentsTitle.setVisibility(View.GONE);
-            holder.mContents.setTextColor(R.color.colorTextDefault);
 		}
     }
 

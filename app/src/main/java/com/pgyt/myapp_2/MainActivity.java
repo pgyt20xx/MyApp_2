@@ -445,9 +445,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // レイアウトセット
         LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final TextView textTitle = new TextView(getApplicationContext());
+        final TextView textContents = new TextView(getApplicationContext());
+        textTitle.setText("Title");
+        textContents.setText("Contents");
         final EditText contentsTitleEditView = new EditText(MainActivity.this);
         final EditText contentsEditView = new EditText(MainActivity.this);
+        layout.addView(textTitle, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         layout.addView(contentsTitleEditView);
+        layout.addView(textContents, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         layout.addView(contentsEditView);
 
         // ダイアログセット

@@ -12,17 +12,18 @@
 		android:visibility="gone"/>
 	<TextView
 		android:id="@+id/text_contents_title"
-		android:layout_width="wrap_content"
-		android:textColor="@color/colorGray"
+		android:layout_width="match_parent"
+		android:textColor="@color/colorTextDefault"
 		android:ellipsize="end"
 		android:maxLines="1"
 		android:layout_height="50dp" />
 	<TextView
         android:id="@+id/text_contents"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
 		android:textColor="@color/colorGray"
 		android:ellipsize="end"
         android:maxLines="2"
+		android:layout_below="@id/text_contents_title"
         android:layout_height="50dp" />
     
 </LinearLayout>

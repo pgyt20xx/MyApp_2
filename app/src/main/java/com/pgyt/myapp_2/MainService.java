@@ -28,6 +28,9 @@ public class MainService extends Service {
 	
 	private String mClipBoard;
 
+	
+	NotificationCompat.Builder mBuilder;
+
     public MainService() {
         mPreviousText = "";
 		mClipBoard = "";
@@ -82,8 +85,11 @@ public class MainService extends Service {
                 }
 				
 				mPreviousText = item.getText().toString();
-                // コピーしたテキストの登録
-				mClipBoard = item.getText().toString();
+				
+				// 通知バーの更新
+				setNotification();
+				
+				// コピーしたテキストの登録
                 insertNewContents(item);
 
             }
@@ -157,7 +163,7 @@ public class MainService extends Service {
 			mClipBoard = mClipboardManager.getText().toString();
 		}
 		
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle(mClipBoard);
         mBuilder.setContentText(mPreviousText);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);

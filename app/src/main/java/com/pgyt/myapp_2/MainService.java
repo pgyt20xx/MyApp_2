@@ -131,7 +131,7 @@ public class MainService extends Service {
 
             // 1行目に追加
             LinkedHashMap<String, String[]> tContentsMap = new LinkedHashMap<>();
-            tContentsMap.put(id.toString(), new String[]{MainActivity.CLIPBOARD_TAB_NAME, item.getText().toString()});
+            tContentsMap.put(id.toString(), new String[]{"DummyContentsTitle", item.getText().toString()});
             if (contentsMap.size() != 0) {
                 // 既存コンテンツ追加
                 tContentsMap.putAll(contentsMap);

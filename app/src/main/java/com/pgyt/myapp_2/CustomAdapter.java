@@ -100,8 +100,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(String title, LinkedHashMap<String, String[]> item) {
 		this.title = title;
-		this.mRowIdset = new ArrayList<>(item.keySet());
-		this.mDataset = new ArrayList<>(item.values());
+		this.mRowIdset = new ArrayList<String>(item.keySet());
+		this.mDataset = new ArrayList<String[]>(item.values());
     }
 
     // Create new views (invoked by the layout manager)
@@ -124,8 +124,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mContents.setText(mDataset.get(position)[1]);
 		holder.mRowId.setText(mRowIdset.get(position));
 		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
-            Resources res = Resources.getSystem();
-			holder.mContents.setTextColor(res.getColor(R.color.colorTextDefault));
+			holder.mContentsTitle.setVisibility(View.GONE);
+            holder.mContents.setTextColor(R.color.colorTextDefault);
 		}
     }
 

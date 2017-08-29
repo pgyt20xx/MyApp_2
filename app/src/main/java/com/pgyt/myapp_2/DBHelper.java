@@ -92,7 +92,7 @@ class DBHelper {
      * @return Cursor
      */
     Cursor selectAllContents() {
-        String sql = "SELECT id, category_name, contents FROM CONTENTS ORDER BY category_name, id DESC;";
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name, id DESC;";
         return sqLiteDatabase.rawQuery(sql, null);
     }
 

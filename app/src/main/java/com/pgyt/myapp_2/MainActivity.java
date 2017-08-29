@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             boolean isEof = cursor.moveToFirst();
 
             String mapKey;
-            String[] contentsArray = new String[2];
             while (isEof) {
                 mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
                 LinkedHashMap<String, String[]> contentsMap = new LinkedHashMap<>();
@@ -175,10 +174,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 while (isEof) {
                     if (!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))) {
                         break;
-                    }
-                    contentsArray[0] = cursor.getString(cursor.getColumnIndex("contents_title"));
-                    contentsArray[1] = cursor.getString(cursor.getColumnIndex("contents"));
-                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), contentsArray);
+                    }				
+                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), new String[]{cursor.getString(cursor.getColumnIndex("contents_title")), cursor.getString(cursor.getColumnIndex("contents"))});
                     isEof = cursor.moveToNext();
                 }
                 result.put(mapKey, contentsMap);

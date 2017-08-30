@@ -16,6 +16,7 @@ import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import java.util.*;
+import android.widget.*;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
@@ -61,9 +62,10 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             v.setOnLongClickListener(new View.OnLongClickListener(){
 
                 @Override
-                public boolean onLongClick(View view) {
+                public boolean onLongClick(View view) {				
                     Toast.makeText(view.getContext(), "call onLongClick", Toast.LENGTH_SHORT).show();
-
+					CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+					checkBox.setVisibility(View.VISIBLE);
                     return true;
                 }
             });
@@ -123,8 +125,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mContentsTitle.setText(mDataset.get(position)[0]);
         holder.mContents.setText(mDataset.get(position)[1]);
 		holder.mRowId.setText(mRowIdset.get(position));
+		
 		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
 			holder.mContentsTitle.setVisibility(View.GONE);
+			holder.mContents.setVisibility(View.VISIBLE);
+			
+		} else {
+			holder.mContentsTitle.setVisibility(View.VISIBLE);
+			holder.mContents.setVisibility(View.GONE);
+			
 		}
     }
 

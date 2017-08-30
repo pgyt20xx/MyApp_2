@@ -5,26 +5,48 @@
 	android:focusable="true"
 	android:background="?android:attr/selectableItemBackground"
 	>
-	<TextView
-        android:id="@+id/row_id"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
+	
+	<CheckBox
+		android:id="@+id/checkbox"
+		android:layout_width="wrap_content"
+		android:layout_height="50dp"
+		android:gravity="center"
 		android:visibility="gone"/>
+	
 	<TextView
-		android:id="@+id/text_contents_title"
+		android:id="@+id/row_id"
+		android:layout_width="wrap_content"
+		android:layout_height="50dp"
+		android:visibility="gone"/>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
-		android:textColor="@color/colorTextDefault"
-        android:textSize="24sp"
-        android:ellipsize="end"
-		android:maxLines="1"
-		android:layout_height="50dp" />
-	<TextView
-        android:id="@+id/text_contents"
-        android:layout_width="match_parent"
-		android:textColor="@color/colorTextDefault"
-        android:textSize="24sp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:layout_height="50dp" />
+		android:layout_height="wrap_content"
+		android:background="?android:attr/selectableItemBackground"	
+		android:orientation="vertical" >
+
+		<TextView
+			android:id="@+id/text_contents_title"
+			android:layout_width="match_parent"
+			android:textColor="@color/colorTextDefault"
+			android:textSize="20sp"
+			android:ellipsize="end"
+			android:maxLines="1"
+			android:gravity="center_vertical"
+			android:visibility="gone"
+			android:layout_height="50dp" />
+		
+		<TextView
+			android:id="@+id/text_contents"
+			android:layout_width="match_parent"
+			android:textColor="@color/colorTextDefault"
+			android:textSize="20sp"
+			android:ellipsize="end"
+			android:maxLines="2"
+			android:gravity="center_vertical"
+			android:visibility="gone"
+			android:layout_height="50dp" />
+		
+	</LinearLayout>
     
 </LinearLayout>

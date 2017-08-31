@@ -3,6 +3,7 @@ package com.pgyt.myapp_2;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,10 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
 	private String title;
 
+    private Context context;
+
+    private LayoutInflater layoutInflater;
+
     private static final String TAG = "CustomAdapter";
 
     // Provide a reference to the views for each data item
@@ -38,6 +43,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         private TextView mContents;
 		private TextView mRowId;
 		private CheckBox mCheckBox;
+
 
         private ViewHolder(View v) {
             super(v);
@@ -63,20 +69,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             v.setOnLongClickListener(new View.OnLongClickListener(){
 
                 @Override
-                public boolean onLongClick(View view) {				
-                    Toast.makeText(view.getContext(), "call onLongClick", Toast.LENGTH_SHORT).show();
-					RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-					
-					for(int i = 0; i < recyclerView.getChildCount(); i++) {
-						View row = recyclerView.getChildAt(i);
-						CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkbox);
-						checkBox.setVisibility(View.VISIBLE);
-						
-					}
-									
+                public boolean onLongClick(View view) {
+
                     return true;
                 }
             });
+
             mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
             mContents = (TextView) v.findViewById(R.id.text_contents);
 			mRowId = (TextView) v.findViewById(R.id.row_id);
@@ -106,23 +104,24 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		private TextView getRowId() {
             return mRowId;
         }
-		
-		
+
     }
 
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(String title, LinkedHashMap<String, String[]> item) {
+    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
+        this.context = context;
 		this.title = title;
-		this.mRowIdset = new ArrayList<String>(item.keySet());
-		this.mDataset = new ArrayList<String[]>(item.values());
+		this.mRowIdset = new ArrayList<>(item.keySet());
+		this.mDataset = new ArrayList<>(item.values());
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        View view = LayoutInflater.from(parent.getContext())
+        View view = layoutInflater
                 .inflate(R.layout.text_view, parent, false);
 
         // set the view's size, margins, paddings and layout parameters

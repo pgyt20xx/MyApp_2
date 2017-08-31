@@ -681,4 +681,5 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
 		Log.d(TAG, "onFragmentInteraction End");
     }
+
 }

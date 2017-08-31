@@ -37,10 +37,11 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         private TextView mContentsTitle;
         private TextView mContents;
 		private TextView mRowId;
+		private CheckBox mCheckBox;
 
         private ViewHolder(View v) {
             super(v);
-
+			
             // reciclerViewのクリックイベント
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -54,7 +55,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                     clipboardManager.setPrimaryClip(clipData);
 
                     Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
-
+					
                 }
             });
 
@@ -64,14 +65,22 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                 @Override
                 public boolean onLongClick(View view) {				
                     Toast.makeText(view.getContext(), "call onLongClick", Toast.LENGTH_SHORT).show();
-					CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
-					checkBox.setVisibility(View.VISIBLE);
+					RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+					
+					for(int i = 0; i < recyclerView.getChildCount(); i++) {
+						View row = recyclerView.getChildAt(i);
+						CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkbox);
+						checkBox.setVisibility(View.VISIBLE);
+						
+					}
+									
                     return true;
                 }
             });
             mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
             mContents = (TextView) v.findViewById(R.id.text_contents);
 			mRowId = (TextView) v.findViewById(R.id.row_id);
+			mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
         }
 
         /**
@@ -97,7 +106,10 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		private TextView getRowId() {
             return mRowId;
         }
+		
+		
     }
+
 
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(String title, LinkedHashMap<String, String[]> item) {

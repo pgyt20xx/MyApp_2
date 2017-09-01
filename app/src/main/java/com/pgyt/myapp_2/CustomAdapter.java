@@ -1,23 +1,24 @@
 package com.pgyt.myapp_2;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
-import java.util.*;
-import android.widget.*;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
@@ -27,6 +28,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
 	private String title;
 
+    private static Activity activity;
+
     private Context context;
 
     private LayoutInflater layoutInflater;
@@ -34,8 +37,10 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 	
 	// Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
-        this.context = context;
+    CustomAdapter(Activity activity, String title, LinkedHashMap<String, String[]> item) {
+        // TODO; これは。。。
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
 		this.title = title;
 		this.mRowIdset = new ArrayList<>(item.keySet());
 		this.mDataset = new ArrayList<>(item.values());
@@ -64,27 +69,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 			mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
 			mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
 			
-//			mContentsTitle.setOnClickListener(new View.OnClickListener() {
-//				@Override
-//				public void onClick(View v) {
-//					Log.d(TAG, " TITLE:" + getContentsTitle().getText() + " clicked.");
-//
-//					copyClip(v);
-//					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
-//
-//				}
-//			});
-//			
-//			mContents.setOnClickListener(new View.OnClickListener() {
-//				@Override
-//				public void onClick(View v) {
-//					Log.d(TAG, " TITLE:" + getContentsTitle().getText() + " clicked.");
-//					
-//					copyClip(v);
-//					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
-//				}
-//			});
-			
 			mRowSetting.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -107,7 +91,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
                 @Override
                 public boolean onLongClick(View view) {
+                    if (MainActivity.mActionMode != null) {
+                        return false;
+                    }
 
+                    // TODO; ここにあるべきじゃない？？
+                    // Start the CAB using the ActionMode.Callback defined above
+                    MainActivity.mActionMode = activity.startActionMode(MainActivity.mActionModeCallback);
+                    view.setSelected(true);
                     return true;
                 }
             });

@@ -1,4 +1,5 @@
 <resources>
+    <!-- Setting -->
     <string name="app_name">MyApp_2</string>
     <string name="fab_title">Add Contents</string>
     <string name="add_category">Add Category</string>
@@ -6,13 +7,20 @@
     <string name="menu_setting">Setting</string>
 	<string name="menu_delete_all">Delete All</string>
 
+    <!-- NavigationDrawer -->
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
 
+    <!-- Preference -->
     <string name="preference_title">Setting</string>
-
     <string name="checkbox_01_title">ネットワーク通信許可</string>
     <string name="checkbox_01_summary">ネットワーク通信を有効にします</string>
     <string name="checkbox_02_title">GPS許可</string>
     <string name="checkbox_02_summary">GPSを有効にします</string>
+
+    <!-- contextMenu -->
+    <string name="context_menu_share">Share</string>
+    <string name="context_menu_edit">Edit</string>
+    <string name="context_menu_delete">Delete</string>
+
 </resources>

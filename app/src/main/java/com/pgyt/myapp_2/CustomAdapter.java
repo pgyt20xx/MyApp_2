@@ -32,6 +32,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private LayoutInflater layoutInflater;
 
     private static final String TAG = "CustomAdapter";
+	
+	// Provide a suitable constructor (depends on the kind of dataset)
+    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
+        this.context = context;
+		this.title = title;
+		this.mRowIdset = new ArrayList<>(item.keySet());
+		this.mDataset = new ArrayList<>(item.values());
+        this.layoutInflater = LayoutInflater.from(context);
+    }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -43,27 +52,55 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         private TextView mContents;
 		private TextView mRowId;
 		private CheckBox mCheckBox;
+		private ImageView mRowSetting;
 
 
         private ViewHolder(View v) {
             super(v);
 			
-            // reciclerViewのクリックイベント
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "ID:" + getRowId().getText() + " TITLE:" + getContentsTitle().getText() + " ELEMENT:" + getContents().getText() + " clicked.");
-
-                    // クリップボードにコピー
-                    ClipData.Item item = new ClipData.Item(getContents().getText());
-                    ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
-                    ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(clipData);
-
-                    Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
-					
-                }
-            });
+            mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
+            mContents = (TextView) v.findViewById(R.id.text_contents);
+			mRowId = (TextView) v.findViewById(R.id.row_id);
+			mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
+			mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
+			
+//			mContentsTitle.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					Log.d(TAG, " TITLE:" + getContentsTitle().getText() + " clicked.");
+//
+//					copyClip(v);
+//					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
+//
+//				}
+//			});
+//			
+//			mContents.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					Log.d(TAG, " TITLE:" + getContentsTitle().getText() + " clicked.");
+//					
+//					copyClip(v);
+//					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
+//				}
+//			});
+			
+			mRowSetting.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Toast.makeText(v.getContext(), "Image is on clicked", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			});
+			
+			v.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					copyClip(v);
+					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			});
 
             // reciclerViewのロングクリックイベント
             v.setOnLongClickListener(new View.OnLongClickListener(){
@@ -75,11 +112,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                 }
             });
 
-            mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
-            mContents = (TextView) v.findViewById(R.id.text_contents);
-			mRowId = (TextView) v.findViewById(R.id.row_id);
-			mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
         }
+		
+		private void copyClip(View v) {
+			// クリップボードにコピー
+			ClipData.Item item = new ClipData.Item(getContents().getText());
+			ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
+			ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
+			clipboardManager.setPrimaryClip(clipData);
+		}
 
         /**
          * クリックされたコンテンツを返す。
@@ -107,16 +148,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     }
 
-
-    // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
-        this.context = context;
-		this.title = title;
-		this.mRowIdset = new ArrayList<>(item.keySet());
-		this.mDataset = new ArrayList<>(item.values());
-        this.layoutInflater = LayoutInflater.from(context);
-    }
-
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -140,11 +171,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
 			holder.mContentsTitle.setVisibility(View.GONE);
 			holder.mContents.setVisibility(View.VISIBLE);
+			holder.mRowSetting.setVisibility(View.GONE);
 			
 		} else {
 			holder.mContentsTitle.setVisibility(View.VISIBLE);
 			holder.mContents.setVisibility(View.GONE);
-			
+			holder.mRowSetting.setVisibility(View.VISIBLE);	
 		}
     }
 

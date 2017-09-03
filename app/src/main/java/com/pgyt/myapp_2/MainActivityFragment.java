@@ -1,27 +1,36 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import java.util.*;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.LinkedHashMap;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment{
 
     private OnFragmentInteractionListener mListener;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
 
     private static final String TAG = "MainActivityFragment";
-	
-	private ActionMode mActionMode;
 
 
     // コンストラクタ
@@ -60,7 +69,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView Start");
-		
+
         // パラメータ取得
         String title = getArguments().getString(ARG_TITLE_NAME);
         LinkedHashMap<String, String[]> contentsMap = MainActivity.CONTENTS.get(title);
@@ -75,30 +84,38 @@ public class MainActivityFragment extends Fragment {
         if (contentsMap != null) {
             CustomAdapter mAdapter = new CustomAdapter(getContext(), title, contentsMap);
             mRecyclerView.setAdapter(mAdapter);
-			mAdapter.setOnItemClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
-					}
-				});
-				
-			mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
-					@Override
-                	public boolean onLongClick(View view) {
-                    	if (mActionMode != null) {
-                        	return false;
-                    	}
 
-                    	mActionMode = getActivity().startActionMode(mActionModeCallback);
-                    	view.setSelected(true);
-                    	return true;
-              		}
-				});
+            // 行のクリックイベント
+            mAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(View view, TextView textView) {
+                    Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+                    copyClip(textView);
+                }
+            });
+
+            // イメージのクリックイベント
+            mAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
+                @Override
+                public void onClick(View view, TextView textView) {
+                    Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // ロングクリックイベント
+            mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    getActivity().startActionMode(new CustomActionModeCallback(view, getFragmentManager()));
+                    view.setSelected(true);
+                    return true;
+                }
+            });
 
         }
         Log.d(TAG, "onCreateView End");
 
-		
+
         return view;
     }
 
@@ -116,55 +133,14 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onAttach End");
 
     }
-	
-	ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
-        // Called when the action mode is created; startActionMode() was called
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.context_menu, menu);
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-
-				case R.id.menu_edit:
-
-					mode.finish();
-
-					return true;
-				case R.id.menu_delete:
-					mode.finish();
-
-					return true;
-				case R.id.menu_share:
-					mode.finish();
-
-					return true;
-				default:
-					return false;
-
-            }
-        }
-
-        // Called when the user exits the action mode
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-        }
-    };
+    private void copyClip(TextView textView) {
+        // クリップボードにコピー
+        ClipData.Item item = new ClipData.Item(textView.getText());
+        ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
+        ClipboardManager clipboardManager = (ClipboardManager) textView.getContext().getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setPrimaryClip(clipData);
+    }
 
     @Override
     public void onDetach() {
@@ -175,8 +151,10 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onDetach End");
     }
 
+
+
     interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-	
+
 }

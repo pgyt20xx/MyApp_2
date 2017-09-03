@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private ViewPager mViewPager;
 
-    static ActionMode mActionMode;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -526,6 +524,55 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.show();
 		Log.d(TAG, "contentsInsertEvent End");
     }
+	
+	/**
+     * コンテンツ削除のダイアログイベント
+     */
+    private void contentsDeletetEvent() {
+		Log.d(TAG, "contentsDeletetEvent Start");
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle(R.string.context_menu_delete);
+
+        // OKボタン押下時
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				Log.d(TAG, "contentsDeletetEvent Click OK");
+
+
+				//SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+				try {
+					//String param = TITLE_NAME.get(position);
+					//new DBHelper(sqLiteDatabase).deletetCategory(param);
+
+					// 変数からカテゴリーを削除
+					//TITLE_NAME.remove(position);
+
+				} catch (Exception e) {
+					Log.e(TAG, e.getMessage());
+
+				} finally {
+					//sqLiteDatabase.close();
+				}
+				// フラグメントの初期化
+				initFragmentView();
+				
+			}
+		});
+		
+        // Cancelボタン押下時
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				Log.d(TAG, "contentsDeletetEvent Click cancel");
+
+			}
+		});
+
+        dialog.show();
+		Log.d(TAG, "contentsDeletetEvent End");
+    }
 
     /**
      * FragmentPagerAdapter呼び出し
@@ -610,12 +657,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
-            case R.id.edit:
+            case R.id.menu_edit:
 //                editNote(info.id);
-                Toast.makeText(getApplicationContext(), "Image is on clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), info.targetView.findViewById(R.id.row_id) + " Row is on clicked", Toast.LENGTH_SHORT).show();
 
                 return true;
-            case R.id.delete:
+            case R.id.menu_delete:
 //                deleteNote(info.id);
                 Toast.makeText(getApplicationContext(), "Image is on clicked", Toast.LENGTH_SHORT).show();
 
@@ -624,44 +671,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 return super.onContextItemSelected(item);
         }
     }
-
-    static ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
-        // Called when the action mode is created; startActionMode() was called
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.context_menu, menu);
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_share:
-//                    shareCurrentItem();
-                    mode.finish(); // Action picked, so close the CAB
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-        }
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import android.widget.*;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
@@ -27,20 +28,21 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 	private List<String> mRowIdset;
 
 	private String title;
-
-    private static Activity activity;
-
+	
     private Context context;
 
     private LayoutInflater layoutInflater;
+	
+	private View.OnClickListener clickListener;
+	
+	private View.OnLongClickListener longClickListener;
 
     private static final String TAG = "CustomAdapter";
 	
 	// Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(Activity activity, String title, LinkedHashMap<String, String[]> item) {
+    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
         // TODO; これは。。。
-        this.activity = activity;
-        this.context = activity.getApplicationContext();
+        this.context = context;
 		this.title = title;
 		this.mRowIdset = new ArrayList<>(item.keySet());
 		this.mDataset = new ArrayList<>(item.values());
@@ -58,61 +60,19 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		private TextView mRowId;
 		private CheckBox mCheckBox;
 		private ImageView mRowSetting;
+		private View mRow;
 
 
         private ViewHolder(View v) {
             super(v);
-			
             mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
             mContents = (TextView) v.findViewById(R.id.text_contents);
 			mRowId = (TextView) v.findViewById(R.id.row_id);
 			mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
 			mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
-			
-			mRowSetting.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Toast.makeText(v.getContext(), "Image is on clicked", Toast.LENGTH_SHORT).show();
-					return;
-				}
-			});
-			
-			v.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					copyClip(v);
-					Toast.makeText(v.getContext(), "\"" + getContents().getText() + "\"" + " is on cliped", Toast.LENGTH_SHORT).show();
-					return;
-				}
-			});
-
-            // reciclerViewのロングクリックイベント
-            v.setOnLongClickListener(new View.OnLongClickListener(){
-
-                @Override
-                public boolean onLongClick(View view) {
-                    if (MainActivity.mActionMode != null) {
-                        return false;
-                    }
-
-                    // TODO; ここにあるべきじゃない？？
-                    // Start the CAB using the ActionMode.Callback defined above
-                    MainActivity.mActionMode = activity.startActionMode(MainActivity.mActionModeCallback);
-                    view.setSelected(true);
-                    return true;
-                }
-            });
-
+			mRow = (LinearLayout) v.findViewById(R.id.row);
         }
 		
-		private void copyClip(View v) {
-			// クリップボードにコピー
-			ClipData.Item item = new ClipData.Item(getContents().getText());
-			ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
-			ClipboardManager clipboardManager = (ClipboardManager) v.getContext().getSystemService(CLIPBOARD_SERVICE);
-			clipboardManager.setPrimaryClip(clipData);
-		}
-
         /**
          * クリックされたコンテンツを返す。
          * @return
@@ -136,7 +96,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 		private TextView getRowId() {
             return mRowId;
         }
-
+		
+		
     }
 
     // Create new views (invoked by the layout manager)
@@ -169,6 +130,32 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 			holder.mContents.setVisibility(View.GONE);
 			holder.mRowSetting.setVisibility(View.VISIBLE);	
 		}
+		
+		holder.mRow.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					clickListener.onClick(v);
+					return;
+				}
+			});
+	
+		holder.mRowSetting.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					clickListener.onClick(v);
+					return;
+				}
+			});
+			
+		// reciclerViewのロングクリックイベント
+		holder.mRow.setOnLongClickListener(new View.OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(View v) {
+                    longClickListener.onLongClick(v);
+                    return true;
+                }
+            });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -176,5 +163,13 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
+	
+	public void setOnItemClickListener(View.OnClickListener listener) {
+		this.clickListener = listener;
+	}
+	
+	public void setOnItemLongClickListener(View.OnLongClickListener listener) {
+		this.longClickListener = listener;
+	}
 
 }

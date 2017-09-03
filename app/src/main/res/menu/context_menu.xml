@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.pgyt.myapp_2.MainActivity">
     <item
-        android:id="@+id/edit"
+        android:id="@+id/menu_edit"
         android:title="@string/context_menu_edit"
         android:orderInCategory="100"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/delete"
+        android:id="@+id/menu_delete"
         android:title="@string/context_menu_delete"
         android:orderInCategory="100"
         app:showAsAction="never" />

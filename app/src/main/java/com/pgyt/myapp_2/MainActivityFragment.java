@@ -20,6 +20,8 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_TITLE_NAME = "title_name";
 
     private static final String TAG = "MainActivityFragment";
+	
+	private ActionMode mActionMode;
 
 
     // コンストラクタ
@@ -71,8 +73,27 @@ public class MainActivityFragment extends Fragment {
 
         // 表示内容があるときだけ設定
         if (contentsMap != null) {
-            RecyclerView.Adapter mAdapter = new CustomAdapter(getActivity(), title, contentsMap);
+            CustomAdapter mAdapter = new CustomAdapter(getContext(), title, contentsMap);
             mRecyclerView.setAdapter(mAdapter);
+			mAdapter.setOnItemClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
+					}
+				});
+				
+			mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
+					@Override
+                	public boolean onLongClick(View view) {
+                    	if (mActionMode != null) {
+                        	return false;
+                    	}
+
+                    	mActionMode = getActivity().startActionMode(mActionModeCallback);
+                    	view.setSelected(true);
+                    	return true;
+              		}
+				});
 
         }
         Log.d(TAG, "onCreateView End");
@@ -95,6 +116,55 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onAttach End");
 
     }
+	
+	ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+
+				case R.id.menu_edit:
+
+					mode.finish();
+
+					return true;
+				case R.id.menu_delete:
+					mode.finish();
+
+					return true;
+				case R.id.menu_share:
+					mode.finish();
+
+					return true;
+				default:
+					return false;
+
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
 
     @Override
     public void onDetach() {
@@ -108,4 +178,5 @@ public class MainActivityFragment extends Fragment {
     interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
+	
 }

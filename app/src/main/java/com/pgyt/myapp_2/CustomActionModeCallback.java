@@ -20,18 +20,14 @@ import android.view.Display.*;
 public class CustomActionModeCallback implements ActionMode.Callback {
 
     private final String TAG = "ActionModeCallback";
-
-    private View view;
     private Context context;
     private ImageView mSelectedImage;
     private TextView mRowId;
     private FragmentManager mFragmentManager;
 	
 	private OnBottomClickListener bottomClickListener;
-	private ActionMode mode;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
-        this.view = view;
         this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
         this.mSelectedImage = (ImageView) view.findViewById(R.id.image_clip_edit);
@@ -43,7 +39,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         // Inflate a menu resource providing context menu items
-		this.mode = mode;
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
         return true;
@@ -58,7 +53,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
 
     // Called when the user selects a contextual menu item
     @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+    public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
 
             case R.id.menu_edit:
@@ -72,11 +67,11 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
                     @Override
                     public void onPositiveClick() {
-						bottomClickListener.onBottomClick(true);
+						bottomClickListener.onBottomClick(true, mode, mRowId);
                     }
                     @Override
                     public void onNegativeClick() {
-						bottomClickListener.onBottomClick(false);
+						bottomClickListener.onBottomClick(false, mode, mRowId);
                     }
                 });
 				
@@ -100,35 +95,12 @@ public class CustomActionModeCallback implements ActionMode.Callback {
         this.mSelectedImage.setVisibility(View.GONE);
 		
     }
-
-    private void contentsDelete() {
-        Log.d(TAG, "contentsDelete Start");
-		
-		SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
-		try {
-			new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
-
-			// 変数からコンテンツを削除
-			//mViewPager = (ViewPager) view.findViewById(R.id.pager);
-			//int position = mViewPager.getCurrentItem();
-			//MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(position)).get(mRowId));
-
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-
-		} finally {
-			sqLiteDatabase.close();
-		}
-
-        Log.d(TAG, "contentsDelete End");
-
-    }
 	
 	/**
      * イメージクリックのインターフェース
      */
     interface OnBottomClickListener {
-        void onBottomClick(boolean bool);
+        void onBottomClick(boolean bool, ActionMode mode, TextView textView);
     }
 	
 	/**
@@ -138,8 +110,4 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     void setOnBottomClickListener(OnBottomClickListener listener) {
         this.bottomClickListener = listener;
     }
-	
-	ActionMode getMode() {
-		return this.mode;
-	}
 }

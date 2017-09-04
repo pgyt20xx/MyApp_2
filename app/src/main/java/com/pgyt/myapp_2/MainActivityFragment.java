@@ -4,12 +4,14 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +80,13 @@ public class MainActivityFragment extends Fragment{
         LinkedHashMap<String, String[]> contentsMap = MainActivity.CONTENTS.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
+
+        if (view instanceof RecyclerView) {
+            // 処理継続
+        } else {
+            return view;
+        }
+
 		RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -114,16 +123,24 @@ public class MainActivityFragment extends Fragment{
 						return false;
 					}
 					
-					mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager());
+					mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
+                        // Called when the user exits the action mode
+                        @Override
+                        public void onDestroyActionMode(ActionMode mode) {
+                            mActionModeCallback = null;
+                        }
+                    };
+
                     getActivity().startActionMode(mActionModeCallback);
 					mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
 						@Override
-						public void onBottomClick(boolean bool){
+						public void onBottomClick(boolean bool, ActionMode mode, TextView rowId){
 							if(bool) {
-								Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
-								
+                                contentsDelete(rowId);
+								Toast.makeText(getContext(), rowId.getText(), Toast.LENGTH_SHORT).show();
+
 							}
-							mActionModeCallback.getMode().finish();
+                            mode.finish();
 						}
 					});
                     view.setSelected(true);
@@ -135,6 +152,38 @@ public class MainActivityFragment extends Fragment{
         Log.d(TAG, "onCreateView End");
 
         return view;
+    }
+
+    private void copyClip(TextView textView) {
+        // クリップボードにコピー
+        ClipData.Item item = new ClipData.Item(textView.getText());
+        ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
+        ClipboardManager clipboardManager = (ClipboardManager) textView.getContext().getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setPrimaryClip(clipData);
+    }
+
+
+    private void contentsDelete(TextView mRowId) {
+        Log.d(TAG, "contentsDelete Start");
+
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
+        try {
+            new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
+
+            // 変数からコンテンツを削除
+            //mViewPager = (ViewPager) view.findViewById(R.id.pager);
+            //int position = mViewPager.getCurrentItem();
+            //MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(position)).get(mRowId));
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+
+        } finally {
+            sqLiteDatabase.close();
+        }
+
+        Log.d(TAG, "contentsDelete End");
+
     }
 
     @Override
@@ -152,20 +201,13 @@ public class MainActivityFragment extends Fragment{
 
     }
 
-    private void copyClip(TextView textView) {
-        // クリップボードにコピー
-        ClipData.Item item = new ClipData.Item(textView.getText());
-        ClipData clipData = new ClipData(new ClipDescription("text_data", new String[]{ClipDescription.MIMETYPE_TEXT_URILIST}), item);
-        ClipboardManager clipboardManager = (ClipboardManager) textView.getContext().getSystemService(CLIPBOARD_SERVICE);
-        clipboardManager.setPrimaryClip(clipData);
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
         Log.d(TAG, "onDetach Start");
 
         mListener = null;
+
         Log.d(TAG, "onDetach End");
     }
 

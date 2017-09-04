@@ -75,10 +75,10 @@ public class MainActivityFragment extends Fragment{
         LinkedHashMap<String, String[]> contentsMap = MainActivity.CONTENTS.get(title);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+		RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.addItemDecoration(new RecilerItemDecoration(view.getContext()));
+        mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // 表示内容があるときだけ設定
         if (contentsMap != null) {

@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.*;
+import android.support.v7.widget.*;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
@@ -20,18 +22,17 @@ public class CustomActionModeCallback implements ActionMode.Callback {
 
     private View view;
     private Context context;
-    private CheckBox mCheckBox;
+    private ImageView mSelectedImage;
     private TextView mRowId;
     private FragmentManager mFragmentManager;
-    private ViewPager mViewPager;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
         this.view = view;
         this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
-        this.mCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+        this.mSelectedImage = (ImageView) view.findViewById(R.id.image_clip_edit);
         this.mRowId = (TextView) view.findViewById(R.id.row_id);
-        this.mCheckBox.setVisibility(View.VISIBLE);
+        this.mSelectedImage.setVisibility(View.VISIBLE);
     }
 
     // Called when the action mode is created; startActionMode() was called
@@ -65,21 +66,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
                     @Override
                     public void onPositiveClick() {
-                        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
-                        try {
-                            new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
-
-                            // 変数からコンテンツを削除
-                            mViewPager = (ViewPager) view.findViewById(R.id.pager);
-                            int position = mViewPager.getCurrentItem();
-                            MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(position)).get(mRowId));
-
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
-
-                        } finally {
-                            sqLiteDatabase.close();
-                        }
+                        contentsDelete();
                     }
                     @Override
                     public void onNegativeClick() {
@@ -101,14 +88,29 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     // Called when the user exits the action mode
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-        this.mCheckBox.setVisibility(View.GONE);
+        this.mSelectedImage.setVisibility(View.GONE);
     }
 
     private void contentsDelete() {
         Log.d(TAG, "contentsDelete Start");
+		
+		SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
+		try {
+			new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
 
+			// 変数からコンテンツを削除
+			//mViewPager = (ViewPager) view.findViewById(R.id.pager);
+			//int position = mViewPager.getCurrentItem();
+			//MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(position)).get(mRowId));
 
-        Log.d(TAG, "contentsDelete Start");
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+
+		} finally {
+			sqLiteDatabase.close();
+		}
+
+        Log.d(TAG, "contentsDelete End");
 
     }
 }

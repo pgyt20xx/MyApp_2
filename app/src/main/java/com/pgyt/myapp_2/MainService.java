@@ -164,8 +164,8 @@ public class MainService extends Service {
 		}
 		
         mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle(mClipBoard);
-        mBuilder.setContentText(mPreviousText);
+        mBuilder.setContentTitle("Current ClipBoard");
+        mBuilder.setContentText(mClipBoard);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setOngoing(true);
         mBuilder.setAutoCancel(false);

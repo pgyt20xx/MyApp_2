@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.LinkedHashMap;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import android.view.Display.*;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,6 +32,8 @@ public class MainActivityFragment extends Fragment{
     private static final String ARG_TITLE_NAME = "title_name";
 
     private static final String TAG = "MainActivityFragment";
+	
+	CustomActionModeCallback mActionModeCallback;
 
 
     // コンストラクタ
@@ -106,7 +109,23 @@ public class MainActivityFragment extends Fragment{
             mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    getActivity().startActionMode(new CustomActionModeCallback(view, getFragmentManager()));
+					if(mActionModeCallback != null) {
+						Toast.makeText(getContext(), "false", Toast.LENGTH_SHORT).show();
+						return false;
+					}
+					
+					mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager());
+                    getActivity().startActionMode(mActionModeCallback);
+					mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
+						@Override
+						public void onBottomClick(boolean bool){
+							if(bool) {
+								Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
+								
+							}
+							mActionModeCallback.getMode().finish();
+						}
+					});
                     view.setSelected(true);
                     return true;
                 }
@@ -114,7 +133,6 @@ public class MainActivityFragment extends Fragment{
 
         }
         Log.d(TAG, "onCreateView End");
-
 
         return view;
     }

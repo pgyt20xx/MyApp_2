@@ -115,7 +115,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             }
         });
 
-        // イメージのクリップイベント
+        // イメージのクリックイベント
         holder.mRowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

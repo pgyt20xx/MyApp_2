@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.*;
 import android.support.v7.widget.*;
+import android.view.Display.*;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
@@ -25,6 +26,9 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     private ImageView mSelectedImage;
     private TextView mRowId;
     private FragmentManager mFragmentManager;
+	
+	private OnBottomClickListener bottomClickListener;
+	private ActionMode mode;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
         this.view = view;
@@ -39,6 +43,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         // Inflate a menu resource providing context menu items
+		this.mode = mode;
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
         return true;
@@ -61,24 +66,28 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 mode.finish();
 
                 return true;
+				
             case R.id.menu_delete:
                 CustomDialogFragment newFragment = CustomDialogFragment.newInstance("title", "this is message");
                 newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
                     @Override
                     public void onPositiveClick() {
-                        contentsDelete();
+						bottomClickListener.onBottomClick(true);
                     }
                     @Override
                     public void onNegativeClick() {
-
+						bottomClickListener.onBottomClick(false);
                     }
                 });
+				
                 newFragment.show(mFragmentManager, "CommonDialogFragment");
                 return true;
+				
             case R.id.menu_share:
                 mode.finish();
 
                 return true;
+				
             default:
                 return false;
 
@@ -89,6 +98,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         this.mSelectedImage.setVisibility(View.GONE);
+		
     }
 
     private void contentsDelete() {
@@ -113,4 +123,23 @@ public class CustomActionModeCallback implements ActionMode.Callback {
         Log.d(TAG, "contentsDelete End");
 
     }
+	
+	/**
+     * イメージクリックのインターフェース
+     */
+    interface OnBottomClickListener {
+        void onBottomClick(boolean bool);
+    }
+	
+	/**
+     * イメージのクリックイベントのリスナーセット
+     * @param listener OnImageItemClickListener
+     */
+    void setOnBottomClickListener(OnBottomClickListener listener) {
+        this.bottomClickListener = listener;
+    }
+	
+	ActionMode getMode() {
+		return this.mode;
+	}
 }

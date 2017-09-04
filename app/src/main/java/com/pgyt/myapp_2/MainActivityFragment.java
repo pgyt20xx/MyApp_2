@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,20 +25,22 @@ import android.widget.Toast;
 import java.util.LinkedHashMap;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+
 import android.view.Display.*;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment{
+public class MainActivityFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    private CustomAdapter mAdapter;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
 
     private static final String TAG = "MainActivityFragment";
-	
-	CustomActionModeCallback mActionModeCallback;
+
+    CustomActionModeCallback mActionModeCallback;
 
 
     // コンストラクタ
@@ -81,74 +86,68 @@ public class MainActivityFragment extends Fragment{
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 
-        if (view instanceof RecyclerView) {
-            // 処理継続
-        } else {
+        if (contentsMap == null) {
+            Log.d(TAG, "onCreateView End contentsMap == null");
             return view;
         }
 
-		RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // 表示内容があるときだけ設定
-        if (contentsMap != null) {
-            CustomAdapter mAdapter = new CustomAdapter(getContext(), title, contentsMap);
-            mRecyclerView.setAdapter(mAdapter);
+        mAdapter = new CustomAdapter(getContext(), title, contentsMap);
+        mRecyclerView.setAdapter(mAdapter);
 
-            // 行のクリックイベント
-            mAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
-                @Override
-                public void onClick(View view, TextView textView) {
-                    Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
-                    copyClip(textView);
+        // 行のクリックイベント
+        mAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, TextView textView) {
+                Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+                copyClip(textView);
+            }
+        });
+
+        // イメージのクリックイベント
+        mAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
+            @Override
+            public void onClick(View view, TextView textView) {
+                Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // ロングクリックイベント
+        mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mActionModeCallback != null) {
+                    return false;
                 }
-            });
 
-            // イメージのクリックイベント
-            mAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
-                @Override
-                public void onClick(View view, TextView textView) {
-                    Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
+                    // Called when the user exits the action mode
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                        mActionModeCallback = null;
+                    }
+                };
 
-            // ロングクリックイベント
-            mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-					if(mActionModeCallback != null) {
-						Toast.makeText(getContext(), "false", Toast.LENGTH_SHORT).show();
-						return false;
-					}
-					
-					mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
-                        // Called when the user exits the action mode
-                        @Override
-                        public void onDestroyActionMode(ActionMode mode) {
-                            mActionModeCallback = null;
+                getActivity().startActionMode(mActionModeCallback);
+                mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
+                    @Override
+                    public void onBottomClick(boolean bool, ActionMode mode, TextView rowId) {
+                        if (bool) {
+                            contentsDelete(rowId);
                         }
-                    };
+                        mode.finish();
+                    }
+                });
+                view.setSelected(true);
+                return true;
+            }
+        });
 
-                    getActivity().startActionMode(mActionModeCallback);
-					mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
-						@Override
-						public void onBottomClick(boolean bool, ActionMode mode, TextView rowId){
-							if(bool) {
-                                contentsDelete(rowId);
-								Toast.makeText(getContext(), rowId.getText(), Toast.LENGTH_SHORT).show();
-
-							}
-                            mode.finish();
-						}
-					});
-                    view.setSelected(true);
-                    return true;
-                }
-            });
-
-        }
         Log.d(TAG, "onCreateView End");
 
         return view;
@@ -171,9 +170,10 @@ public class MainActivityFragment extends Fragment{
             new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
 
             // 変数からコンテンツを削除
-            //mViewPager = (ViewPager) view.findViewById(R.id.pager);
-            //int position = mViewPager.getCurrentItem();
-            //MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(position)).get(mRowId));
+//            mViewPager = (ViewPager) view.findViewById(R.id.pager);
+//            int position = mViewPager.getCurrentItem();
+            MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(1)).get(mRowId));
+            mAdapter.updateData(MainActivity.CONTENTS.get("g"));
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -210,7 +210,6 @@ public class MainActivityFragment extends Fragment{
 
         Log.d(TAG, "onDetach End");
     }
-
 
 
     interface OnFragmentInteractionListener {

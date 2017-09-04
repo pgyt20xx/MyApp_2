@@ -50,7 +50,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         private TextView mContentsTitle;
         private TextView mContents;
         private TextView mRowId;
-        private CheckBox mCheckBox;
         private ImageView mRowSetting;
         private LinearLayout mRow;
 
@@ -60,7 +59,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
             mContents = (TextView) v.findViewById(R.id.text_contents);
             mRowId = (TextView) v.findViewById(R.id.row_id);
-            mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
             mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
             mRow = (LinearLayout) v.findViewById(R.id.row);
         }
@@ -184,6 +182,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
      */
     void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.itemLongClickListener = listener;
+    }
+
+    public void updateData(LinkedHashMap<String, String[]> item) {
+        mDataset.clear();
+        mRowIdset.clear();
+        this.mRowIdset = new ArrayList<>(item.keySet());
+        this.mDataset = new ArrayList<>(item.values());
+        notifyDataSetChanged();
     }
 
 }

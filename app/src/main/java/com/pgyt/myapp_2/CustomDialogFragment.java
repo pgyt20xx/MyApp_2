@@ -2,7 +2,6 @@ package com.pgyt.myapp_2;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.support.v4.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -12,13 +11,15 @@ import java.util.EventListener;
 
 public class CustomDialogFragment extends DialogFragment {
     private DialogListener listener = null;
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_MESSAGE = "message";
 
     private static CustomDialogFragment frag = new CustomDialogFragment();
 
     public static CustomDialogFragment newInstance(String title, String message) {
         Bundle bundle = new Bundle();
-        bundle.putString("title", title);
-        bundle.putString("message", message);
+        bundle.putString(ARG_TITLE, title);
+        bundle.putString(ARG_MESSAGE, message);
         frag.setArguments(bundle);
         return frag;
     }
@@ -26,8 +27,8 @@ public class CustomDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        String title = getArguments().getString("title");
-        String message = getArguments().getString("message");
+        String title = getArguments().getString(ARG_TITLE);
+        String message = getArguments().getString(ARG_MESSAGE);
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(R.mipmap.ic_launcher)

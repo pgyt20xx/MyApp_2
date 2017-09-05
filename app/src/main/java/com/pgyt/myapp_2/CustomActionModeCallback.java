@@ -22,13 +22,13 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     private final String TAG = "ActionModeCallback";
     private Context context;
     private FragmentManager mFragmentManager;
-	
-	private OnBottomClickListener bottomClickListener;
+
+    private OnBottomClickListener bottomClickListener;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
         this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
-        
+
     }
 
     // Called when the action mode is created; startActionMode() was called
@@ -57,28 +57,29 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 mode.finish();
 
                 return true;
-				
+
             case R.id.menu_delete:
                 CustomDialogFragment newFragment = CustomDialogFragment.newInstance("title", "this is message");
                 newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
                     @Override
                     public void onPositiveClick() {
-						bottomClickListener.onBottomClick(true, mode);
+                        bottomClickListener.onBottomClick(true, mode);
                     }
+
                     @Override
                     public void onNegativeClick() {
-						bottomClickListener.onBottomClick(false, mode);
+                        bottomClickListener.onBottomClick(false, mode);
                     }
                 });
-				
+
                 newFragment.show(mFragmentManager, "CommonDialogFragment");
                 return true;
-				
+
             case R.id.menu_share:
                 mode.finish();
 
                 return true;
-				
+
             default:
                 return false;
 
@@ -88,18 +89,19 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     // Called when the user exits the action mode
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-		
+
     }
-	
-	/**
+
+    /**
      * イメージクリックのインターフェース
      */
     interface OnBottomClickListener {
         void onBottomClick(boolean bool, ActionMode mode);
     }
-	
-	/**
+
+    /**
      * イメージのクリックイベントのリスナーセット
+     *
      * @param listener OnImageItemClickListener
      */
     void setOnBottomClickListener(OnBottomClickListener listener) {

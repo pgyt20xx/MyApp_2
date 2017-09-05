@@ -1,15 +1,24 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.database.sqlite.*;
-import android.net.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import java.util.*;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.LinkedHashMap;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -19,7 +28,6 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 public class MainActivityFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    private CustomAdapter mAdapter;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
 
@@ -82,7 +90,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // 表示内容があるときだけ設定
-        mAdapter = new CustomAdapter(getContext(), title, contentsMap);
+        CustomAdapter mAdapter = new CustomAdapter(getContext(), title, contentsMap);
         mRecyclerView.setAdapter(mAdapter);
 
         // 行のクリックイベント
@@ -154,31 +162,6 @@ public class MainActivityFragment extends Fragment {
         clipboardManager.setPrimaryClip(clipData);
     }
 
-
-    private void contentsDelete(TextView mRowId) {
-        Log.d(TAG, "contentsDelete Start");
-
-        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
-        try {
-            //new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
-            // 変数からコンテンツを削除
-//            mViewPager = (ViewPager) view.findViewById(R.id.pager);
-//            int position = mViewPager.getCurrentItem();
-            //MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(1)).get(mRowId));
-            //mAdapter.updateData(MainActivity.CONTENTS.get("g"));
-			
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-
-        } finally {
-            sqLiteDatabase.close();
-        }
-
-        Log.d(TAG, "contentsDelete End");
-
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -205,8 +188,7 @@ public class MainActivityFragment extends Fragment {
     }
 	
     interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-		void onContentsChanged(View v)
+		void onContentsChanged(View v);
     }
 
 }

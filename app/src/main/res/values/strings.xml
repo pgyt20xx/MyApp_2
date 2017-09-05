@@ -23,4 +23,8 @@
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_delete">Delete</string>
 
+    <!-- exc -->
+    <string name="bottom_positive">Ok</string>
+    <string name="bottom_negative">Cancel</string>
+
 </resources>

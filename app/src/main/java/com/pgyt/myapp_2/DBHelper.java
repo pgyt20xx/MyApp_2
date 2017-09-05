@@ -1,6 +1,5 @@
 package com.pgyt.myapp_2;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -66,7 +65,7 @@ class DBHelper {
         sqLiteDatabase.delete("CONTENTS", null, null);
     }
 
-	/**
+    /**
      * カテゴリーテーブルの削除
      * 紐づくコンテンツテーブルの削除も行う。
      *
@@ -76,7 +75,7 @@ class DBHelper {
         sqLiteDatabase.delete("CATEGORY", "category_name = ?", new String[]{param});
         sqLiteDatabase.delete("CONTENTS", "category_name = ?", new String[]{param});
     }
-	
+
     /**
      * コンテンツテーブルの削除
      *

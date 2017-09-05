@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -162,6 +161,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     /**
      * 行のクリックイベントのリスナーセット
+     *
      * @param listener OnItemClickListener
      */
     void setOnItemClickListener(OnItemClickListener listener) {
@@ -170,6 +170,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     /**
      * イメージのクリックイベントのリスナーセット
+     *
      * @param listener OnImageItemClickListener
      */
     void setOnImageItemClickListener(OnImageItemClickListener listener) {
@@ -178,6 +179,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     /**
      * ロングクリックイベントのリスナーセット
+     *
      * @param listener OnItemLongClickListener
      */
     void setOnItemLongClickListener(OnItemLongClickListener listener) {

@@ -1,19 +1,28 @@
 package com.pgyt.myapp_2;
 
 
-import android.app.*;
-import android.content.*;
-import android.content.ClipboardManager.*;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ClipboardManager.OnPrimaryClipChangedListener;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.*;
-import android.support.annotation.*;
-import android.support.v7.app.*;
-import android.util.*;
-import android.widget.*;
-import com.pgyt.myapp_2.model.*;
-import java.util.*;
+import android.os.Build;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.pgyt.myapp_2.model.ContentsBean;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 
 public class MainService extends Service {
@@ -25,16 +34,16 @@ public class MainService extends Service {
     private ClipboardManager mClipboardManager;
 
     private String mPreviousText;
-	
-	private String mClipBoard;
 
-	
-	NotificationCompat.Builder mBuilder;
+    private String mClipBoard;
+
+
+    NotificationCompat.Builder mBuilder;
 
     public MainService() {
         mPreviousText = "";
-		mClipBoard = "";
-		
+        mClipBoard = "";
+
     }
 
 
@@ -79,17 +88,17 @@ public class MainService extends Service {
                 ClipData data = mClipboardManager.getPrimaryClip();
                 ClipData.Item item = data.getItemAt(0);
 
-				// 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
+                // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
                 if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
-				
-				mPreviousText = item.getText().toString();
-				
-				// 通知バーの更新
-				setNotification();
-				
-				// コピーしたテキストの登録
+
+                mPreviousText = item.getText().toString();
+
+                // 通知バーの更新
+                setNotification();
+
+                // コピーしたテキストの登録
                 insertNewContents(item);
 
             }
@@ -99,9 +108,10 @@ public class MainService extends Service {
 
     /**
      * テキストをDBに登録
+     *
      * @param item ClipData.Item
      */
-    private void insertNewContents(ClipData.Item item){
+    private void insertNewContents(ClipData.Item item) {
         Log.d(TAG, "insertNewContents Start");
 
         // アプリ内のコンテンツは登録しない。
@@ -117,7 +127,7 @@ public class MainService extends Service {
             cursor.close();
 
             // アプリ内登録コンテンツは登録しない。
-            if(allContents.lastIndexOf(item.getText().toString()) >= 0){
+            if (allContents.lastIndexOf(item.getText().toString()) >= 0) {
                 return;
             }
 
@@ -158,11 +168,11 @@ public class MainService extends Service {
      */
     void setNotification() {
         Log.d(TAG, "setNotification Start");
-		
-		if (mClipboardManager != null) {
-			mClipBoard = mClipboardManager.getText().toString();
-		}
-		
+
+        if (mClipboardManager != null) {
+            mClipBoard = mClipboardManager.getText().toString();
+        }
+
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("Current ClipBoard");
         mBuilder.setContentText(mClipBoard);
@@ -180,7 +190,7 @@ public class MainService extends Service {
 
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(NOTIFICATION_ID, notification);
-		startForeground(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
         Log.d(TAG, "setNotification End");
     }
 

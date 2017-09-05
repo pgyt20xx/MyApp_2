@@ -591,9 +591,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         @Override
         public Fragment getItem(int position) {
 			Log.d(TAG, "SectionsPagerAdapter getItem Start");
+			MainActivityFragment fragment = MainActivityFragment.newInstance(position, TITLE_NAME.get(position));
+//			fragment.OnFragmentInteractionListener.onContentChanged();
 			
 			Log.d(TAG, "SectionsPagerAdapter getItem End");
-            return MainActivityFragment.newInstance(position, TITLE_NAME.get(position));
+            return fragment;
         }
 
         /**
@@ -752,5 +754,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
 		Log.d(TAG, "onFragmentInteraction End");
     }
-
+	
+	public void onContentsChanged(View v) {
+		final TextView mRowId = (TextView) v.findViewById(R.id.row_id);
+		Snackbar.make(findViewById(R.id.activity_main), mRowId.getText(), Snackbar.LENGTH_SHORT).show();
+	}
 }

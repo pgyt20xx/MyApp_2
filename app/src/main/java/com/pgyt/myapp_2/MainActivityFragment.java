@@ -1,32 +1,17 @@
 package com.pgyt.myapp_2;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.LinkedHashMap;
+import android.content.*;
+import android.database.sqlite.*;
+import android.net.*;
+import android.os.*;
+import android.support.v4.app.*;
+import android.support.v7.widget.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import java.util.*;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
-
-import android.view.Display.*;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -120,26 +105,34 @@ public class MainActivityFragment extends Fragment {
         // ロングクリックイベント
         mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public boolean onLongClick(final View view) {
                 if (mActionModeCallback != null) {
                     return false;
                 }
-
+				
+				final ImageView mSelectedImage = (ImageView) view.findViewById(R.id.image_clip_edit);
+				
                 mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
                     // Called when the user exits the action mode
                     @Override
                     public void onDestroyActionMode(ActionMode mode) {
+						mSelectedImage.setVisibility(View.GONE);
                         mActionModeCallback = null;
                     }
                 };
-
+				
+				
+				mSelectedImage.setVisibility(View.VISIBLE);
+				
                 getActivity().startActionMode(mActionModeCallback);
                 mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
                     @Override
-                    public void onBottomClick(boolean bool, ActionMode mode, TextView rowId) {
+                    public void onBottomClick(boolean bool, ActionMode mode) {
                         if (bool) {
-                            contentsDelete(rowId);
+                            //contentsDelete(mRowId);
+							mListener.onContentsChanged(view);
                         }
+						
                         mode.finish();
                     }
                 });
@@ -167,13 +160,13 @@ public class MainActivityFragment extends Fragment {
 
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
         try {
-            new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
-
+            //new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
             // 変数からコンテンツを削除
 //            mViewPager = (ViewPager) view.findViewById(R.id.pager);
 //            int position = mViewPager.getCurrentItem();
-            MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(1)).get(mRowId));
-            mAdapter.updateData(MainActivity.CONTENTS.get("g"));
+            //MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(1)).get(mRowId));
+            //mAdapter.updateData(MainActivity.CONTENTS.get("g"));
+			
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -210,10 +203,10 @@ public class MainActivityFragment extends Fragment {
 
         Log.d(TAG, "onDetach End");
     }
-
-
+	
     interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+		void onContentsChanged(View v)
     }
 
 }

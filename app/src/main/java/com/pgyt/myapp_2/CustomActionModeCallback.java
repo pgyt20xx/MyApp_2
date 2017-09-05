@@ -21,8 +21,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
 
     private final String TAG = "ActionModeCallback";
     private Context context;
-    private ImageView mSelectedImage;
-    private TextView mRowId;
     private FragmentManager mFragmentManager;
 	
 	private OnBottomClickListener bottomClickListener;
@@ -30,9 +28,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
         this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
-        this.mSelectedImage = (ImageView) view.findViewById(R.id.image_clip_edit);
-        this.mRowId = (TextView) view.findViewById(R.id.row_id);
-        this.mSelectedImage.setVisibility(View.VISIBLE);
+        
     }
 
     // Called when the action mode is created; startActionMode() was called
@@ -67,11 +63,11 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
                     @Override
                     public void onPositiveClick() {
-						bottomClickListener.onBottomClick(true, mode, mRowId);
+						bottomClickListener.onBottomClick(true, mode);
                     }
                     @Override
                     public void onNegativeClick() {
-						bottomClickListener.onBottomClick(false, mode, mRowId);
+						bottomClickListener.onBottomClick(false, mode);
                     }
                 });
 				
@@ -92,7 +88,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     // Called when the user exits the action mode
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-        this.mSelectedImage.setVisibility(View.GONE);
 		
     }
 	
@@ -100,7 +95,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
      * イメージクリックのインターフェース
      */
     interface OnBottomClickListener {
-        void onBottomClick(boolean bool, ActionMode mode, TextView textView);
+        void onBottomClick(boolean bool, ActionMode mode);
     }
 	
 	/**

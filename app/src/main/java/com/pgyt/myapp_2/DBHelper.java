@@ -51,7 +51,7 @@ class DBHelper {
             String sql = "SELECT id, category_name FROM CATEGORY ORDER BY id;";
             cursor = sqLiteDatabase.rawQuery(sql, null);
         } else {
-            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = ? ORDER BY id;";
+            String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = ? ORDER BY id ASC;";
             cursor = sqLiteDatabase.rawQuery(sql, new String[]{param});
         }
         return cursor;
@@ -91,7 +91,7 @@ class DBHelper {
      * @return Cursor
      */
     Cursor selectAllContents() {
-        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name, id DESC;";
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
         return sqLiteDatabase.rawQuery(sql, null);
     }
 

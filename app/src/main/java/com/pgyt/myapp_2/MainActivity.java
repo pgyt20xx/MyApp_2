@@ -1,27 +1,44 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.database.*;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.*;
-import android.os.*;
-import android.support.annotation.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.text.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-
-import com.pgyt.myapp_2.model.*;
-
-import java.util.*;
-
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.pgyt.myapp_2.model.CategoryBean;
+import com.pgyt.myapp_2.model.ContentsBean;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
@@ -32,11 +49,27 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
 
+    private static final String COLUMN_ID = "id";
+
+    private static final String COLUMN_CATEGORY_NAME = "category_name";
+
+    private static final String COLUMN_CONTENTS_TITLE = "contents_title";
+
+    private static final String COLUMN_CONTENTS = "contents";
+
+    private  static final String DIALOG_STRING_TITLE = "Title";
+
+    private  static final String DIALOG_STRING_CONTENTS = "Contents";
+
+    private static final String BUTTOM_POSITIVE = "OK";
+
+    private static final String BUTTOM_NEGATIVE = "CANCEL";
+
     public static final int CLIPBOARD_TAB_POSITON = 0;
 
-    public static ArrayList<String> TITLE_NAME;
+    public static ArrayList<CategoryBean> mCategoryList;
 
-    public static HashMap<String, LinkedHashMap<String, String[]>> CONTENTS;
+    public static ArrayList<ContentsBean> mContentsList;
 
     private int fragmentPosition;
 
@@ -61,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // サービスを起動
         this.startService(new Intent(this, MainService.class));
 
-        // フローティングアクションボタンを設定
-        setFabEvent();
+
 
         // フラグメントの初期化
         initFragmentView();
@@ -80,10 +112,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "initData Start");
 
         // 登録されているカテゴリー名を保持する
-        TITLE_NAME = getAllCategory();
+        mCategoryList = getAllCategory();
 
         // 登録されているコンテンツを取得
-        CONTENTS = getAllContents();
+        mContentsList = getAllContents();
 
         Log.d(TAG, "initData End");
     }
@@ -96,7 +128,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // ナビゲーションドロワーに設定するリストを作成
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, TITLE_NAME);
+
+        ArrayList<String> drawerList = new ArrayList<>();
+        for (CategoryBean category : mCategoryList) {
+            drawerList.add(category.getCategory_name());
+        }
+        adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, drawerList);
         mDrawerList.setAdapter(adapter);
 
         //リスト項目が選択された時のイベントを追加
@@ -136,53 +173,30 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "setNavigationDrawerList End");
     }
 
-    /**
-     * フローティングアクションボタンのクリックイベントを定義
-     */
-    private void setFabEvent() {
-        Log.d(TAG, "setFabEvent Start");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                contentsInsertEvent();
-            }
-        });
-
-        Log.d(TAG, "setFabEvent End");
-    }
 
     /**
      * 全コンテンツを取得
      *
      * @return HashMap
      */
-    HashMap<String, LinkedHashMap<String, String[]>> getAllContents() {
+    ArrayList<ContentsBean> getAllContents() {
         Log.d(TAG, "getAllContents Start");
 
         // DBからカテゴリー名を取得する
-        HashMap<String, LinkedHashMap<String, String[]>> result = new HashMap<>();
+        ArrayList<ContentsBean> result = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
             boolean isEof = cursor.moveToFirst();
-
-            String mapKey;
             while (isEof) {
-                mapKey = cursor.getString(cursor.getColumnIndex("category_name"));
-                LinkedHashMap<String, String[]> contentsMap = new LinkedHashMap<>();
-
-                // 同一カテゴリーのリストを作成する。
-                // カテゴリー名でソートされていることが前提
-                while (isEof) {
-                    if (!mapKey.equals(cursor.getString(cursor.getColumnIndex("category_name")))) {
-                        break;
-                    }
-                    contentsMap.put(cursor.getString(cursor.getColumnIndex("id")), new String[]{cursor.getString(cursor.getColumnIndex("contents_title")), cursor.getString(cursor.getColumnIndex("contents"))});
-                    isEof = cursor.moveToNext();
-                }
-                result.put(mapKey, contentsMap);
+                ContentsBean contents = new ContentsBean();
+                contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
+                contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
+                contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
+                result.add(contents);
+                isEof = cursor.moveToNext();
             }
             cursor.close();
 
@@ -202,17 +216,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return ArrayList
      */
-    private ArrayList<String> getAllCategory() {
+    private ArrayList<CategoryBean> getAllCategory() {
         Log.d(TAG, "getAllCategory Start");
 
         // DBからカテゴリー名を取得する
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<CategoryBean> result = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(BLANK_STRING);
             boolean isEof = cursor.moveToFirst();
             while (isEof) {
-                result.add(cursor.getString(cursor.getColumnIndex("category_name")));
+                CategoryBean category = new CategoryBean();
+                category.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                category.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
+                result.add(category);
                 isEof = cursor.moveToNext();
             }
             cursor.close();
@@ -266,71 +283,73 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "initFragment End");
     }
 
-    /**
-     * カテゴリ追加のダイアログイベント
-     */
-    private void categoryInsertEvent() {
-        Log.d(TAG, "categoryInsertEvent Start");
-
-        final EditText editView = new EditText(MainActivity.this);
-
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.add_category);
-        dialog.setView(editView);
-
-        // OKボタン押下時
-        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-                Log.d(TAG, "categoryInsertEvent Click OK");
-
-                // 値が入力されていない場合は何もしない
-                if (TextUtils.isEmpty(editView.getText())) {
-                    Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-
-                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
-                try {
-                    CategoryBean param = new CategoryBean();
-                    param.setCategory_name(editView.getText().toString());
-                    new DBHelper(sqLiteDatabase).insertCategory(param);
-
-                    // 新規タブ追加
-                    TITLE_NAME.add((editView.getText()).toString());
-                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
-
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-
-                } finally {
-                    sqLiteDatabase.close();
-                }
-
-                // ナビゲーションドロワーの更新
-                adapter.notifyDataSetChanged();
-
-                // フラグメントの初期化
-                initFragmentView();
-
-                // 追加したページを開く
-                mViewPager = (ViewPager) findViewById(R.id.pager);
-                mViewPager.setCurrentItem(TITLE_NAME.size() - 1);
-            }
-        });
-        // Cancelボタン押下時
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                Log.d(TAG, "categoryInsertEvent Click cancel");
-
-            }
-        });
-
-        dialog.show();
-        Log.d(TAG, "categoryInsertEvent End");
-    }
+//    /**
+//     * カテゴリ追加のダイアログイベント
+//     */
+//    private void categoryInsertEvent() {
+//        Log.d(TAG, "categoryInsertEvent Start");
+//
+//        final EditText editView = new EditText(MainActivity.this);
+//
+//        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+//        dialog.setTitle(R.string.add_category);
+//        dialog.setView(editView);
+//
+//        // OKボタン押下時
+//        dialog.setPositiveButton(BUTTOM_POSITIVE, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                Log.d(TAG, "categoryInsertEvent Click OK");
+//
+//                // 値が入力されていない場合は何もしない
+//                if (TextUtils.isEmpty(editView.getText())) {
+//                    Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
+//                    return;
+//                }
+//
+//                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
+//                try {
+//                    CategoryBean category = new CategoryBean();
+//                    category.setCategory_name(editView.getText().toString());
+//                    int id = (int) new DBHelper(sqLiteDatabase).insertCategory(category);
+//
+//                    // 新規タブ追加
+//                    category.setId(id);
+//                    mCategoryList.add(category);
+//
+//                    Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+//
+//                } catch (Exception e) {
+//                    Log.e(TAG, e.getMessage());
+//
+//                } finally {
+//                    sqLiteDatabase.close();
+//                }
+//
+//                // ナビゲーションドロワーの更新
+//                adapter.notifyDataSetChanged();
+//
+//                // フラグメントの初期化
+//                initFragmentView();
+//
+//                // 追加したページを開く
+//                mViewPager = (ViewPager) findViewById(R.id.pager);
+//                mViewPager.setCurrentItem(mCategoryList.size() - 1);
+//            }
+//        });
+//        // Cancelボタン押下時
+//        dialog.setNegativeButton(BUTTOM_NEGATIVE, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                Log.d(TAG, "categoryInsertEvent Click cancel");
+//
+//            }
+//        });
+//
+//        dialog.show();
+//        Log.d(TAG, "categoryInsertEvent End");
+//    }
 
     /**
      * カテゴリ削除のダイアログイベント
@@ -342,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setTitle(R.string.delete_category);
 
         // OKボタン押下時
-        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        dialog.setPositiveButton(BUTTOM_POSITIVE, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Log.d(TAG, "categoryDeleteEvent Click OK");
@@ -358,11 +377,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 } else {
                     SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
                     try {
-                        String param = TITLE_NAME.get(position);
+                        String param = mCategoryList.get(position).getCategory_name();
                         new DBHelper(sqLiteDatabase).deletetCategory(param);
 
                         // 変数からカテゴリーを削除
-                        TITLE_NAME.remove(position);
+                        mCategoryList.remove(position);
                         Snackbar.make(findViewById(R.id.activity_main), "Delete Success", Snackbar.LENGTH_SHORT).show();
 
                     } catch (Exception e) {
@@ -378,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         });
         // Cancelボタン押下時
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialog.setNegativeButton(BUTTOM_NEGATIVE, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 Log.d(TAG, "categoryDeleteEvent Click cancel");
@@ -401,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         dialog.setTitle(R.string.menu_delete_all);
 
         // OKボタン押下時
-        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        dialog.setPositiveButton(BUTTOM_POSITIVE, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Log.d(TAG, "deleteAllEvent Click OK");
@@ -425,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         });
         // Cancelボタン押下時
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialog.setNegativeButton(BUTTOM_NEGATIVE, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 Log.d(TAG, "deleteAllEvent Click cancel");
@@ -437,97 +456,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "deleteAllEvent Click End");
     }
 
-    /**
-     * コンテンツ追加のダイアログイベント
-     */
-    private void contentsInsertEvent() {
-        Log.d(TAG, "contentsInsertEvent Start");
 
-        // レイアウトセット
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        final TextView textTitle = new TextView(getApplicationContext());
-        final TextView textContents = new TextView(getApplicationContext());
-        textTitle.setText("Title");
-        textContents.setText("Contents");
-        final EditText contentsTitleEditView = new EditText(MainActivity.this);
-        final EditText contentsEditView = new EditText(MainActivity.this);
-        layout.addView(textTitle, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        layout.addView(contentsTitleEditView);
-        layout.addView(textContents, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        layout.addView(contentsEditView);
-
-        // ダイアログセット
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.fab_title);
-        dialog.setView(layout);
-
-        // OKボタン押下時
-        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d(TAG, "contentsInsertEvent Click OK");
-
-                // 値が入力されていない場合は何もしない
-                if (TextUtils.isEmpty(contentsTitleEditView.getText())) {
-                    Snackbar.make(findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // 現在のフラグメントのpositionを取得
-                mViewPager = (ViewPager) findViewById(R.id.pager);
-                int position = mViewPager.getCurrentItem();
-
-                // コンテンツ登録
-                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
-                try {
-                    ContentsBean param = new ContentsBean();
-                    param.setCategory_name(TITLE_NAME.get(position));
-                    param.setContents_title(contentsTitleEditView.getText().toString());
-                    param.setContents(contentsEditView.getText().toString());
-                    Long id = new DBHelper(sqLiteDatabase).insertContents(param);
-
-                    // 1行目に追加する
-                    LinkedHashMap<String, String[]> contentsMap;
-                    LinkedHashMap<String, String[]> tContentsMap = new LinkedHashMap<>();
-                    tContentsMap.put(id.toString(), new String[]{contentsTitleEditView.getText().toString(), contentsEditView.getText().toString()});
-                    if (CONTENTS.containsKey(TITLE_NAME.get(position))) {
-                        // 既存コンテンツ追加
-                        tContentsMap.putAll(CONTENTS.get(TITLE_NAME.get(position)));
-
-                    }
-                    contentsMap = tContentsMap;
-                    CONTENTS.put(TITLE_NAME.get(position), contentsMap);
-
-                } catch (Exception e) {
-                    Log.d(TAG, e.getMessage());
-
-                } finally {
-                    sqLiteDatabase.close();
-                }
-
-                Snackbar.make(findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
-
-                // フラグメントの初期化
-                initFragmentView();
-
-                // 元のページを開く
-                mViewPager.setCurrentItem(position);
-
-            }
-        });
-        // Cancelボタン押下時
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                Log.d(TAG, "contentsInsertEvent Click Cancel");
-
-            }
-        });
-
-        dialog.show();
-        Log.d(TAG, "contentsInsertEvent End");
-    }
 
     /**
      * コンテンツ削除
@@ -538,7 +467,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
-            MainActivity.CONTENTS.remove(MainActivity.CONTENTS.get(MainActivity.TITLE_NAME.get(1)).get(mRowId));
+
+            // TODO : 面倒なので後で関数にする
+            for (ContentsBean contents : mContentsList) {
+                if (String.valueOf(contents.getId()).equals(mRowId)) {
+                    mContentsList.remove(contents);
+                    break;
+                }
+            }
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -569,8 +505,28 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public Fragment getItem(int position) {
             Log.d(TAG, "SectionsPagerAdapter getItem Start");
 
+            ArrayList<ContentsBean> currentPageContentsList = getCurrentPageContentsList(position);
+
             Log.d(TAG, "SectionsPagerAdapter getItem End");
-            return MainActivityFragment.newInstance(position, TITLE_NAME.get(position));
+            return MainActivityFragment.newInstance(position, mCategoryList.get(position).getCategory_name(), currentPageContentsList);
+        }
+
+        /**
+         * 現在のページのコンテンツを返却する
+         * @param position int
+         * @return
+         */
+        ArrayList<ContentsBean> getCurrentPageContentsList (int position) {
+            String title = mCategoryList.get(position).getCategory_name();
+            ArrayList<ContentsBean> result = new ArrayList<>();
+
+            // TODO : 面倒なので後で関数にする
+            for (ContentsBean contents : mContentsList) {
+                if (title.equals(contents.getCategory_name())) {
+                    result.add(contents);
+                }
+            }
+            return result;
         }
 
         /**
@@ -584,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, "SectionsPagerAdapter getTitle Start");
 
             Log.d(TAG, "SectionsPagerAdapter getTitle End");
-            return TITLE_NAME.get(position);
+            return mCategoryList.get(position).getCategory_name();
         }
 
         /**
@@ -597,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, "SectionsPagerAdapter getCount Start");
 
             Log.d(TAG, "SectionsPagerAdapter getCount End");
-            return TITLE_NAME.size();
+            return mCategoryList.size();
         }
 
         @Override
@@ -608,9 +564,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             return POSITION_NONE;
         }
 
-        public Fragment findFragmentByPosition(ViewPager viewPager, int position) {
-            return (Fragment) instantiateItem(viewPager, position);
-        }
     }
 
     /**
@@ -665,37 +618,37 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected getItemPosition Start");
-
-        // 押下されたメニューで分岐
-        switch (item.getItemId()) {
-            case R.id.add_category:
-                Log.d(TAG, "add_category selected");
-                categoryInsertEvent();
-                return true;
-
-            case R.id.delete_category:
-                Log.d(TAG, "delete_category selected");
-                categoryDeletetEvent();
-                return true;
-
-            case R.id.all_delete:
-                Log.d(TAG, "all_delete selected");
-                deletetAllEvent();
-                return true;
-
-            case R.id.action_settings:
-                Log.d(TAG, "action_settings selected");
-                Intent intent = new android.content.Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
-        }
-        Log.d(TAG, "onOptionsItemSelected getItemPosition End");
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d(TAG, "onOptionsItemSelected getItemPosition Start");
+//
+//        // 押下されたメニューで分岐
+//        switch (item.getItemId()) {
+//            case R.id.add_category:
+//                Log.d(TAG, "add_category selected");
+//                categoryInsertEvent();
+//                return true;
+//
+//            case R.id.delete_category:
+//                Log.d(TAG, "delete_category selected");
+//                categoryDeletetEvent();
+//                return true;
+//
+//            case R.id.all_delete:
+//                Log.d(TAG, "all_delete selected");
+//                deletetAllEvent();
+//                return true;
+//
+//            case R.id.action_settings:
+//                Log.d(TAG, "action_settings selected");
+//                Intent intent = new android.content.Intent(this, SettingsActivity.class);
+//                startActivity(intent);
+//                return true;
+//
+//        }
+//        Log.d(TAG, "onOptionsItemSelected getItemPosition End");
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onRestart() {
@@ -742,10 +695,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         contentsDelete(mRowId);
 
         // 変数から削除
-        String tabName = TITLE_NAME.get(this.fragmentPosition);
-        LinkedHashMap tContents = CONTENTS.get(tabName);
-        tContents.remove(mRowId.getText());
-        CONTENTS = tContents;
+        String tabName = mCategoryList.get(this.fragmentPosition).getCategory_name();
 
         // フラグメントを初期化する。
         // TODO; 画面から全部消えちゃう

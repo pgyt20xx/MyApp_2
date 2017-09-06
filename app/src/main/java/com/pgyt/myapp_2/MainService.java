@@ -29,6 +29,10 @@ public class MainService extends Service {
 
     private static final String TAG = "MainService";
 
+    private static final String CLIP_BOARD_TITLE_NAME = "DummyContentsTitle";
+
+    private static final String STATUS_BAR_TITLE = "Current ClipBoard";
+
     private static final int NOTIFICATION_ID = 10;
 
     private ClipboardManager mClipboardManager;
@@ -117,43 +121,25 @@ public class MainService extends Service {
         // アプリ内のコンテンツは登録しない。
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
-            boolean isEof = cursor.moveToFirst();
-            ArrayList<String> allContents = new ArrayList<>();
-            while (isEof) {
-                allContents.add(cursor.getString(cursor.getColumnIndex("contents")));
-                isEof = cursor.moveToNext();
-            }
-            cursor.close();
-
-            // アプリ内登録コンテンツは登録しない。
-            if (allContents.lastIndexOf(item.getText().toString()) >= 0) {
-                return;
-            }
-
-            // 既存コンテンツ
-            LinkedHashMap<String, String[]> contentsMap = new LinkedHashMap<>();
-            if (MainActivity.CONTENTS.containsKey(MainActivity.CLIPBOARD_TAB_NAME)) {
-                contentsMap = MainActivity.CONTENTS.get(MainActivity.CLIPBOARD_TAB_NAME);
+            // 既にあるコンテンツは登録しない
+            for (ContentsBean contents : MainActivity.mContentsList) {
+                if (contents.getContents().equals(item.getText().toString())) {
+                    return;
+                }
             }
 
             // コンテンツの登録
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
-            ContentsBean param = new ContentsBean();
-            param.setCategory_name(MainActivity.CLIPBOARD_TAB_NAME);
-            param.setContents_title("DummyContentsTitle");
-            param.setContents(item.getText().toString());
-            Long id = new DBHelper(sqLiteDatabase).insertContents(param);
+            ContentsBean contents = new ContentsBean();
+            contents.setCategory_name(MainActivity.CLIPBOARD_TAB_NAME);
+            contents.setContents_title(CLIP_BOARD_TITLE_NAME);
+            contents.setContents(item.getText().toString());
+            int id = (int) new DBHelper(sqLiteDatabase).insertContents(contents);
 
             // 1行目に追加
-            LinkedHashMap<String, String[]> tContentsMap = new LinkedHashMap<>();
-            tContentsMap.put(id.toString(), new String[]{"DummyContentsTitle", item.getText().toString()});
-            if (contentsMap.size() != 0) {
-                // 既存コンテンツ追加
-                tContentsMap.putAll(contentsMap);
-            }
-            contentsMap = tContentsMap;
-            MainActivity.CONTENTS.put(MainActivity.CLIPBOARD_TAB_NAME, contentsMap);
+            contents.setId(id);
+            MainActivity.mContentsList.add(0, contents);
+
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
 
@@ -174,7 +160,7 @@ public class MainService extends Service {
         }
 
         mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle("Current ClipBoard");
+        mBuilder.setContentTitle(STATUS_BAR_TITLE);
         mBuilder.setContentText(mClipBoard);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setOngoing(true);

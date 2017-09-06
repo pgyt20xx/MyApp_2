@@ -10,17 +10,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pgyt.myapp_2.model.ContentsBean;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
-    private List<String[]> mDataset;
-
-    private List<String> mRowIdset;
-
     private String title;
+
+    private ArrayList<ContentsBean> mItemList;
 
     private LayoutInflater layoutInflater;
 
@@ -32,11 +32,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private static final String TAG = "CustomAdapter";
 
+    private static final String BLANK_STRING = "";
+
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(Context context, String title, LinkedHashMap<String, String[]> item) {
+    CustomAdapter(Context context, String title, ArrayList<ContentsBean> itemList) {
         this.title = title;
-        this.mRowIdset = new ArrayList<>(item.keySet());
-        this.mDataset = new ArrayList<>(item.values());
+        this.mItemList = itemList;
         this.layoutInflater = LayoutInflater.from(context);
     }
 
@@ -85,12 +86,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mContentsTitle.setText(mDataset.get(position)[0]);
-        if (mDataset.get(position)[1] == null) {
-            mDataset.get(position)[1] = "";
+        holder.mContentsTitle.setText(mItemList.get(position).getContents_title());
+        if (mItemList.get(position) == null) {
+            mItemList.get(position).setContents(BLANK_STRING);
         }
-        holder.mContents.setText(mDataset.get(position)[1]);
-        holder.mRowId.setText(mRowIdset.get(position));
+        holder.mContents.setText(mItemList.get(position).getContents());
+        holder.mRowId.setText(String.valueOf(mItemList.get(position).getId()));
 
         // クリップボートタブとそれ以外の描画を分ける
         if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
@@ -135,7 +136,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return mItemList.size();
     }
 
     /**
@@ -185,13 +186,4 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.itemLongClickListener = listener;
     }
-
-    public void updateData(LinkedHashMap<String, String[]> item) {
-        mDataset.clear();
-        mRowIdset.clear();
-        this.mRowIdset = new ArrayList<>(item.keySet());
-        this.mDataset = new ArrayList<>(item.values());
-        notifyDataSetChanged();
-    }
-
 }

@@ -3,7 +3,9 @@ package com.pgyt.myapp_2.model;
 
 import android.content.ContentValues;
 
-public class ContentsBean
+import java.io.Serializable;
+
+public class ContentsBean implements Serializable
 {
 	
 	/**

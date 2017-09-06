@@ -80,7 +80,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder Start");
 
         // - get element from your dataset at this position
@@ -108,7 +108,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemClickListener.onClick(v, holder.mContents);
+                itemClickListener.onClick(v, holder.mContents, position);
             }
         });
 
@@ -116,7 +116,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageItemClickListener.onClick(v, holder.mRowId);
+                imageItemClickListener.onClick(v, holder.mRowId, position);
             }
         });
 
@@ -124,7 +124,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRow.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                itemLongClickListener.onLongClick(v);
+                itemLongClickListener.onLongClick(v, position);
                 return true;
             }
         });
@@ -142,21 +142,21 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
      * 行クリックのインターフェース
      */
     interface OnItemClickListener {
-        void onClick(View v, TextView textView);
+        void onClick(View v, TextView textView, int position);
     }
 
     /**
      * イメージクリックのインターフェース
      */
     interface OnImageItemClickListener {
-        void onClick(View v, TextView textView);
+        void onClick(View v, TextView textView, int position);
     }
 
     /**
      * ロングクリックのインターフェース
      */
     interface OnItemLongClickListener {
-        boolean onLongClick(View v);
+        boolean onLongClick(View v, int position);
     }
 
     /**

@@ -32,6 +32,7 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_TITLE_NAME = "title_name";
 
     private static final String TAG = "MainActivityFragment";
+	CustomAdapter mAdapter;
 
     CustomActionModeCallback mActionModeCallback;
 
@@ -90,13 +91,13 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // 表示内容があるときだけ設定
-        CustomAdapter mAdapter = new CustomAdapter(getContext(), title, contentsMap);
+        mAdapter = new CustomAdapter(getContext(), title, contentsMap);
         mRecyclerView.setAdapter(mAdapter);
 
         // 行のクリックイベント
         mAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View view, TextView textView) {
+            public void onClick(View view, TextView textView, int position) {
                 Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
                 copyClip(textView);
             }
@@ -105,7 +106,7 @@ public class MainActivityFragment extends Fragment {
         // イメージのクリックイベント
         mAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
             @Override
-            public void onClick(View view, TextView textView) {
+            public void onClick(View view, TextView textView, int position) {
                 Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -113,7 +114,7 @@ public class MainActivityFragment extends Fragment {
         // ロングクリックイベント
         mAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onLongClick(final View view) {
+            public boolean onLongClick(final View view, final int position) {
                 if (mActionModeCallback != null) {
                     return false;
                 }
@@ -139,11 +140,14 @@ public class MainActivityFragment extends Fragment {
                         if (bool) {
                             //contentsDelete(mRowId);
 							mListener.onContentsChanged(view);
+							mAdapter.notifyItemRemoved(position);
+
                         }
 						
                         mode.finish();
                     }
                 });
+				
                 view.setSelected(true);
                 return true;
             }

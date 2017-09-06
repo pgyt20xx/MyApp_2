@@ -749,7 +749,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // フラグメントを初期化する。
         // TODO; 画面から全部消えちゃう
-        initFragmentView();
+		
+        //initFragmentView();
 
         Snackbar.make(findViewById(R.id.activity_main), "Contents Delete Success", Snackbar.LENGTH_SHORT).show();
     }

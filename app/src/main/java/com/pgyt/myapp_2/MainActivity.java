@@ -73,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private int fragmentPosition;
 
-    private ArrayAdapter<String> adapter;
-
     private ViewPager mViewPager;
+	
+	private ArrayAdapter<String> adapter;
 
 
     @Override
@@ -94,13 +94,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // サービスを起動
         this.startService(new Intent(this, MainService.class));
 
-
-
         // フラグメントの初期化
         initFragmentView();
-
-        // ナビゲーションドロワーのリスト作成
-        setNavigationDrawerListAdapter();
+		
+		// ナビゲーションドロワーのリスト作成
+		//setNavigationDrawerListAdapter();
 
         // ナビゲーションドロワー設定
         setNavigationDrawer(toolbar);
@@ -118,59 +116,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mContentsList = getAllContents();
 
         Log.d(TAG, "initData End");
-    }
-
-    /**
-     * ナビゲーションドロワーリスト作成
-     */
-    private void setNavigationDrawerListAdapter() {
-        Log.d(TAG, "setNavigationDrawerList Start");
-
-        // ナビゲーションドロワーに設定するリストを作成
-        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        ArrayList<String> drawerList = new ArrayList<>();
-        for (CategoryBean category : mCategoryList) {
-            drawerList.add(category.getCategory_name());
-        }
-        adapter = new ArrayAdapter<>(this, R.layout.drawer_list_item, drawerList);
-        mDrawerList.setAdapter(adapter);
-
-        //リスト項目が選択された時のイベントを追加
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mViewPager = (ViewPager) findViewById(R.id.pager);
-                mViewPager.setCurrentItem(position);
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
-                drawer.closeDrawers();
-            }
-        });
-        Log.d(TAG, "setNavigationDrawerList End");
-
-    }
-
-    /**
-     * ナビゲーションドロワー設定
-     *
-     * @param toolbar Toolbar
-     */
-    private void setNavigationDrawer(Toolbar toolbar) {
-        Log.d(TAG, "setNavigationDrawer Start");
-
-        // ナビゲーションドロワーの設定
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,
-                R.string.drawer_open,
-                R.string.drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        // リスナー設定
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
-        Log.d(TAG, "setNavigationDrawerList End");
     }
 
 
@@ -566,19 +511,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     }
 
-    /**
-     * Called when an item in the navigation menu is selected.
-     *
-     * @param item The selected item
-     * @return true to display the item as the selected item
-     */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected Start");
 
-        Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected End");
-        return true;
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
@@ -683,6 +616,46 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         Log.d(TAG, "onPageScrollStateChanged End");
     }
+	
+	/**
+     * ナビゲーションドロワー設定
+     *
+     * @param toolbar Toolbar
+     */
+    private void setNavigationDrawer(Toolbar toolbar) {
+        Log.d(TAG, "setNavigationDrawer Start");
+
+        // ナビゲーションドロワーの設定
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+			this, drawer, toolbar,
+			R.string.drawer_open,
+			R.string.drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // リスナー設定
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(this);
+        Log.d(TAG, "setNavigationDrawerList End");
+    }
+
+    
+
+
+	/**
+     * Called when an item in the navigation menu is selected.
+     *
+     * @param item The selected item
+     * @return true to display the item as the selected item
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected Start");
+
+        Log.d(TAG, "SectionsPagerAdapter onNavigationItemSelected End");
+        return true;
+    }
 
     /**
      * フラグメントがコンテンツを削除したら呼び出される。
@@ -704,4 +677,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         Snackbar.make(findViewById(R.id.activity_main), "Contents Delete Success", Snackbar.LENGTH_SHORT).show();
     }
+	
+	
 }

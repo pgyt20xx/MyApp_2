@@ -1,37 +1,25 @@
 package com.pgyt.myapp_2;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
+import android.content.*;
+import android.database.sqlite.*;
+import android.os.*;
+import android.support.annotation.*;
+import android.support.design.widget.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
+import java.util.*;
+
 import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.widget.Toolbar;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -46,8 +34,8 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_CONTENTS_LIST = "contents_list";
     private static final String BUTTOM_POSITIVE = "OK";
     private static final String BUTTOM_NEGATIVE = "CANCEL";
-    private  static final String DIALOG_STRING_TITLE = "Title";
-    private  static final String DIALOG_STRING_CONTENTS = "Contents";
+    private static final String DIALOG_STRING_TITLE = "Title";
+    private static final String DIALOG_STRING_CONTENTS = "Contents";
     private static final String TAG = "MainActivityFragment";
 
     private ViewPager mViewPager;
@@ -55,6 +43,8 @@ public class MainActivityFragment extends Fragment {
     CustomAdapter mAdapter;
 
     CustomActionModeCallback mActionModeCallback;
+	
+	private ArrayAdapter<String> adapter;
 
 
     // コンストラクタ
@@ -72,6 +62,7 @@ public class MainActivityFragment extends Fragment {
         fragment.setArguments(args);
 
         Log.d(TAG, "newInstance End");
+		
 
         return fragment;
     }
@@ -84,7 +75,7 @@ public class MainActivityFragment extends Fragment {
         if (getArguments() != null) {
             // param取得
             Log.d(TAG, "OnCreate");
-
+		
         }
         Log.d(TAG, "onCreate End");
 
@@ -106,6 +97,27 @@ public class MainActivityFragment extends Fragment {
             Log.d(TAG, "onCreateView End contentsList == null");
             return view;
         }
+		
+		// ナビゲーションドロワーに設定するリストを作成
+        ListView mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
+
+        ArrayList<String> drawerList = new ArrayList<>();
+        for (CategoryBean category : MainActivity.mCategoryList) {
+            drawerList.add(category.getCategory_name());
+        }
+        adapter = new ArrayAdapter<>(getActivity(), R.layout.drawer_list_item, drawerList);
+        mDrawerList.setAdapter(adapter);
+
+        //リスト項目が選択された時のイベントを追加
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+					mViewPager.setCurrentItem(position);
+
+					DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawerLayout);
+					drawer.closeDrawers();
+				}
+			});
 
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -292,6 +304,7 @@ public class MainActivityFragment extends Fragment {
                     // 新規タブ追加
                     category.setId(id);
                     MainActivity.mCategoryList.add(category);
+					
 
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
@@ -301,11 +314,11 @@ public class MainActivityFragment extends Fragment {
                 } finally {
                     sqLiteDatabase.close();
                 }
+				
 
-                mAdapter.notifyDataSetChanged();
+                //mAdapter.notifyDataSetChanged();
 
 //                // ナビゲーションドロワーの更新
-//                adapter.notifyDataSetChanged();
 //
 //                // フラグメントの初期化
 //                initFragmentView();

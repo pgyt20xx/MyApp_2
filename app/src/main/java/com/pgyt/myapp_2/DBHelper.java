@@ -90,6 +90,16 @@ class DBHelper {
      *
      * @return Cursor
      */
+    Cursor selectContentsList(String param) {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? ORDER BY id DESC;";
+        return sqLiteDatabase.rawQuery(sql, new String[]{param});
+    }
+
+    /**
+     * コンテンツテーブルを取得するのセレクト文
+     *
+     * @return Cursor
+     */
     Cursor selectAllContents() {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
         return sqLiteDatabase.rawQuery(sql, null);

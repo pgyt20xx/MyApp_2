@@ -3,7 +3,6 @@ package com.pgyt.myapp_2;
 import android.content.*;
 import android.database.sqlite.*;
 import android.os.*;
-import android.support.annotation.*;
 import android.support.design.widget.*;
 import android.support.v4.app.*;
 import android.support.v4.view.*;
@@ -18,10 +17,9 @@ import com.pgyt.myapp_2.model.*;
 import java.util.*;
 
 import android.content.ClipboardManager;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.widget.Toolbar;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,34 +29,29 @@ public class MainActivityFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
-    private static final String ARG_CONTENTS_LIST = "contents_list";
     private static final String BUTTOM_POSITIVE = "OK";
     private static final String BUTTOM_NEGATIVE = "CANCEL";
     private static final String DIALOG_STRING_TITLE = "Title";
     private static final String DIALOG_STRING_CONTENTS = "Contents";
     private static final String TAG = "MainActivityFragment";
-
     private ViewPager mViewPager;
+    private CustomAdapter mAdapter;
+    private CustomActionModeCallback mActionModeCallback;
+    private ArrayAdapter<String> mDrawerAdapter;
 
-    CustomAdapter mAdapter;
-
-    CustomActionModeCallback mActionModeCallback;
-	
-	private ArrayAdapter<String> adapter;
 
 
     // コンストラクタ
     public MainActivityFragment() {
     }
 
-    static MainActivityFragment newInstance(int page, String title, ArrayList<ContentsBean> contentsList) {
+    static MainActivityFragment newInstance(int page, String title) {
         Log.d(TAG, "newInstance Start");
 
         MainActivityFragment fragment = new MainActivityFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, page);
         args.putString(ARG_TITLE_NAME, title);
-        args.putSerializable(ARG_CONTENTS_LIST, contentsList);
         fragment.setArguments(args);
 
         Log.d(TAG, "newInstance End");
@@ -87,37 +80,17 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreateView Start");
 
         // パラメータ取得
-        String title = getArguments().getString(ARG_TITLE_NAME);
-
-        ArrayList<ContentsBean> contentsList = (ArrayList<ContentsBean>) getArguments().getSerializable(ARG_CONTENTS_LIST);
+        String mCategoryName = getArguments().getString(ARG_TITLE_NAME);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 
-        if (contentsList == null) {
+        if (MainActivity.mContentsListMap.get(mCategoryName) == null) {
             Log.d(TAG, "onCreateView End contentsList == null");
             return view;
         }
-		
-		// ナビゲーションドロワーに設定するリストを作成
-        ListView mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
 
-        ArrayList<String> drawerList = new ArrayList<>();
-        for (CategoryBean category : MainActivity.mCategoryList) {
-            drawerList.add(category.getCategory_name());
-        }
-        adapter = new ArrayAdapter<>(getActivity(), R.layout.drawer_list_item, drawerList);
-        mDrawerList.setAdapter(adapter);
-
-        //リスト項目が選択された時のイベントを追加
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-					mViewPager.setCurrentItem(position);
-
-					DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawerLayout);
-					drawer.closeDrawers();
-				}
-			});
+        // ナビゲーションドロワーリスト設定
+        setDrawerList();
 
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -125,7 +98,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // 表示内容があるときだけ設定
-        mAdapter = new CustomAdapter(getContext(), title, contentsList);
+        mAdapter = new CustomAdapter(getContext(), mCategoryName, MainActivity.mContentsListMap.get(mCategoryName));
         mRecyclerView.setAdapter(mAdapter);
 
         // 行のクリックイベント
@@ -191,6 +164,8 @@ public class MainActivityFragment extends Fragment {
 
         return view;
     }
+
+
 
     private void copyClip(TextView textView) {
         // クリップボードにコピー
@@ -303,8 +278,15 @@ public class MainActivityFragment extends Fragment {
 
                     // 新規タブ追加
                     category.setId(id);
-                    MainActivity.mCategoryList.add(category);
-					
+                    mCategoryList.add(category);
+
+                    mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                    mViewPager.getAdapter().notifyDataSetChanged();
+                    mDrawerAdapter.addAll();
+
+                    mDrawerAdapter.notifyDataSetChanged();
+                    mViewPager.setCurrentItem(mCategoryList.size() - 1);
+
 
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
@@ -387,14 +369,14 @@ public class MainActivityFragment extends Fragment {
                 SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                 try {
                     ContentsBean contents = new ContentsBean();
-                    contents.setCategory_name(MainActivity.mCategoryList.get(position).getCategory_name());
+                    contents.setCategory_name(mCategoryList.get(position).getCategory_name());
                     contents.setContents_title(contentsTitleEditView.getText().toString());
                     contents.setContents(contentsEditView.getText().toString());
                     int id = (int) new DBHelper(sqLiteDatabase).insertContents(contents);
 
                     // 1行目に追加する
                     contents.setId(id);
-                    MainActivity.mContentsList.add(0,  contents);
+                    MainActivity.mContentsListMap.get(mCategoryList.get(position).getCategory_name()).add(0,  contents);
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -442,6 +424,32 @@ public class MainActivityFragment extends Fragment {
 
     	mAdapter.notifyDataSetChanged();
         Log.d(TAG, "setFabEvent End");
+    }
+
+    /**
+     * ナビゲーションドロワーリスト設定
+     */
+    private void setDrawerList(){
+        // ナビゲーションドロワーに設定するリストを作成
+        ListView mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
+
+        ArrayList<String> drawerList = new ArrayList<>();
+        for (CategoryBean category : mCategoryList) {
+            drawerList.add(category.getCategory_name());
+        }
+        mDrawerAdapter = new ArrayAdapter<>(getActivity(), R.layout.drawer_list_item, drawerList);
+        mDrawerList.setAdapter(mDrawerAdapter);
+
+        //リスト項目が選択された時のイベントを追加
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                mViewPager.setCurrentItem(position);
+
+                DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawerLayout);
+                drawer.closeDrawers();
+            }
+        });
     }
 
 }

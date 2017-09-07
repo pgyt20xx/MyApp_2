@@ -50,7 +50,6 @@ public class MainService extends Service {
 
     }
 
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -122,7 +121,7 @@ public class MainService extends Service {
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             // 既にあるコンテンツは登録しない
-            for (ContentsBean contents : MainActivity.mContentsList) {
+            for (ContentsBean contents : MainActivity.mContentsListMap.get(CLIP_BOARD_TITLE_NAME)) {
                 if (contents.getContents().equals(item.getText().toString())) {
                     return;
                 }
@@ -138,7 +137,7 @@ public class MainService extends Service {
 
             // 1行目に追加
             contents.setId(id);
-            MainActivity.mContentsList.add(0, contents);
+            MainActivity.mContentsListMap.get(CLIP_BOARD_TITLE_NAME).add(0, contents);
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());

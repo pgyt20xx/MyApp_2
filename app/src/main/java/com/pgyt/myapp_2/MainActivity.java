@@ -39,6 +39,7 @@ import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
@@ -69,13 +70,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public static ArrayList<CategoryBean> mCategoryList;
 
-    public static ArrayList<ContentsBean> mContentsList;
+    public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
 
     private int fragmentPosition;
 
     private ViewPager mViewPager;
-	
-	private ArrayAdapter<String> adapter;
+
+    private ArrayAdapter<String> aDrawerAdapter;
+
 
 
     @Override
@@ -96,9 +98,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // フラグメントの初期化
         initFragmentView();
-		
-		// ナビゲーションドロワーのリスト作成
-		//setNavigationDrawerListAdapter();
 
         // ナビゲーションドロワー設定
         setNavigationDrawer(toolbar);
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mCategoryList = getAllCategory();
 
         // 登録されているコンテンツを取得
-        mContentsList = getAllContents();
+        mContentsListMap = getAllContents(mCategoryList);
 
         Log.d(TAG, "initData End");
     }
@@ -125,25 +124,29 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      *
      * @return HashMap
      */
-    ArrayList<ContentsBean> getAllContents() {
+    LinkedHashMap<String, ArrayList<ContentsBean>> getAllContents(ArrayList<CategoryBean> categoryList) {
         Log.d(TAG, "getAllContents Start");
 
         // DBからカテゴリー名を取得する
-        ArrayList<ContentsBean> result = new ArrayList<>();
+        LinkedHashMap<String, ArrayList<ContentsBean>> result = new LinkedHashMap<>();
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
-            boolean isEof = cursor.moveToFirst();
-            while (isEof) {
-                ContentsBean contents = new ContentsBean();
-                contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
-                contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
-                contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
-                contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
-                result.add(contents);
-                isEof = cursor.moveToNext();
+            for (CategoryBean category : categoryList) {
+                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(category.getCategory_name());
+                boolean isEof = cursor.moveToFirst();
+                ArrayList<ContentsBean> contentsList = new ArrayList<>();
+                while (isEof) {
+                    ContentsBean contents = new ContentsBean();
+                    contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                    contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
+                    contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
+                    contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
+                    contentsList.add(contents);
+                    isEof = cursor.moveToNext();
+                }
+                result.put(category.getCategory_name(), contentsList);
+                cursor.close();
             }
-            cursor.close();
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
@@ -413,14 +416,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         try {
             new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
 
-            // TODO : 面倒なので後で関数にする
-            for (ContentsBean contents : mContentsList) {
-                if (String.valueOf(contents.getId()).equals(mRowId)) {
-                    mContentsList.remove(contents);
-                    break;
-                }
-            }
-
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
 
@@ -450,28 +445,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public Fragment getItem(int position) {
             Log.d(TAG, "SectionsPagerAdapter getItem Start");
 
-            ArrayList<ContentsBean> currentPageContentsList = getCurrentPageContentsList(position);
-
             Log.d(TAG, "SectionsPagerAdapter getItem End");
-            return MainActivityFragment.newInstance(position, mCategoryList.get(position).getCategory_name(), currentPageContentsList);
-        }
-
-        /**
-         * 現在のページのコンテンツを返却する
-         * @param position int
-         * @return
-         */
-        ArrayList<ContentsBean> getCurrentPageContentsList (int position) {
-            String title = mCategoryList.get(position).getCategory_name();
-            ArrayList<ContentsBean> result = new ArrayList<>();
-
-            // TODO : 面倒なので後で関数にする
-            for (ContentsBean contents : mContentsList) {
-                if (title.equals(contents.getCategory_name())) {
-                    result.add(contents);
-                }
-            }
-            return result;
+            return MainActivityFragment.newInstance(position, mCategoryList.get(position).getCategory_name());
         }
 
         /**
@@ -510,7 +485,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
 
     }
-
 
 
     @Override
@@ -639,8 +613,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         navigationView.setNavigationItemSelectedListener(this);
         Log.d(TAG, "setNavigationDrawerList End");
     }
-
-    
 
 
 	/**

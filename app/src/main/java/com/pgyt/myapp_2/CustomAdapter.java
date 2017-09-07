@@ -13,12 +13,10 @@ import android.widget.TextView;
 import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
-    private String title;
+    private String mTitle;
 
     private ArrayList<ContentsBean> mItemList;
 
@@ -36,7 +34,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(Context context, String title, ArrayList<ContentsBean> itemList) {
-        this.title = title;
+        this.mTitle = title;
         this.mItemList = itemList;
         this.layoutInflater = LayoutInflater.from(context);
     }
@@ -94,7 +92,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRowId.setText(String.valueOf(mItemList.get(position).getId()));
 
         // クリップボートタブとそれ以外の描画を分ける
-        if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.title)) {
+        if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
             holder.mContentsTitle.setVisibility(View.GONE);
             holder.mContents.setVisibility(View.VISIBLE);
             holder.mRowSetting.setVisibility(View.GONE);

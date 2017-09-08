@@ -59,8 +59,8 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 return true;
 
             case R.id.menu_delete:
-                CustomDialogFragment newFragment = CustomDialogFragment.newInstance("title", "this is message");
-                newFragment.setDialogListener(new CustomDialogFragment.DialogListener() {
+                CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete", "realy?", null, null, "0");
+                newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
                     @Override
                     public void onPositiveClick() {
                         bottomClickListener.onBottomClick(true, mode);

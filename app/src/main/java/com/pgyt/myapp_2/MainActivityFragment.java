@@ -244,84 +244,57 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onOptionsItemSelected getItemPosition End");
         return super.onOptionsItemSelected(item);
     }
+	
+	private void categoryInsertEvent() {
+		CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Categry", "realy?", null, null, "1");
+		newFragment.setEditDialogListener(new CustomDialogFragment.EditDialogListener() {
+				@Override
+				public void onPositiveClick(EditText text) {
+					//bottomClickListener.onBottomClick(true, mode);   Log.d(TAG, "contentsInsertEvent Click OK");
 
-    /**
-     * カテゴリ追加のダイアログイベント
-     */
-    private void categoryInsertEvent() {
-        Log.d(TAG, "categoryInsertEvent Start");
+					// 値が入力されていない場合は何もしない
+					if (TextUtils.isEmpty(text.getText())) {
+						Snackbar.make(getActivity().findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
+						return;
+					}
 
-        final EditText editView = new EditText(getContext());
+					SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
+					try {
+						CategoryBean category = new CategoryBean();
+						category.setCategory_name(text.getText().toString());
+						int id = (int) new DBHelper(sqLiteDatabase).insertCategory(category);
 
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(getContext(), R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.add_category);
-        dialog.setView(editView);
+						// 新規タブ追加
+						category.setId(id);
+						mCategoryList.add(category);
 
-        // OKボタン押下時
-        dialog.setPositiveButton(BUTTOM_POSITIVE, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+						mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+						mViewPager.getAdapter().notifyDataSetChanged();
+						mDrawerAdapter.addAll();
 
-                Log.d(TAG, "categoryInsertEvent Click OK");
-
-                // 値が入力されていない場合は何もしない
-                if (TextUtils.isEmpty(editView.getText())) {
-                    Snackbar.make(getActivity().findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-
-                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
-                try {
-                    CategoryBean category = new CategoryBean();
-                    category.setCategory_name(editView.getText().toString());
-                    int id = (int) new DBHelper(sqLiteDatabase).insertCategory(category);
-
-                    // 新規タブ追加
-                    category.setId(id);
-                    mCategoryList.add(category);
-
-                    mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-                    mViewPager.getAdapter().notifyDataSetChanged();
-                    mDrawerAdapter.addAll();
-
-                    mDrawerAdapter.notifyDataSetChanged();
-                    mViewPager.setCurrentItem(mCategoryList.size() - 1);
+						mDrawerAdapter.notifyDataSetChanged();
+						mViewPager.setCurrentItem(mCategoryList.size() - 1);
 
 
-                    Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
+						Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+					} catch (Exception e) {
+						Log.e(TAG, e.getMessage());
 
-                } finally {
-                    sqLiteDatabase.close();
-                }
-				
+					} finally {
+						sqLiteDatabase.close();
+					}
+					
+				}
 
-                //mAdapter.notifyDataSetChanged();
+				@Override
+				public void onNegativeClick(EditText text) {
+					//bottomClickListener.onBottomClick(false, mode);
+				}
+			});
+		newFragment.show(getFragmentManager(), "categoryInsertEvent");
 
-//                // ナビゲーションドロワーの更新
-//
-//                // フラグメントの初期化
-//                initFragmentView();
-//
-//                // 追加したページを開く
-//                mViewPager = (ViewPager) findViewById(R.id.pager);
-//                mViewPager.setCurrentItem(mCategoryList.size() - 1);
-            }
-        });
-        // Cancelボタン押下時
-        dialog.setNegativeButton(BUTTOM_NEGATIVE, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                Log.d(TAG, "categoryInsertEvent Click cancel");
-
-            }
-        });
-
-        dialog.show();
-        Log.d(TAG, "categoryInsertEvent End");
-    }
+	}
 
     /**
      * コンテンツ追加のダイアログイベント

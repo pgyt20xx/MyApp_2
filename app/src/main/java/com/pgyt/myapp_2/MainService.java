@@ -9,7 +9,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.IBinder;
@@ -20,9 +19,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 
 public class MainService extends Service {

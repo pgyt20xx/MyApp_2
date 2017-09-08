@@ -16,21 +16,14 @@ import java.util.ArrayList;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
-    private String mTitle;
-
-    private ArrayList<ContentsBean> mItemList;
-
-    private LayoutInflater layoutInflater;
-
-    private OnItemClickListener itemClickListener;
-
-    private OnImageItemClickListener imageItemClickListener;
-
-    private OnItemLongClickListener itemLongClickListener;
-
     private static final String TAG = "CustomAdapter";
-
     private static final String BLANK_STRING = "";
+    private String mTitle;
+    private ArrayList<ContentsBean> mItemList;
+    private LayoutInflater layoutInflater;
+    private OnItemClickListener itemClickListener;
+    private OnImageItemClickListener imageItemClickListener;
+    private OnItemLongClickListener itemLongClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(Context context, String title, ArrayList<ContentsBean> itemList) {

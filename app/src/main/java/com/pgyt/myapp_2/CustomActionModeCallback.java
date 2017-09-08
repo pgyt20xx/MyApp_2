@@ -2,20 +2,12 @@ package com.pgyt.myapp_2;
 
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.*;
-import android.support.v7.widget.*;
-import android.view.Display.*;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
@@ -53,12 +45,13 @@ public class CustomActionModeCallback implements ActionMode.Callback {
         switch (item.getItemId()) {
 
             case R.id.menu_edit:
-
+                // 変種ボタン押下
                 mode.finish();
 
                 return true;
 
             case R.id.menu_delete:
+                // 削除ボタン押下
                 CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete", "realy?", null, null, "0");
                 newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
                     @Override
@@ -76,6 +69,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 return true;
 
             case R.id.menu_share:
+                // 共有ボタン押下
                 mode.finish();
 
                 return true;

@@ -62,7 +62,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         // create a new view
         View view = layoutInflater
-                .inflate(R.layout.text_view, parent, false);
+                .inflate(R.layout.recycler_view, parent, false);
 
         Log.d(TAG, "onCreateViewHolder End");
 

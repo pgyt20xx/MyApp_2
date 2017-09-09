@@ -117,10 +117,10 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // リサイクルビューのアダプター設定
-		ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
-		if(dataAdaperList == null) {
-			dataAdaperList = new ArrayList<>();
-		}
+        ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
+        if (dataAdaperList == null) {
+            dataAdaperList = new ArrayList<>();
+        }
         mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName, dataAdaperList);
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
@@ -168,9 +168,9 @@ public class MainActivityFragment extends Fragment {
 
                 // ダイアログのボタン押下
                 getActivity().startActionMode(mActionModeCallback);
-                mActionModeCallback.setOnBottomClickListener(new CustomActionModeCallback.OnBottomClickListener() {
+                mActionModeCallback.setOnButtonClickListener(new CustomActionModeCallback.OnButtonClickListener() {
                     @Override
-                    public void onBottomClick(boolean bool, ActionMode mode) {
+                    public void onButtonClick(boolean bool, ActionMode mode) {
                         if (bool) {
                             // データ削除
                             contentsDelete((TextView) getActivity().findViewById(R.id.row_id));
@@ -205,7 +205,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * カテゴリー追加のダイアログイベント
-	 * TODO:追加時にカスタムアダプターも更新必要？
+     * TODO:追加時にカスタムアダプターも更新必要？
      */
     private void categoryInsertEvent() {
         Log.d(TAG, "categoryInsertEvent Start");
@@ -359,9 +359,9 @@ public class MainActivityFragment extends Fragment {
                     mContentsListMap.get(mCategoryList.get(page).getCategory_name()).add(0, contents);
 
                     // リサイクルビューに通知
-				   getCurrentRecyclerView(page).getAdapter().notifyItemInserted(0);
-				   getCurrentRecyclerView(page).scrollToPosition(0);
-				 
+                    getCurrentRecyclerView(page).getAdapter().notifyItemInserted(0);
+                    getCurrentRecyclerView(page).scrollToPosition(0);
+
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -444,9 +444,9 @@ public class MainActivityFragment extends Fragment {
                     // デフォルトカテゴリを設定
                     mCategoryList = categoryList;
                     cursor.close();
-					
-					// データの変更を通知
-					mViewPager.getAdapter().notifyDataSetChanged();
+
+                    // データの変更を通知
+                    mViewPager.getAdapter().notifyDataSetChanged();
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -467,11 +467,11 @@ public class MainActivityFragment extends Fragment {
 
         Log.d(TAG, "deleteAllEvent End");
     }
-	
-	private RecyclerView getCurrentRecyclerView(int page) {
-		View v = getFragmentManager().getFragments().get(page).getView();
-		return (RecyclerView)v.findViewById(R.id.recyclerView);
-	}
+
+    private RecyclerView getCurrentRecyclerView(int page) {
+        View v = getFragmentManager().getFragments().get(page).getView();
+        return (RecyclerView) v.findViewById(R.id.recyclerView);
+    }
 
     /**
      * クリップボードコピー

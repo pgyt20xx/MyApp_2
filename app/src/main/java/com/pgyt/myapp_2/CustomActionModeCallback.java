@@ -2,22 +2,28 @@ package com.pgyt.myapp_2;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
     private final String TAG = "ActionModeCallback";
     private Context context;
     private FragmentManager mFragmentManager;
+    private View view;
 
-    private OnBottomClickListener bottomClickListener;
+    private OnButtonClickListener buttonClickListener;
+    private OnEditClickListener editClickListener;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
+        this.view = view;
         this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
 
@@ -45,7 +51,19 @@ public class CustomActionModeCallback implements ActionMode.Callback {
         switch (item.getItemId()) {
 
             case R.id.menu_edit:
-                // 変種ボタン押下
+                // 情報取得
+                TextView contentsId = (TextView) view.findViewById(R.id.row_id);
+                TextView contentsTitle = (TextView) view.findViewById(R.id.text_contents_title);
+                TextView contents = (TextView) view.findViewById(R.id.text_contents);
+                Intent intent = new Intent(context, EditContentsActivity.class);
+
+                // 情報受け渡し
+                intent.putExtra("contentsId", contentsId.getText().toString());
+                intent.putExtra("contentsTitle", contentsTitle.getText().toString().toString());
+                intent.putExtra("contents", contents.getText().toString());
+
+                // 編集画面起動
+                context.startActivity(intent);
                 mode.finish();
 
                 return true;
@@ -56,12 +74,12 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
                     @Override
                     public void onPositiveClick() {
-                        bottomClickListener.onBottomClick(true, mode);
+                        buttonClickListener.onButtonClick(true, mode);
                     }
 
                     @Override
                     public void onNegativeClick() {
-                        bottomClickListener.onBottomClick(false, mode);
+                        buttonClickListener.onButtonClick(false, mode);
                     }
                 });
 
@@ -89,8 +107,15 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     /**
      * イメージクリックのインターフェース
      */
-    interface OnBottomClickListener {
-        void onBottomClick(boolean bool, ActionMode mode);
+    interface OnButtonClickListener {
+        void onButtonClick(boolean bool, ActionMode mode);
+    }
+
+    /**
+     * 編集クリック
+     */
+    interface OnEditClickListener {
+        void EditClick();
     }
 
     /**
@@ -98,7 +123,15 @@ public class CustomActionModeCallback implements ActionMode.Callback {
      *
      * @param listener OnImageItemClickListener
      */
-    void setOnBottomClickListener(OnBottomClickListener listener) {
-        this.bottomClickListener = listener;
+    void setOnButtonClickListener(OnButtonClickListener listener) {
+        this.buttonClickListener = listener;
+    }
+
+    /**
+     * 編集クリックイベントのリスナーセット
+     * @param listener OnEditClickListener
+     */
+    void setOnEditClickListener(OnEditClickListener listener) {
+        this.editClickListener = listener;
     }
 }

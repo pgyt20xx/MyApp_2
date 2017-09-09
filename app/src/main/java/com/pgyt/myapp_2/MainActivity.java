@@ -282,9 +282,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        Log.d(TAG, "onPageScrolled Start");
 
-        Log.d(TAG, "onPageScrolled End");
+        Log.d(TAG, "onPageScrolled position: " + position + "  positionOffset: " + positionOffset + "positionOffsetPixels: " + positionOffsetPixels);
     }
 
     @Override
@@ -292,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "onPageSelected Start");
 
         this.fragmentPosition = position;
+        Log.d(TAG, "onPageSelected " + position);
 
         Log.d(TAG, "onPageSelected End");
     }
@@ -338,9 +338,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public Fragment getItem(int position) {
-            Log.d(TAG, "SectionsPagerAdapter getItem Start");
 
-            Log.d(TAG, "SectionsPagerAdapter getItem End");
+            Log.d(TAG, "SectionsPagerAdapter getItem " + position);
             return MainActivityFragment.newInstance(position, mCategoryList.get(position).getCategory_name());
         }
 
@@ -352,9 +351,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public CharSequence getPageTitle(int position) {
-            Log.d(TAG, "SectionsPagerAdapter getTitle Start");
 
-            Log.d(TAG, "SectionsPagerAdapter getTitle End");
+            Log.d(TAG, "SectionsPagerAdapter getTitle " + position);
             return mCategoryList.get(position).getCategory_name();
         }
 

@@ -338,27 +338,24 @@ public class MainActivityFragment extends Fragment {
 
                 // 現在のフラグメントのpositionを取得
                 //mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-                int position = mViewPager.getCurrentItem();
+                int page = mViewPager.getCurrentItem();
 
                 // コンテンツ登録
                 SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                 try {
                     ContentsBean contents = new ContentsBean();
-                    contents.setCategory_name(mCategoryList.get(position).getCategory_name());
+                    contents.setCategory_name(mCategoryList.get(page).getCategory_name());
                     contents.setContents_title(contentsTitle.getText().toString());
                     contents.setContents(contentsText.getText().toString());
                     int id = (int) new DBHelper(sqLiteDatabase).insertContents(contents);
 
                     // 1行目に追加する
                     contents.setId(id);
-                    MainActivity.mContentsListMap.get(mCategoryList.get(position).getCategory_name()).add(0, contents);
+                    MainActivity.mContentsListMap.get(mCategoryList.get(page).getCategory_name()).add(0, contents);
 
                     // リサイクルビューに通知
-					// TODO:現在のアダプターを返すメソッド
-					// 追加行にフォーカス
-				   View v = getFragmentManager().getFragments().get(position).getView();
-				   RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
-				   recyclerView.getAdapter().notifyItemInserted(0);
+				   getCurrentRecyclerView(page).getAdapter().notifyItemInserted(0);
+				   getCurrentRecyclerView(page).scrollToPosition(0);
 				 
 
                 } catch (Exception e) {
@@ -427,7 +424,7 @@ public class MainActivityFragment extends Fragment {
                     MainActivity.mContentsListMap.clear();
 					
 					// データが削除されたことを通知
-                    mRecyclerAdapter.notifyDataSetChanged();
+                    // mRecyclerAdapter.notifyDataSetChanged();
 
                     // デフォルトカテゴリを取得
                     ArrayList<CategoryBean> categoryList = new ArrayList<>();
@@ -446,7 +443,7 @@ public class MainActivityFragment extends Fragment {
                     cursor.close();
 					
 					// データの変更を通知
-					mViewPager.getAdapter().notifyDataSetChanged();
+					// mViewPager.getAdapter().notifyDataSetChanged();
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -466,6 +463,11 @@ public class MainActivityFragment extends Fragment {
 
         Log.d(TAG, "deleteAllEvent End");
     }
+	
+	private RecyclerView getCurrentRecyclerView(int page) {
+		View v = getFragmentManager().getFragments().get(page).getView();
+		return (RecyclerView)v.findViewById(R.id.recyclerView);
+	}
 
     /**
      * クリップボードコピー

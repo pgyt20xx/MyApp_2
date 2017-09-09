@@ -103,11 +103,6 @@ public class MainActivityFragment extends Fragment {
         // ページャー取得
         this.mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
 
-        if (MainActivity.mContentsListMap.get(mCategoryName) == null) {
-            Log.d(TAG, "onCreateView End contentsList == null");
-            return view;
-        }
-
         // ナビゲーションドロワーリスト設定
         setDrawerList();
 
@@ -118,7 +113,11 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // リサイクルビューのアダプター設定
-        mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName, MainActivity.mContentsListMap.get(mCategoryName));
+		ArrayList<ContentsBean> dataAdaperList = MainActivity.mContentsListMap.get(mCategoryName);
+		if(dataAdaperList == null) {
+			dataAdaperList = new ArrayList<>();
+		}
+        mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName, dataAdaperList);
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
         // 行のクリックイベント
@@ -338,7 +337,7 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 // 現在のフラグメントのpositionを取得
-                mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                //mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
                 int position = mViewPager.getCurrentItem();
 
                 // コンテンツ登録
@@ -355,7 +354,12 @@ public class MainActivityFragment extends Fragment {
                     MainActivity.mContentsListMap.get(mCategoryList.get(position).getCategory_name()).add(0, contents);
 
                     // リサイクルビューに通知
-                    mRecyclerAdapter.notifyItemInserted(0);
+					// TODO:現在のアダプターを返すメソッド
+					// 追加行にフォーカス
+				   View v = getFragmentManager().getFragments().get(position).getView();
+				   RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
+				   recyclerView.getAdapter().notifyItemInserted(0);
+				 
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -421,6 +425,9 @@ public class MainActivityFragment extends Fragment {
                     // データをクリア
                     MainActivity.mCategoryList.clear();
                     MainActivity.mContentsListMap.clear();
+					
+					// データが削除されたことを通知
+                    mRecyclerAdapter.notifyDataSetChanged();
 
                     // デフォルトカテゴリを取得
                     ArrayList<CategoryBean> categoryList = new ArrayList<>();
@@ -437,11 +444,9 @@ public class MainActivityFragment extends Fragment {
                     // デフォルトカテゴリを設定
                     MainActivity.mCategoryList = categoryList;
                     cursor.close();
-
-                    // データが削除されたことを通知
-                    mViewPager.getAdapter().notifyDataSetChanged();
-                    mRecyclerAdapter.notifyDataSetChanged();
-
+					
+					// データの変更を通知
+					mViewPager.getAdapter().notifyDataSetChanged();
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());

@@ -415,9 +415,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          */
         @Override
         public int getCount() {
-            Log.d(TAG, "SectionsPagerAdapter getCount Start");
 
-            Log.d(TAG, "SectionsPagerAdapter getCount End");
+            Log.d(TAG, "SectionsPagerAdapter getCount " + mCategoryList.size());
             return mCategoryList.size();
         }
 

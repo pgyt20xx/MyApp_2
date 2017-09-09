@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
+import java.util.*;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -203,6 +204,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * カテゴリー追加のダイアログイベント
+	 * TODO:追加時にカスタムアダプターも更新必要？
      */
     private void categoryInsertEvent() {
         Log.d(TAG, "categoryInsertEvent Start");
@@ -407,10 +409,10 @@ public class MainActivityFragment extends Fragment {
     private void deletetAllEvent() {
         Log.d(TAG, "deleteAllEvent Start");
 
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Categry", "realy?", null, null, "");
-        newFragment.setEditDialogListener1(new CustomDialogFragment.EditDialogListener1() {
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete All", "realy?", null, null, "0");
+        newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
             @Override
-            public void onPositiveClick(EditText text) {
+            public void onPositiveClick() {
                 Log.d(TAG, "deleteAllEvent Click Positive");
 
                 // 全データ削除
@@ -420,15 +422,15 @@ public class MainActivityFragment extends Fragment {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
 
                     // データをクリア
-                    MainActivity.mCategoryList.clear();
-                    MainActivity.mContentsListMap.clear();
+                    MainActivity.mCategoryList = new ArrayList<>();
+                    MainActivity.mContentsListMap = new LinkedHashMap<>();
 					
 					// データが削除されたことを通知
                     // mRecyclerAdapter.notifyDataSetChanged();
 
                     // デフォルトカテゴリを取得
                     ArrayList<CategoryBean> categoryList = new ArrayList<>();
-                    Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(text.getText().toString());
+                    Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(MainActivity.CLIPBOARD_TAB_NAME);
                     boolean isEof = cursor.moveToFirst();
                     while (isEof) {
                         CategoryBean category = new CategoryBean();
@@ -443,7 +445,7 @@ public class MainActivityFragment extends Fragment {
                     cursor.close();
 					
 					// データの変更を通知
-					// mViewPager.getAdapter().notifyDataSetChanged();
+					mViewPager.getAdapter().notifyDataSetChanged();
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
@@ -455,7 +457,7 @@ public class MainActivityFragment extends Fragment {
             }
 
             @Override
-            public void onNegativeClick(EditText text) {
+            public void onNegativeClick() {
                 Log.d(TAG, "deleteAllEvent Click Negative");
             }
         });

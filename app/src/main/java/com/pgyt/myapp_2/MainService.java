@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.IBinder;
@@ -19,6 +20,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.ContentsBean;
+
+import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
 
 public class MainService extends Service {
@@ -85,13 +89,23 @@ public class MainService extends Service {
 
             if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
                 ClipData data = mClipboardManager.getPrimaryClip();
+
+                // データチェック
+                if (data == null) {
+                    return;
+                }
+
                 ClipData.Item item = data.getItemAt(0);
+                if (item == null) {
+                    return;
+                }
 
                 // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
                 if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
 
+                // 2週目チェック用の変数
                 mPreviousText = item.getText().toString();
 
                 // 通知バーの更新
@@ -117,23 +131,24 @@ public class MainService extends Service {
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         try {
             // 既にあるコンテンツは登録しない
-            for (ContentsBean contents : MainActivity.mContentsListMap.get(CLIP_BOARD_TITLE_NAME)) {
-                if (contents.getContents().equals(item.getText().toString())) {
-                    return;
-                }
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(item.getText().toString());
+            int cnt = cursor.getCount();
+            cursor.close();
+            if (cnt > 0) {
+                return;
             }
 
             // コンテンツの登録
             Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean contents = new ContentsBean();
-            contents.setCategory_name(MainActivity.CLIPBOARD_TAB_NAME);
+            contents.setCategory_name(CLIPBOARD_TAB_NAME);
             contents.setContents_title(CLIP_BOARD_TITLE_NAME);
             contents.setContents(item.getText().toString());
             int id = (int) new DBHelper(sqLiteDatabase).insertContents(contents);
 
             // 1行目に追加
             contents.setId(id);
-            MainActivity.mContentsListMap.get(CLIP_BOARD_TITLE_NAME).add(0, contents);
+            mContentsListMap.get(CLIP_BOARD_TITLE_NAME).add(0, contents);
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());

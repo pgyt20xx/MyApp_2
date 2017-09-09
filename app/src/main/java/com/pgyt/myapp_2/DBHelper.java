@@ -19,7 +19,7 @@ class DBHelper {
     }
 
     /**
-     * カテゴリーテーブルのインサート文
+     * カテゴリを登録する。
      *
      * @param params CategoryBean
      */
@@ -29,7 +29,7 @@ class DBHelper {
     }
 
     /**
-     * コンテンツテーブルのインサート文
+     * コンテンツを登録する。
      *
      * @param params ContentsBean
      */
@@ -40,7 +40,7 @@ class DBHelper {
 
 
     /**
-     * カテゴリーテーブルのセレクト文
+     * カテゴリーを取得する。
      *
      * @param param String
      * @return Cursor
@@ -58,7 +58,7 @@ class DBHelper {
     }
 
     /**
-     * 全テーブルの削除
+     * 全テーブルのデータを削除する。
      */
     void deletetAll() {
         sqLiteDatabase.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
@@ -66,7 +66,7 @@ class DBHelper {
     }
 
     /**
-     * カテゴリーテーブルの削除
+     * カテゴリ名を指定してカテゴリを削除する。
      * 紐づくコンテンツテーブルの削除も行う。
      *
      * @param param String
@@ -77,7 +77,7 @@ class DBHelper {
     }
 
     /**
-     * コンテンツテーブルの削除
+     * IDを指定してコンテンツを削除する。
      *
      * @param param String
      */
@@ -86,7 +86,17 @@ class DBHelper {
     }
 
     /**
-     * コンテンツテーブルの内容をすべて取得するのセレクト文
+     * コンテンツを全件取得する。
+     *
+     * @return Cursor
+     */
+    Cursor selectAllContents() {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
+        return sqLiteDatabase.rawQuery(sql, null);
+    }
+
+    /**
+     * カテゴリ名を指定してコンテンツを取得する。
      *
      * @return Cursor
      */
@@ -96,13 +106,13 @@ class DBHelper {
     }
 
     /**
-     * コンテンツテーブルを取得するのセレクト文
+     * 指定したコンテンツを取得する。
      *
      * @return Cursor
      */
-    Cursor selectAllContents() {
-        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
-        return sqLiteDatabase.rawQuery(sql, null);
+    Cursor selectContents(String param) {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE contents = ? ORDER BY category_name ASC, id DESC;";
+        return sqLiteDatabase.rawQuery(sql, new String[]{param});
     }
 
 //    /**

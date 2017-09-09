@@ -36,7 +36,11 @@ import com.pgyt.myapp_2.model.ContentsBean;
 import java.util.ArrayList;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
+import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
+
 import java.util.*;
 
 /**
@@ -114,7 +118,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
         // リサイクルビューのアダプター設定
-		ArrayList<ContentsBean> dataAdaperList = MainActivity.mContentsListMap.get(mCategoryName);
+		ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
 		if(dataAdaperList == null) {
 			dataAdaperList = new ArrayList<>();
 		}
@@ -174,15 +178,15 @@ public class MainActivityFragment extends Fragment {
 
                             // 対象のカテゴリ取得
                             int page = mViewPager.getCurrentItem();
-                            String categoryName = MainActivity.mCategoryList.get(page).getCategory_name();
+                            String categoryName = mCategoryList.get(page).getCategory_name();
 
                             // 変数から削除
-                            ContentsBean removeContents = MainActivity.mContentsListMap.get(categoryName).get(position);
-                            MainActivity.mContentsListMap.get(categoryName).remove(removeContents);
+                            ContentsBean removeContents = mContentsListMap.get(categoryName).get(position);
+                            mContentsListMap.get(categoryName).remove(removeContents);
 
                             // リサイクルビューに通知
                             mRecyclerAdapter.notifyItemRemoved(position);
-                            mRecyclerAdapter.notifyItemRangeChanged(position, MainActivity.mContentsListMap.get(categoryName).size());
+                            mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
 
                             Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete Success", Snackbar.LENGTH_SHORT).show();
 
@@ -244,6 +248,9 @@ public class MainActivityFragment extends Fragment {
                     category.setId(id);
                     mCategoryList.add(category);
 
+                    // 新規コンテンツのリストを作成する。
+                    mContentsListMap.put(category.getCategory_name(), new ArrayList<ContentsBean>());
+
                     // ページャーに変更を通知
                     mViewPager.getAdapter().notifyDataSetChanged();
                     mViewPager.setCurrentItem(mCategoryList.size() - 1);
@@ -285,7 +292,7 @@ public class MainActivityFragment extends Fragment {
                 int position = mViewPager.getCurrentItem();
 
                 // デフォルトタブでなければ削除
-                if (position == MainActivity.CLIPBOARD_TAB_POSITON) {
+                if (position == CLIPBOARD_TAB_POSITON) {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
@@ -339,7 +346,6 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 // 現在のフラグメントのpositionを取得
-                //mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
                 int page = mViewPager.getCurrentItem();
 
                 // コンテンツ登録
@@ -353,7 +359,7 @@ public class MainActivityFragment extends Fragment {
 
                     // 1行目に追加する
                     contents.setId(id);
-                    MainActivity.mContentsListMap.get(mCategoryList.get(page).getCategory_name()).add(0, contents);
+                    mContentsListMap.get(mCategoryList.get(page).getCategory_name()).add(0, contents);
 
                     // リサイクルビューに通知
 				   getCurrentRecyclerView(page).getAdapter().notifyItemInserted(0);
@@ -422,15 +428,12 @@ public class MainActivityFragment extends Fragment {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
 
                     // データをクリア
-                    MainActivity.mCategoryList = new ArrayList<>();
-                    MainActivity.mContentsListMap = new LinkedHashMap<>();
-					
-					// データが削除されたことを通知
-                    // mRecyclerAdapter.notifyDataSetChanged();
+                    mCategoryList = new ArrayList<>();
+                    mContentsListMap = new LinkedHashMap<>();
 
                     // デフォルトカテゴリを取得
                     ArrayList<CategoryBean> categoryList = new ArrayList<>();
-                    Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(MainActivity.CLIPBOARD_TAB_NAME);
+                    Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(CLIPBOARD_TAB_NAME);
                     boolean isEof = cursor.moveToFirst();
                     while (isEof) {
                         CategoryBean category = new CategoryBean();
@@ -441,7 +444,7 @@ public class MainActivityFragment extends Fragment {
                     }
 
                     // デフォルトカテゴリを設定
-                    MainActivity.mCategoryList = categoryList;
+                    mCategoryList = categoryList;
                     cursor.close();
 					
 					// データの変更を通知

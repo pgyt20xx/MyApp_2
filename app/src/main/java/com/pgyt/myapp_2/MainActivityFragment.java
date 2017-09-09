@@ -34,14 +34,13 @@ import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
-
-import java.util.*;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -188,8 +187,6 @@ public class MainActivityFragment extends Fragment {
                             mRecyclerAdapter.notifyItemRemoved(position);
                             mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
 
-                            Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete Success", Snackbar.LENGTH_SHORT).show();
-
                         }
 
                         mode.finish();
@@ -255,10 +252,10 @@ public class MainActivityFragment extends Fragment {
                     mViewPager.getAdapter().notifyDataSetChanged();
                     mViewPager.setCurrentItem(mCategoryList.size() - 1);
 
-                    Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
+                    Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration ERROR", Snackbar.LENGTH_SHORT).show();
 
                 } finally {
                     sqLiteDatabase.close();
@@ -307,10 +304,10 @@ public class MainActivityFragment extends Fragment {
                         // ページャーに変更を通知
                         mViewPager.getAdapter().notifyDataSetChanged();
 
-                        Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete Success", Snackbar.LENGTH_SHORT).show();
 
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
+                        Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete ERROR", Snackbar.LENGTH_SHORT).show();
 
                     } finally {
                         sqLiteDatabase.close();
@@ -373,13 +370,13 @@ public class MainActivityFragment extends Fragment {
                     sqLiteDatabase.close();
                 }
 
-                Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration Success", Snackbar.LENGTH_SHORT).show();
-
             }
 
             @Override
             public void onNegativeClick(EditText contentsTitle, EditText contentsText) {
                 Log.d(TAG, "contentsInsertEvent Click Negative");
+                Snackbar.make(getActivity().findViewById(R.id.activity_main), "Registration ERROR", Snackbar.LENGTH_SHORT).show();
+
             }
         });
 
@@ -400,6 +397,7 @@ public class MainActivityFragment extends Fragment {
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
+            Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete ERROR", Snackbar.LENGTH_SHORT).show();
 
         } finally {
             sqLiteDatabase.close();
@@ -452,6 +450,7 @@ public class MainActivityFragment extends Fragment {
 
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
+                    Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete All data ERROR", Snackbar.LENGTH_SHORT).show();
 
                 } finally {
                     sqLiteDatabase.close();

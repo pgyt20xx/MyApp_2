@@ -1,6 +1,5 @@
 package com.pgyt.myapp_2;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,7 +14,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -200,53 +197,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         Log.d(TAG, "getAllContents End");
         return result;
-    }
-
-
-    /**
-     * 全データ削除ダイアログイベント
-     */
-    private void deletetAllEvent() {
-        Log.d(TAG, "deleteAllEvent Start");
-
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
-        dialog.setTitle(R.string.menu_delete_all);
-
-        // OKボタン押下時
-        dialog.setPositiveButton(BUTTOM_POSITIVE, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d(TAG, "deleteAllEvent Click OK");
-
-                // 全データ削除
-                SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getBaseContext()).getWritableDatabase();
-                try {
-                    new DBHelper(sqLiteDatabase).deletetAll();
-                    initAllData();
-                    Snackbar.make(findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
-
-                } catch (Exception e) {
-                    Log.d(TAG, e.getMessage());
-
-                } finally {
-                    sqLiteDatabase.close();
-                }
-                // フラグメントの初期化
-                initFragmentView();
-
-            }
-        });
-        // Cancelボタン押下時
-        dialog.setNegativeButton(BUTTOM_NEGATIVE, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichButton) {
-                Log.d(TAG, "deleteAllEvent Click cancel");
-
-            }
-        });
-
-        dialog.show();
-        Log.d(TAG, "deleteAllEvent Click End");
     }
 
     /**

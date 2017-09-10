@@ -96,7 +96,7 @@ public class MainService extends Service {
                 }
 
                 ClipData.Item item = data.getItemAt(0);
-                if (item == null) {
+                if (item == null || item.getText() == null) {
                     return;
                 }
 
@@ -148,7 +148,7 @@ public class MainService extends Service {
 
             // 1行目に追加
             contents.setId(id);
-            mContentsListMap.get(CLIP_BOARD_TITLE_NAME).add(0, contents);
+            mContentsListMap.get(CLIPBOARD_TAB_NAME).add(0, contents);
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());

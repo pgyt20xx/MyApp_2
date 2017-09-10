@@ -31,7 +31,7 @@ public class EditContentsFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.contents_edit_view, container, false);
-        TextView title = (TextView) view.findViewById(R.id.text_contents_title);
+        TextView title = (TextView) view.findViewById(R.id.edit_contents_title);
         title.setText(contentsTitle);
 
         return view;

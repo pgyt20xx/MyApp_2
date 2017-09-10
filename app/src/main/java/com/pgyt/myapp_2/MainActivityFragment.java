@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -249,9 +252,10 @@ public class MainActivityFragment extends Fragment {
                     mContentsListMap.put(category.getCategory_name(), new ArrayList<ContentsBean>());
 
                     // ページャーに変更を通知
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     mViewPager.getAdapter().notifyDataSetChanged();
                     mViewPager.setCurrentItem(mCategoryList.size() - 1);
-
+                    fragmentTransaction.commit();
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -359,8 +363,8 @@ public class MainActivityFragment extends Fragment {
                     mContentsListMap.get(mCategoryList.get(page).getCategory_name()).add(0, contents);
 
                     // リサイクルビューに通知
-                    getCurrentRecyclerView(page).getAdapter().notifyItemInserted(0);
-                    getCurrentRecyclerView(page).scrollToPosition(0);
+                    getCurrentRecyclerView().getAdapter().notifyItemInserted(0);
+                    getCurrentRecyclerView().scrollToPosition(0);
 
 
                 } catch (Exception e) {
@@ -468,9 +472,14 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "deleteAllEvent End");
     }
 
-    private RecyclerView getCurrentRecyclerView(int page) {
-        View v = getFragmentManager().getFragments().get(page).getView();
-        return (RecyclerView) v.findViewById(R.id.recyclerView);
+    /**
+     * 現在表示されているリサイクルビューを返す
+     * @return
+     */
+    private RecyclerView getCurrentRecyclerView() {
+        FragmentPagerAdapter sectionPagerAdapter = (FragmentPagerAdapter) mViewPager.getAdapter();
+        MainActivityFragment fragment = (MainActivityFragment) sectionPagerAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        return (RecyclerView) fragment.getView().findViewById(R.id.recyclerView);
     }
 
     /**

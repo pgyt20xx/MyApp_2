@@ -1,5 +1,6 @@
 package com.pgyt.myapp_2;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -36,6 +37,18 @@ class DBHelper {
     long insertContents(ContentsBean params) {
         long id = this.sqLiteDatabase.insert(TABLE_NAME_CONTENTS, BLANK_STRING, params.getParams());
         return id;
+    }
+
+    /**
+     * コンテンツを更新する。
+     *
+     * @param param ContentsBean
+     */
+    int updateContents(ContentsBean param) {
+        ContentValues cv = new ContentValues();
+        cv.put("contents", param.getContents());
+        int cnt = sqLiteDatabase.update(TABLE_NAME_CONTENTS, cv, "id = ?", new String[]{String.valueOf(param.getId())});
+        return cnt;
     }
 
 

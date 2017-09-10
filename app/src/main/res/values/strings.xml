@@ -26,5 +26,6 @@
     <!-- exc -->
     <string name="buttom_positive">Ok</string>
     <string name="buttom_negative">Cancel</string>
+    <string name="edit_contents_hint">Edit Contents Area</string>
 
 </resources>

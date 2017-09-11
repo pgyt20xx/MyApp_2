@@ -1,16 +1,10 @@
 package com.pgyt.myapp_2;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
+import android.content.*;
+import android.support.v4.app.*;
+import android.view.*;
+import android.widget.*;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
@@ -63,7 +57,8 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 intent.putExtra("contents", contents.getText().toString());
 
                 // 編集画面起動
-                context.startActivity(intent);
+                //context.startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_CONTENTS);
+				context.startActivity(intent);
                 mode.finish();
 
                 return true;

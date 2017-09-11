@@ -1,11 +1,12 @@
 package com.pgyt.myapp_2;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.content.*;
+import android.os.*;
+import android.support.v7.app.*;
+import android.view.*;
+import com.pgyt.myapp_2.model.*;
 
-public class EditContentsActivity extends AppCompatActivity {
+public class EditContentsActivity extends AppCompatActivity implements EditContentsFragment.OnFragmentInteractionListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,4 +21,10 @@ public class EditContentsActivity extends AppCompatActivity {
                 .replace(android.R.id.content, new EditContentsFragment(contentsId, contentsTitle, contents)).commit();
 
     }
+	
+	
+	
+	public void onFragmentInteractionListener(View view, ContentsBean contents) {
+		
+	}
 }

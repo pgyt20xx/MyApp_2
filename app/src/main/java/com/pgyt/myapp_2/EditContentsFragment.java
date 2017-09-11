@@ -1,19 +1,14 @@
 package com.pgyt.myapp_2;
 
 
-import android.app.Fragment;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import com.pgyt.myapp_2.model.ContentsBean;
+import android.app.*;
+import android.content.*;
+import android.database.sqlite.*;
+import android.os.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
 
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 
@@ -22,6 +17,7 @@ public class EditContentsFragment extends Fragment {
 
     private static String TAG = "EditContentsFragment";
     private static final String BLANK_STRING = "";
+	private OnFragmentInteractionListener mListener;
     private String contentsId;
     private String contentsTitle;
     private String contents;
@@ -72,6 +68,9 @@ public class EditContentsFragment extends Fragment {
 
                 // 更新
                 updateContents(param);
+				
+				// Activityへ通知
+				mListener.onFragmentInteractionListener(view, param);
             }
         });
 
@@ -103,4 +102,25 @@ public class EditContentsFragment extends Fragment {
         }
         Log.d(TAG, "updateContents End");
     }
+	
+	@Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach Start");
+
+        // リスナーは必ずここでセットする。
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+									   + " must implement OnFragmentInteractionListener");
+        }
+        Log.d(TAG, "onAttach End");
+
+    }
+	
+	interface OnFragmentInteractionListener {
+        void onFragmentInteractionListener(View v, ContentsBean contens);
+    }
+	
 }

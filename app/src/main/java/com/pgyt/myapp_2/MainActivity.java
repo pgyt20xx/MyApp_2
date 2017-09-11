@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static final String COLUMN_CONTENTS = "contents";
     private static final String BUTTOM_POSITIVE = "OK";
     private static final String BUTTOM_NEGATIVE = "CANCEL";
-	private static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
+	public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
     private int fragmentPosition;

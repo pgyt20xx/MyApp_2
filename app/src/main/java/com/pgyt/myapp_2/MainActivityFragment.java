@@ -210,7 +210,6 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * カテゴリー追加のダイアログイベント
-     * TODO:追加時にカスタムアダプターも更新必要？
      */
     private void categoryInsertEvent() {
         Log.d(TAG, "categoryInsertEvent Start");

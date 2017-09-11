@@ -29,22 +29,23 @@ import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
-    public static final int CLIPBOARD_TAB_POSITON = 0;
     private static final String BLANK_STRING = "";
     private static final String TAG = "MainActivity";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_CATEGORY_NAME = "category_name";
     private static final String COLUMN_CONTENTS_TITLE = "contents_title";
     private static final String COLUMN_CONTENTS = "contents";
-    private static final String BUTTOM_POSITIVE = "OK";
-    private static final String BUTTOM_NEGATIVE = "CANCEL";
-	public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
+    public static final int CLIPBOARD_TAB_POSITON = 0;
+    public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
     private int fragmentPosition;
@@ -54,9 +55,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate Start");
-
-        // データ取得
-        initAllData();
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
@@ -93,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void initFragmentView() {
         Log.d(TAG, "initFragment Start");
+
+        // データ取得
+        initAllData();
 
         // フラグメントを取得する
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -222,20 +223,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         navigationView.setNavigationItemSelectedListener(this);
         Log.d(TAG, "setNavigationDrawerList End");
     }
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// Check which request we're responding to
-		if (requestCode == REQUEST_CODE_EDIT_CONTENTS) {
-			// Make sure the request was successful
-			if (resultCode == RESULT_OK) {
-				// The user picked a contact.
-				// The Intent's data Uri identifies which contact was selected.
-
-				// Do something with the contact here (bigger example below)
-			}
-		}
-	}
 
     /**
      * フラグメントがコンテンツを削除したら呼び出される。
@@ -289,10 +276,44 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onRestart();
         Log.d(TAG, "onRestsrt Start");
 
-        // フラグメントの初期化
-        initFragmentView();
+        // 変数内のコンテンツ数を取得
+        int contentsSize = 0;
+        for (Map.Entry<String, ArrayList<ContentsBean>> entry : mContentsListMap.entrySet()) {
+            contentsSize += entry.getValue().size();
+        }
+
+        // DBに登録されているコンテンツ数を取得
+        int contentsSizeDb = 0;
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+        try {
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
+            contentsSizeDb = cursor.getCount();
+            cursor.close();
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+
+        } finally {
+            sqLiteDatabase.close();
+        }
+
+        // 変数内とDB内のコンテンツ数を比較
+        // サービスからのインサートに対応する。
+        if (contentsSize != contentsSizeDb) {
+            // フラグメントを初期化する
+            initFragmentView();
+        }
 
         Log.d(TAG, "onRestsrt End");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume Start");
+
+
+        Log.d(TAG, "onResume End");
     }
 
     @Override

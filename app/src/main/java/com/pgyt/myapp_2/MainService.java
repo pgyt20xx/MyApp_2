@@ -144,11 +144,7 @@ public class MainService extends Service {
             contents.setCategory_name(CLIPBOARD_TAB_NAME);
             contents.setContents_title(CLIP_BOARD_TITLE_NAME);
             contents.setContents(item.getText().toString());
-            int id = (int) new DBHelper(sqLiteDatabase).insertContents(contents);
-
-            // 1行目に追加
-            contents.setId(id);
-            mContentsListMap.get(CLIPBOARD_TAB_NAME).add(0, contents);
+            new DBHelper(sqLiteDatabase).insertContents(contents);
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());

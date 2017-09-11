@@ -39,9 +39,12 @@ import com.pgyt.myapp_2.model.ContentsBean;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_EDIT_CONTENTS;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
@@ -57,11 +60,11 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
     private static final String TAG = "MainActivityFragment";
-    private OnFragmentInteractionListener mListener;
-    private ViewPager mViewPager;
+    private ViewPager mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
     private ArrayAdapter<String> mDrawerAdapter;
+    private OnFragmentInteractionListener mListener;
 
 
     // コンストラクタ
@@ -89,7 +92,7 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreate Start");
 
         if (getArguments() != null) {
-            // param取得
+
             Log.d(TAG, "OnCreate");
 
         }
@@ -108,7 +111,7 @@ public class MainActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // ページャー取得
-        this.mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+        mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
 
         // ナビゲーションドロワーリスト設定
         setDrawerList();
@@ -145,9 +148,11 @@ public class MainActivityFragment extends Fragment {
         });
 
         // ロングクリックイベント
+        // TODO : アクションモード起動後にスクロール位置がおかしい
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
             public boolean onLongClick(final View view, final int position) {
+
                 if (mActionModeCallback != null) {
                     return false;
                 }
@@ -168,11 +173,11 @@ public class MainActivityFragment extends Fragment {
 
                 // 選択状態アイコンをアクティブに設定
                 mSelectedImage.setVisibility(View.VISIBLE);
-				
+
                 // アクションモードスタート
                 getActivity().startActionMode(mActionModeCallback);
-				
-				// ダイアログのボタン押下
+
+                // ダイアログのボタン押下
                 mActionModeCallback.setOnButtonClickListener(new CustomActionModeCallback.OnButtonClickListener() {
                     @Override
                     public void onButtonClick(boolean bool, ActionMode mode) {
@@ -198,6 +203,16 @@ public class MainActivityFragment extends Fragment {
                     }
                 });
 
+                // 編集ボタン押下
+                mActionModeCallback.setOnEditClickListener(new CustomActionModeCallback.OnEditClickListener() {
+                    @Override
+                    public void editClick(Intent intent) {
+
+                        // 編集画面起動
+                        startActivityForResult(intent, REQUEST_CODE_EDIT_CONTENTS);
+                    }
+                });
+
                 view.setSelected(true);
                 return true;
             }
@@ -206,6 +221,52 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreateView End");
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        // Fragment#startActivityForResult() で呼んだ
+        // IntentをFragmentActivityのonActivityResult()で処理する場合には、
+        // 渡されたrequestCodeの下位16ビットだけを比較対象にする必要がある。
+        // (requestCode & 0xffff)
+
+        if (requestCode == REQUEST_CODE_EDIT_CONTENTS) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // Intent取得
+                ContentsBean contents = (ContentsBean) intent.getSerializableExtra("contents");
+
+                // 変数を更新
+                int page = mViewPager.getCurrentItem();
+                String categoryName = mCategoryList.get(page).getCategory_name();
+
+                int position = getRowPositionById(contents.getId(), categoryName);
+                mContentsListMap.get(categoryName).get(position).setContents(contents.getContents());
+
+                // リサイクルビューに通知
+                getCurrentRecyclerView().getAdapter().notifyItemChanged(position);
+
+            } else if (requestCode == RESULT_CANCELED) {
+
+            }
+        }
+    }
+
+    /**
+     * コンテンツの行番号を返す
+     * @param id int
+     * @return int
+     */
+    private int getRowPositionById(int id, String categoryName) {
+        ArrayList<ContentsBean> currentList = mContentsListMap.get(categoryName);
+        int result = 0;
+        for (int i = 0; i < currentList.size(); i++){
+            if (id == currentList.get(i).getId()) {
+                result = i;
+                break;
+            }
+        }
+        return result;
     }
 
     /**
@@ -253,10 +314,8 @@ public class MainActivityFragment extends Fragment {
                     mContentsListMap.put(category.getCategory_name(), new ArrayList<ContentsBean>());
 
                     // ページャーに変更を通知
-                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     mViewPager.getAdapter().notifyDataSetChanged();
                     mViewPager.setCurrentItem(mCategoryList.size() - 1);
-                    fragmentTransaction.commit();
 
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -475,6 +534,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * 現在表示されているリサイクルビューを返す
+     *
      * @return
      */
     private RecyclerView getCurrentRecyclerView() {

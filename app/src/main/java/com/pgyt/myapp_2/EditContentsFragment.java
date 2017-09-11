@@ -8,6 +8,7 @@ import android.os.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
+
 import com.pgyt.myapp_2.model.*;
 
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
@@ -17,7 +18,7 @@ public class EditContentsFragment extends Fragment {
 
     private static String TAG = "EditContentsFragment";
     private static final String BLANK_STRING = "";
-	private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener mListener;
     private String contentsId;
     private String contentsTitle;
     private String contents;
@@ -68,9 +69,9 @@ public class EditContentsFragment extends Fragment {
 
                 // 更新
                 updateContents(param);
-				
-				// Activityへ通知
-				mListener.onFragmentInteractionListener(view, param);
+
+                // Activityへ通知
+                mListener.onFragmentInteractionListener(view, param);
             }
         });
 
@@ -86,6 +87,10 @@ public class EditContentsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * コンテンツの更新
+     * @param param ContentsBean
+     */
     private void updateContents(ContentsBean param) {
         Log.d(TAG, "updateContents Start");
 
@@ -102,8 +107,8 @@ public class EditContentsFragment extends Fragment {
         }
         Log.d(TAG, "updateContents End");
     }
-	
-	@Override
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Log.d(TAG, "onAttach Start");
@@ -113,14 +118,14 @@ public class EditContentsFragment extends Fragment {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-									   + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
         Log.d(TAG, "onAttach End");
 
     }
-	
-	interface OnFragmentInteractionListener {
+
+    interface OnFragmentInteractionListener {
         void onFragmentInteractionListener(View v, ContentsBean contens);
     }
-	
+
 }

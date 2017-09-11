@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static final String COLUMN_CONTENTS = "contents";
     private static final String BUTTOM_POSITIVE = "OK";
     private static final String BUTTOM_NEGATIVE = "CANCEL";
+	private static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
     private int fragmentPosition;
@@ -221,6 +222,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         navigationView.setNavigationItemSelectedListener(this);
         Log.d(TAG, "setNavigationDrawerList End");
     }
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Check which request we're responding to
+		if (requestCode == REQUEST_CODE_EDIT_CONTENTS) {
+			// Make sure the request was successful
+			if (resultCode == RESULT_OK) {
+				// The user picked a contact.
+				// The Intent's data Uri identifies which contact was selected.
+
+				// Do something with the contact here (bigger example below)
+			}
+		}
+	}
 
     /**
      * フラグメントがコンテンツを削除したら呼び出される。

@@ -168,9 +168,11 @@ public class MainActivityFragment extends Fragment {
 
                 // 選択状態アイコンをアクティブに設定
                 mSelectedImage.setVisibility(View.VISIBLE);
-
-                // ダイアログのボタン押下
+				
+                // アクションモードスタート
                 getActivity().startActionMode(mActionModeCallback);
+				
+				// ダイアログのボタン押下
                 mActionModeCallback.setOnButtonClickListener(new CustomActionModeCallback.OnButtonClickListener() {
                     @Override
                     public void onButtonClick(boolean bool, ActionMode mode) {

@@ -60,7 +60,7 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
     private static final String TAG = "MainActivityFragment";
-    private ViewPager mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+    private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
     private ArrayAdapter<String> mDrawerAdapter;

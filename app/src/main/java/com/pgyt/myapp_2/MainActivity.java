@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // サービスを起動
         this.startService(new Intent(this, MainService.class));
+		
+		// データ取得
+        initAllData();
 
         // フラグメントの初期化
         initFragmentView();
@@ -91,9 +94,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void initFragmentView() {
         Log.d(TAG, "initFragment Start");
-
-        // データ取得
-        initAllData();
 
         // フラグメントを取得する
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -300,7 +300,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // 変数内とDB内のコンテンツ数を比較
         // サービスからのインサートに対応する。
         if (contentsSize != contentsSizeDb) {
-            // フラグメントを初期化する
+			
+			// データ取得
+			initAllData();
+			
+            // フラグメントを初期化する;
             initFragmentView();
         }
 

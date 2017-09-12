@@ -9,10 +9,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.NotificationCompat;
@@ -28,21 +30,14 @@ import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 public class MainService extends Service {
 
     private static final String TAG = "MainService";
-
     private static final String CLIP_BOARD_TITLE_NAME = "DummyContentsTitle";
-
     private static final String STATUS_BAR_TITLE = "Current ClipBoard";
-
     private static final int NOTIFICATION_ID = 10;
-
     private ClipboardManager mClipboardManager;
-
     private String mPreviousText;
-
     private String mClipBoard;
-
-
-    NotificationCompat.Builder mBuilder;
+    private boolean settingDisplayStatusBar = true;
+    private NotificationCompat.Builder mBuilder;
 
     public MainService() {
         mPreviousText = "";
@@ -70,12 +65,27 @@ public class MainService extends Service {
 
         Log.d(TAG, "onStartCommand Start");
 
+        // アプリの設定を取得
+        getPreference();
+
         // 通知を設定
-        setNotification();
+        if (this.settingDisplayStatusBar) {
+            setNotification();
+        }
 
         Log.d(TAG, "onStartCommand End");
         // 強制終了時に再起動
         return START_STICKY;
+    }
+
+
+    private void getPreference() {
+
+        // 設定値を取得
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // ステータスバーに表示するか
+        this.settingDisplayStatusBar = preferences.getBoolean("checkbox_status_bar_key", false);
     }
 
 

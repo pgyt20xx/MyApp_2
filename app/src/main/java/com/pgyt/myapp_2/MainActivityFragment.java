@@ -14,7 +14,9 @@ import android.text.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
+
 import com.pgyt.myapp_2.model.*;
+
 import java.util.*;
 
 import android.content.ClipboardManager;
@@ -46,7 +48,7 @@ public class MainActivityFragment extends Fragment {
     private CustomActionModeCallback mActionModeCallback;
     private ArrayAdapter<String> mDrawerAdapter;
     private OnFragmentInteractionListener mListener;
-	public PopupMenu popupMenu = null;
+    public PopupMenu popupMenu = null;
 
 
     // コンストラクタ
@@ -124,11 +126,20 @@ public class MainActivityFragment extends Fragment {
         // イメージのクリックイベント
         mRecyclerAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
             @Override
-            public void onClick(View view, TextView textView, int position) {
-				popupMenu = new PopupMenu(getContext(), view);
-				popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-				popupMenu.show();
-				
+            public void onClick(final View view, TextView textView, final int position) {
+                popupMenu = new PopupMenu(getContext(), view);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                // ポップアップメニューのメニュー項目のクリック処理
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        onOptionsPopUpItemSelected(item, position);
+                        return true;
+                    }
+                });
+
+
+                popupMenu.show();
+
             }
         });
 
@@ -136,7 +147,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
             public boolean onLongClick(final View view, final int position) {
-				((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
                 if (mActionModeCallback != null) {
                     return false;
@@ -152,7 +163,7 @@ public class MainActivityFragment extends Fragment {
                     public void onDestroyActionMode(ActionMode mode) {
                         // アクションモードが破棄された時の処理
                         mSelectedImage.setVisibility(View.GONE);
-						((AppCompatActivity)getActivity()).getSupportActionBar().show();
+                        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
                         mActionModeCallback = null;
                     }
                 };
@@ -240,13 +251,14 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * コンテンツの行番号を返す
+     *
      * @param id int
      * @return int
      */
     private int getRowPositionById(int id, String categoryName) {
         ArrayList<ContentsBean> currentList = mContentsListMap.get(categoryName);
         int result = 0;
-        for (int i = 0; i < currentList.size(); i++){
+        for (int i = 0; i < currentList.size(); i++) {
             if (id == currentList.get(i).getId()) {
                 result = i;
                 break;
@@ -585,6 +597,30 @@ public class MainActivityFragment extends Fragment {
         });
     }
 
+    /**
+     * ポップアップメニューから編集ボタン押下
+     *
+     * @param position int
+     */
+    private void popupEditEvent(int position) {
+        // 設定押下
+        int page = mViewPager.getCurrentItem();
+        ContentsBean selectedContents =
+                mContentsListMap.get(mCategoryList.get(page).getCategory_name()).get(position);
+        String contentsId = String.valueOf(selectedContents.getId());
+        String contentsTitle = selectedContents.getContents_title();
+        String contents = selectedContents.getContents();
+        Intent intent = new Intent(getContext(), EditContentsActivity.class);
+
+        // 情報受け渡し
+        intent.putExtra("contentsId", contentsId);
+        intent.putExtra("contentsTitle", contentsTitle);
+        intent.putExtra("contents", contents);
+
+        // 編集画面起動
+        startActivityForResult(intent, REQUEST_CODE_EDIT_CONTENTS);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -625,6 +661,12 @@ public class MainActivityFragment extends Fragment {
         setFabEvent();
     }
 
+    /**
+     * コンテキストメニュー押下イベント
+     *
+     * @param item MenuItem
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected getItemPosition Start");
@@ -658,6 +700,30 @@ public class MainActivityFragment extends Fragment {
 
         }
         Log.d(TAG, "onOptionsItemSelected getItemPosition End");
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * ポップアップメニュー押下イベント
+     *
+     * @param item     MenuItem
+     * @param position int
+     * @return boolean
+     */
+    public boolean onOptionsPopUpItemSelected(MenuItem item, int position) {
+        Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition Start");
+
+        // 押下されたメニューで分岐
+        switch (item.getItemId()) {
+
+            case R.id.menu_edit:
+
+                // 編集ボタン押下時イベント
+                popupEditEvent(position);
+
+                return true;
+        }
+        Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition End");
         return super.onOptionsItemSelected(item);
     }
 }

@@ -57,9 +57,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 intent.putExtra("contents", contents.getText().toString());
 
                 // 編集画面起動
-
-//				context.startActivity(intent);
-
                 editClickListener.editClick(intent);
 
                 mode.finish();

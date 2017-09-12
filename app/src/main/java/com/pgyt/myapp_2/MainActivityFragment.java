@@ -1,43 +1,23 @@
 package com.pgyt.myapp_2;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
+import android.content.*;
+import android.database.*;
+import android.database.sqlite.*;
+import android.os.*;
+import android.support.design.widget.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
+import java.util.*;
+
 import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -152,6 +132,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
             public boolean onLongClick(final View view, final int position) {
+				((AppCompatActivity)getActivity()).getSupportActionBar().hide();
 
                 if (mActionModeCallback != null) {
                     return false;
@@ -167,6 +148,7 @@ public class MainActivityFragment extends Fragment {
                     public void onDestroyActionMode(ActionMode mode) {
                         // アクションモードが破棄された時の処理
                         mSelectedImage.setVisibility(View.GONE);
+						((AppCompatActivity)getActivity()).getSupportActionBar().show();
                         mActionModeCallback = null;
                     }
                 };

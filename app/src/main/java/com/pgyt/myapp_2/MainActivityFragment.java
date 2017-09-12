@@ -18,6 +18,7 @@ import com.pgyt.myapp_2.model.*;
 import java.util.*;
 
 import android.content.ClipboardManager;
+import android.support.v7.widget.PopupMenu;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -45,6 +46,7 @@ public class MainActivityFragment extends Fragment {
     private CustomActionModeCallback mActionModeCallback;
     private ArrayAdapter<String> mDrawerAdapter;
     private OnFragmentInteractionListener mListener;
+	public PopupMenu popupMenu = null;
 
 
     // コンストラクタ
@@ -123,12 +125,14 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
             @Override
             public void onClick(View view, TextView textView, int position) {
-                Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+				popupMenu = new PopupMenu(getContext(), view);
+				popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+				popupMenu.show();
+				
             }
         });
 
         // ロングクリックイベント
-        // TODO : アクションモード起動後にスクロール位置がおかしい
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
             public boolean onLongClick(final View view, final int position) {

@@ -124,6 +124,7 @@ public class CustomActionModeCallback implements ActionMode.Callback {
 
     /**
      * 編集クリックイベントのリスナーセット
+     *
      * @param listener OnEditClickListener
      */
     void setOnEditClickListener(OnEditClickListener listener) {

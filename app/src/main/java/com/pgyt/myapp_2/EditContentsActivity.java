@@ -27,8 +27,7 @@ public class EditContentsActivity extends AppCompatActivity
 
 
     /**
-     *
-     * @param view View
+     * @param view     View
      * @param contents ContentsBean
      */
     public void onFragmentInteractionListener(View view, ContentsBean contents) {

@@ -3,6 +3,7 @@ package com.pgyt.myapp_2;
 import android.content.*;
 import android.database.*;
 import android.database.sqlite.*;
+import android.net.Uri;
 import android.os.*;
 import android.support.design.widget.*;
 import android.support.v4.app.*;
@@ -118,7 +119,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, TextView textView, int position) {
-                Toast.makeText(getContext(), textView.getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "\"" + textView.getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
                 copyClip(textView);
             }
         });
@@ -717,9 +718,25 @@ public class MainActivityFragment extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.menu_edit:
+                Log.d(TAG, "dmenu_edit selected");
 
                 // 編集ボタン押下時イベント
                 popupEditEvent(position);
+
+                return true;
+
+            case R.id.menu_share:
+                Log.d(TAG, "menu_share selected");
+
+                // exampe
+                Uri uri = Uri.parse("https://www.google.co.jp/");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+
+                return true;
+
+            case R.id.menu_delete:
+                Log.d(TAG, "delete_category selected");
 
                 return true;
         }

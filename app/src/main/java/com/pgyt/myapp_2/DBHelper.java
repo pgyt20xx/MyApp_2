@@ -47,7 +47,7 @@ class DBHelper {
     int updateContents(ContentsBean param) {
         ContentValues cv = new ContentValues();
         cv.put("contents", param.getContents());
-        int cnt = sqLiteDatabase.update(TABLE_NAME_CONTENTS, cv, "id = ?", new String[]{String.valueOf(param.getId())});
+        int cnt = this.sqLiteDatabase.update(TABLE_NAME_CONTENTS, cv, "id = ?", new String[]{String.valueOf(param.getId())});
         return cnt;
     }
 
@@ -62,10 +62,10 @@ class DBHelper {
         Cursor cursor;
         if (param.isEmpty()) {
             String sql = "SELECT id, category_name FROM CATEGORY ORDER BY id;";
-            cursor = sqLiteDatabase.rawQuery(sql, null);
+            cursor = this.sqLiteDatabase.rawQuery(sql, null);
         } else {
             String sql = "SELECT id, category_name FROM CATEGORY WHERE category_name = ? ORDER BY id ASC;";
-            cursor = sqLiteDatabase.rawQuery(sql, new String[]{param});
+            cursor = this.sqLiteDatabase.rawQuery(sql, new String[]{param});
         }
         return cursor;
     }
@@ -74,8 +74,8 @@ class DBHelper {
      * 全テーブルのデータを削除する。
      */
     void deletetAll() {
-        sqLiteDatabase.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
-        sqLiteDatabase.delete("CONTENTS", null, null);
+        this.sqLiteDatabase.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
+        this.sqLiteDatabase.delete("CONTENTS", null, null);
     }
 
     /**
@@ -85,8 +85,8 @@ class DBHelper {
      * @param param String
      */
     void deletetCategory(String param) {
-        sqLiteDatabase.delete("CATEGORY", "category_name = ?", new String[]{param});
-        sqLiteDatabase.delete("CONTENTS", "category_name = ?", new String[]{param});
+        this.sqLiteDatabase.delete("CATEGORY", "category_name = ?", new String[]{param});
+        this.sqLiteDatabase.delete("CONTENTS", "category_name = ?", new String[]{param});
     }
 
     /**
@@ -95,7 +95,7 @@ class DBHelper {
      * @param param String
      */
     void deletetContents(String param) {
-        sqLiteDatabase.delete("CONTENTS", "id = ?", new String[]{param});
+        this.sqLiteDatabase.delete("CONTENTS", "id = ?", new String[]{param});
     }
 
     /**
@@ -105,7 +105,7 @@ class DBHelper {
      */
     Cursor selectAllContents() {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
-        return sqLiteDatabase.rawQuery(sql, null);
+        return this.sqLiteDatabase.rawQuery(sql, null);
     }
 
     /**
@@ -115,7 +115,7 @@ class DBHelper {
      */
     Cursor selectContentsList(String param) {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? ORDER BY id DESC;";
-        return sqLiteDatabase.rawQuery(sql, new String[]{param});
+        return this.sqLiteDatabase.rawQuery(sql, new String[]{param});
     }
 
     /**
@@ -125,7 +125,7 @@ class DBHelper {
      */
     Cursor selectContents(String param) {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE contents = ? ORDER BY category_name ASC, id DESC;";
-        return sqLiteDatabase.rawQuery(sql, new String[]{param});
+        return this.sqLiteDatabase.rawQuery(sql, new String[]{param});
     }
 
 //    /**

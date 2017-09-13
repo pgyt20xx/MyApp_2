@@ -1,27 +1,43 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.database.*;
-import android.database.sqlite.*;
-import android.net.Uri;
-import android.os.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.text.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-
-import com.pgyt.myapp_2.model.*;
-
-import java.util.*;
-
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.pgyt.myapp_2.model.CategoryBean;
+import com.pgyt.myapp_2.model.ContentsBean;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -154,8 +170,13 @@ public class MainActivityFragment extends Fragment {
                     return false;
                 }
 
-                // 選択状態アイコンを取得
-                final ImageView mSelectedImage = (ImageView) view.findViewById(R.id.image_clip_edit);
+                // チェックボックスを全て表示、選択行をチェック状態にする。
+                int itemCount = getCurrentRecyclerView().getChildCount();
+                for (int i = 0; i < itemCount; i++) {
+                    getCurrentRecyclerView().getChildAt(i).findViewById(R.id.checkbox).setVisibility(View.VISIBLE);
+                }
+                CheckBox mCheckbox = (CheckBox) view.findViewById(R.id.checkbox);
+                mCheckbox.setChecked(true);
 
                 // アクションモードコールバック呼び出し。
                 mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
@@ -163,14 +184,17 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onDestroyActionMode(ActionMode mode) {
                         // アクションモードが破棄された時の処理
-                        mSelectedImage.setVisibility(View.GONE);
+                        int itemCount = getCurrentRecyclerView().getChildCount();
+                        for (int i = 0; i < itemCount; i++) {
+                            // 全部非表示・非チェック
+                            CheckBox checkBox = (CheckBox) getCurrentRecyclerView().getChildAt(i).findViewById(R.id.checkbox);
+                            checkBox.setVisibility(View.GONE);
+                            checkBox.setChecked(false);
+                        }
                         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
                         mActionModeCallback = null;
                     }
                 };
-
-                // 選択状態アイコンをアクティブに設定
-                mSelectedImage.setVisibility(View.VISIBLE);
 
                 // アクションモードスタート
                 getActivity().startActionMode(mActionModeCallback);
@@ -180,34 +204,35 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onButtonClick(boolean bool, ActionMode mode) {
                         if (bool) {
-                            // データ削除
-                            contentsDelete((TextView) getActivity().findViewById(R.id.row_id));
 
-                            // 対象のカテゴリ取得
-                            int page = mViewPager.getCurrentItem();
-                            String categoryName = mCategoryList.get(page).getCategory_name();
+                            int itemCount = getCurrentRecyclerView().getChildCount();
+                            for (int i = 0; i < itemCount; i++) {
+                                RecyclerView currentView = getCurrentRecyclerView();
+                                CheckBox checkBox = (CheckBox) currentView.getChildAt(i).findViewById(R.id.checkbox);
 
-                            // 変数から削除
-                            ContentsBean removeContents = mContentsListMap.get(categoryName).get(position);
-                            mContentsListMap.get(categoryName).remove(removeContents);
+                                // チェック状態でなければ処理しない。
+                                if (!checkBox.isChecked()) {
+                                    continue;
+                                }
 
-                            // リサイクルビューに通知
-                            mRecyclerAdapter.notifyItemRemoved(position);
-                            mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
+                                // データ削除
+                                contentsDelete((TextView) currentView.getChildAt(i).findViewById(R.id.row_id));
 
+                                // 対象のカテゴリ取得
+                                int page = mViewPager.getCurrentItem();
+                                String categoryName = mCategoryList.get(page).getCategory_name();
+
+                                // 変数から削除
+                                ContentsBean removeContents = mContentsListMap.get(categoryName).get(i);
+                                mContentsListMap.get(categoryName).remove(removeContents);
+
+                                // リサイクルビューに通知
+                                mRecyclerAdapter.notifyItemRemoved(i);
+                                mRecyclerAdapter.notifyItemRangeChanged(i, mContentsListMap.get(categoryName).size());
+                            }
                         }
 
                         mode.finish();
-                    }
-                });
-
-                // 編集ボタン押下
-                mActionModeCallback.setOnEditClickListener(new CustomActionModeCallback.OnEditClickListener() {
-                    @Override
-                    public void editClick(Intent intent) {
-
-                        // 編集画面起動
-                        startActivityForResult(intent, REQUEST_CODE_EDIT_CONTENTS);
                     }
                 });
 
@@ -286,6 +311,7 @@ public class MainActivityFragment extends Fragment {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+
 
                 SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                 try {

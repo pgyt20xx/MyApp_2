@@ -9,12 +9,11 @@
 	android:background="?android:attr/selectableItemBackground"
 	android:layout_margin="10dp">
 
-	<ImageView
-		android:id="@+id/image_clip_edit"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:visibility="gone"
-		android:src="@android:drawable/checkbox_on_background"/>
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone" />
 
 	<TextView
 		android:id="@+id/row_id"

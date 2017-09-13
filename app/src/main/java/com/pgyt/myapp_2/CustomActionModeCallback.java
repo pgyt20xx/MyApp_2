@@ -1,24 +1,21 @@
 package com.pgyt.myapp_2;
 
 
-import android.content.*;
-import android.support.v4.app.*;
-import android.view.*;
-import android.widget.*;
+import android.support.v4.app.FragmentManager;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
 
     private final String TAG = "ActionModeCallback";
-    private Context context;
     private FragmentManager mFragmentManager;
-    private View view;
 
     private OnButtonClickListener buttonClickListener;
-    private OnEditClickListener editClickListener;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {
-        this.view = view;
-        this.context = view.getContext();
         this.mFragmentManager = fragmentManager;
 
     }
@@ -44,25 +41,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.menu_edit:
-                // 情報取得
-                TextView contentsId = (TextView) view.findViewById(R.id.row_id);
-                TextView contentsTitle = (TextView) view.findViewById(R.id.text_contents_title);
-                TextView contents = (TextView) view.findViewById(R.id.text_contents);
-                Intent intent = new Intent(context, EditContentsActivity.class);
-
-                // 情報受け渡し
-                intent.putExtra("contentsId", contentsId.getText().toString());
-                intent.putExtra("contentsTitle", contentsTitle.getText().toString().toString());
-                intent.putExtra("contents", contents.getText().toString());
-
-                // 編集画面起動
-                editClickListener.editClick(intent);
-
-                mode.finish();
-
-                return true;
-
             case R.id.menu_delete:
                 // 削除ボタン押下
                 CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete", "realy?", null, null, "0");
@@ -81,12 +59,6 @@ public class CustomActionModeCallback implements ActionMode.Callback {
                 newFragment.show(mFragmentManager, "CommonDialogFragment");
                 return true;
 
-            case R.id.menu_share:
-                // 共有ボタン押下
-                mode.finish();
-
-                return true;
-
             default:
                 return false;
 
@@ -100,34 +72,18 @@ public class CustomActionModeCallback implements ActionMode.Callback {
     }
 
     /**
-     * イメージクリックのインターフェース
+     * ダイアログボタン押下のインターフェース
      */
     interface OnButtonClickListener {
         void onButtonClick(boolean bool, ActionMode mode);
     }
 
     /**
-     * 編集クリック
-     */
-    interface OnEditClickListener {
-        void editClick(Intent intent);
-    }
-
-    /**
-     * イメージのクリックイベントのリスナーセット
+     * ダイアログボタン押下イベントのリスナーセット
      *
      * @param listener OnImageItemClickListener
      */
     void setOnButtonClickListener(OnButtonClickListener listener) {
         this.buttonClickListener = listener;
-    }
-
-    /**
-     * 編集クリックイベントのリスナーセット
-     *
-     * @param listener OnEditClickListener
-     */
-    void setOnEditClickListener(OnEditClickListener listener) {
-        this.editClickListener = listener;
     }
 }

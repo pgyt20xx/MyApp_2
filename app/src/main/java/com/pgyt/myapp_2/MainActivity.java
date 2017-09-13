@@ -237,33 +237,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.menu_edit:
-//                editNote(info.id);
-                Toast.makeText(getApplicationContext(), info.targetView.findViewById(R.id.row_id) + " Row is on clicked", Toast.LENGTH_SHORT).show();
-
-                return true;
-            case R.id.menu_delete:
-//                deleteNote(info.id);
-                Toast.makeText(getApplicationContext(), "Image is on clicked", Toast.LENGTH_SHORT).show();
-
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "onCreareOptionMenu Start");
         // Inflate the menu; this adds items to the action bar if it is present.

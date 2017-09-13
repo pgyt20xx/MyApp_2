@@ -108,7 +108,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageItemClickListener.onClick(v, holder.mRowId, position);
+                imageItemClickListener.onClick(v, holder.mRowId, holder.mContents, position);
             }
         });
 
@@ -141,7 +141,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
      * イメージクリックのインターフェース
      */
     interface OnImageItemClickListener {
-        void onClick(View v, TextView textView, int position);
+        void onClick(View v, TextView rowId, TextView contents, int position);
     }
 
     /**

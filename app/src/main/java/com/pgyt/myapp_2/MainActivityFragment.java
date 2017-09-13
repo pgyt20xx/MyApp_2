@@ -118,22 +118,22 @@ public class MainActivityFragment extends Fragment {
         // 行のクリックイベント
         mRecyclerAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View view, TextView textView, int position) {
-                Toast.makeText(getContext(), "\"" + textView.getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
-                copyClip(textView);
+            public void onClick(View view, TextView textContents, int position) {
+                Toast.makeText(getContext(), "\"" + textContents.getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
+                copyClip(textContents);
             }
         });
 
         // イメージのクリックイベント
         mRecyclerAdapter.setOnImageItemClickListener(new CustomAdapter.OnImageItemClickListener() {
             @Override
-            public void onClick(final View view, TextView textView, final int position) {
+            public void onClick(final View view, final TextView textRowId, final TextView textContents, final int position) {
                 popupMenu = new PopupMenu(getContext(), view);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 // ポップアップメニューのメニュー項目のクリック処理
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        onOptionsPopUpItemSelected(item, position);
+                        onOptionsPopUpItemSelected(item, textRowId, textContents, position);
                         return true;
                     }
                 });
@@ -711,7 +711,7 @@ public class MainActivityFragment extends Fragment {
      * @param position int
      * @return boolean
      */
-    public boolean onOptionsPopUpItemSelected(MenuItem item, int position) {
+    public boolean onOptionsPopUpItemSelected(MenuItem item, TextView textRowId, TextView textContents,  int position) {
         Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition Start");
 
         // 押下されたメニューで分岐
@@ -728,15 +728,34 @@ public class MainActivityFragment extends Fragment {
             case R.id.menu_share:
                 Log.d(TAG, "menu_share selected");
 
-                // exampe
-                Uri uri = Uri.parse("https://www.google.co.jp/");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+				Intent intent = new Intent();
+				String sendString = textContents.getText().toString();
+			
+				intent.setAction(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_TEXT, sendString);
                 startActivity(intent);
 
                 return true;
 
             case R.id.menu_delete:
                 Log.d(TAG, "delete_category selected");
+
+				// 削除ボタン押下イベント
+				contentsDelete(textRowId);
+				
+
+				// 対象のカテゴリ取得
+				int page = mViewPager.getCurrentItem();
+				String categoryName = mCategoryList.get(page).getCategory_name();
+
+				// 変数から削除
+				ContentsBean removeContents = mContentsListMap.get(categoryName).get(position);
+				mContentsListMap.get(categoryName).remove(removeContents);
+
+				// リサイクルビューに通知
+				mRecyclerAdapter.notifyItemRemoved(position);
+				mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
 
                 return true;
         }

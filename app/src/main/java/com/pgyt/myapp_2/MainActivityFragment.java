@@ -204,8 +204,15 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onButtonClick(boolean bool, ActionMode mode) {
                         if (bool) {
-
+                            // 行数を取得
                             int itemCount = getCurrentRecyclerView().getChildCount();
+
+                            // 対象のカテゴリ取得
+                            int page = mViewPager.getCurrentItem();
+                            String categoryName = mCategoryList.get(page).getCategory_name();
+
+                            // 削除対象のリストを準備
+                            ArrayList<ContentsBean> removeContentsList = new ArrayList<>();
                             for (int i = 0; i < itemCount; i++) {
                                 RecyclerView currentView = getCurrentRecyclerView();
                                 CheckBox checkBox = (CheckBox) currentView.getChildAt(i).findViewById(R.id.checkbox);
@@ -218,20 +225,29 @@ public class MainActivityFragment extends Fragment {
                                 // データ削除
                                 contentsDelete((TextView) currentView.getChildAt(i).findViewById(R.id.row_id));
 
-                                // 対象のカテゴリ取得
-                                int page = mViewPager.getCurrentItem();
-                                String categoryName = mCategoryList.get(page).getCategory_name();
+                                // 削除対象のリストに追加
+                                removeContentsList.add(mContentsListMap.get(categoryName).get(i));
 
-                                // 変数から削除
-                                ContentsBean removeContents = mContentsListMap.get(categoryName).get(i);
+                            }
+
+                            // 削除対象をまとめて変数から削除
+                            for (ContentsBean removeContents : removeContentsList) {
+                                // 削除対象の変数の位置を取得、見つからなければ次の行へ
+                                int position = mContentsListMap.get(categoryName).indexOf(removeContents);
+                                if (position < 0) {
+                                    continue;
+                                }
+
+                                // 変数を削除する。
                                 mContentsListMap.get(categoryName).remove(removeContents);
 
                                 // リサイクルビューに通知
-                                mRecyclerAdapter.notifyItemRemoved(i);
-                                mRecyclerAdapter.notifyItemRangeChanged(i, mContentsListMap.get(categoryName).size());
+                                mRecyclerAdapter.notifyItemRemoved(position);
+                                mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
+
+
                             }
                         }
-
                         mode.finish();
                     }
                 });

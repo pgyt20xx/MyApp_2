@@ -170,8 +170,8 @@ public class MainService extends Service {
      */
     void setNotification() {
         Log.d(TAG, "setNotification Start");
-
-        if (mClipboardManager != null) {
+        mClipBoard = "";
+        if (mClipboardManager != null && mClipboardManager.getText() != null) {
             mClipBoard = mClipboardManager.getText().toString();
         }
 

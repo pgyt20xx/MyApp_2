@@ -13,10 +13,10 @@
 
     <!-- Preference -->
     <string name="preference_title">Setting</string>
-    <string name="checkbox_status_bar_title">status bar</string>
+    <string name="checkbox_status_bar_title">Statusbar</string>
     <string name="checkbox_status_bar_summary">Display in the status bar</string>
-    <string name="checkbox_02_title">XXXXXX</string>
-    <string name="checkbox_02_summary">YYYYYYYYYYY</string>
+    <string name="checkbox_maxrow_title">Max rows Status</string>
+    <string name="checkbox_maxrow_summary">Display Maxrows 100. Default 50.</string>
 
     <!-- contextMenu -->
     <string name="context_menu_share">Share</string>

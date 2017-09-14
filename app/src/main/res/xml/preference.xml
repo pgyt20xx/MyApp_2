@@ -6,8 +6,8 @@
             android:title="@string/checkbox_status_bar_title"
             android:summary="@string/checkbox_status_bar_summary" />
         <CheckBoxPreference
-            android:key="checkbox_02_key"
-            android:title="@string/checkbox_02_title"
-            android:summary="@string/checkbox_02_summary" />
+            android:key="checkbox_maxrow_key"
+            android:title="@string/checkbox_maxrow_title"
+            android:summary="@string/checkbox_maxrow_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+		SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+		new DBHelper(sqLiteDatabase).isDatabaseDelete(this);
 
         // サービスを起動
         this.startService(new Intent(this, MainService.class));

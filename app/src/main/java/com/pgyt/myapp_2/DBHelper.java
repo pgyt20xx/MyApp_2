@@ -1,11 +1,11 @@
 package com.pgyt.myapp_2;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-import com.pgyt.myapp_2.model.ContentsBean;
+import android.content.*;
+import android.database.*;
+import android.database.sqlite.*;
+import android.os.*;
+import com.pgyt.myapp_2.model.*;
+import java.io.*;
 
 
 class DBHelper {
@@ -139,23 +139,23 @@ class DBHelper {
 //        }
 //    }
 
-//    /**
-//     * データベース削除
-//     * @param context Context
-//     * @return boolean
-//     * TODO; 不要であれば削除する
-//     */
-//    boolean isDatabaseDelete(final Context context){
-//        boolean result = false;
-//
-//        if(this.sqLiteDatabase != null){
-//            File file = context.getDatabasePath(dbOpenHelper.getDatabaseName());
-//
-//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
-//                result = SQLiteDatabase.deleteDatabase(file);
-//            }
-//        }
-//        return result;
-//    }
+    /**
+     * データベース削除
+     * @param context Context
+     * @return boolean
+     * TODO; 不要であれば削除する
+     */
+    boolean isDatabaseDelete(final Context context){
+        boolean result = false;
+
+        if(this.sqLiteDatabase != null){
+            File file = context.getDatabasePath(new DBOpenHelper(context).getDatabaseName());
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
+                result = SQLiteDatabase.deleteDatabase(file);
+            }
+        }
+        return result;
+    }
 
 }

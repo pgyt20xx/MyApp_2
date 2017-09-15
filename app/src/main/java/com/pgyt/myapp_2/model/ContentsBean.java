@@ -7,6 +7,21 @@ import java.io.Serializable;
 
 public class ContentsBean implements Serializable
 {
+
+
+    /**
+     * チェックボックス表示フラグ
+     * false:表示しない
+     * true:表示する
+     */
+    private boolean checkBoxVisibleFlg;
+
+    /**
+     * チェックフラグ
+     * false:チェックなし
+     * true:チェックあり
+     */
+    private boolean checkedFlg;
 	
 	/**
      * id
@@ -30,7 +45,7 @@ public class ContentsBean implements Serializable
 
     /**
      * idを取得
-     * @return
+     * @return int
      */
     public int getId() {
         return id;
@@ -38,7 +53,7 @@ public class ContentsBean implements Serializable
 
     /**
      * idを設定
-     * @param id
+     * @param id int
      */
     public void setId(int id) {
         this.id = id;
@@ -46,7 +61,7 @@ public class ContentsBean implements Serializable
 
     /**
      * カテゴリー名を取得
-     * @return
+     * @return String
      */
     public String getCategory_name() {
         return category_name;
@@ -54,7 +69,7 @@ public class ContentsBean implements Serializable
 
     /**
      * カテゴリー名を設定
-     * @param category_name
+     * @param category_name String
      */
     public void setCategory_name(String category_name) {
         this.category_name = category_name;
@@ -62,7 +77,7 @@ public class ContentsBean implements Serializable
 
     /**
      * コンテンツタイトルを取得
-     * @return
+     * @return String
      */
     public String getContents_title() {
         return contents_title;
@@ -70,7 +85,7 @@ public class ContentsBean implements Serializable
 
     /**
      * コンテンツタイトルを設定
-     * @param contents_title
+     * @param contents_title String
      */
     public void setContents_title(String contents_title) {
         this.contents_title = contents_title;
@@ -78,7 +93,7 @@ public class ContentsBean implements Serializable
 
     /**
      * コンテンツを取得
-     * @return
+     * @return String
      */
     public String getContents() {
         return contents;
@@ -86,15 +101,47 @@ public class ContentsBean implements Serializable
 
     /**
      * コンテンツを設定
-     * @param contents
+     * @param contents String
      */
     public void setContents(String contents) {
         this.contents = contents;
     }
 
     /**
+     * チェックフラグを取得
+     * @return boolean
+     */
+    public boolean getCheckBoxVisibleFlg() {
+        return checkBoxVisibleFlg;
+    }
+
+    /**
+     * チェックフラグを設定
+     * @param checkBoxVisibleFlg boolean
+     */
+    public void setCheckBoxVisibleFlg(boolean checkBoxVisibleFlg) {
+        this.checkBoxVisibleFlg = checkBoxVisibleFlg;
+    }
+
+    /**
+     * チェックフラグを取得
+     * @return boolean
+     */
+    public boolean getCheckedFlg() {
+        return checkedFlg;
+    }
+
+    /**
+     * チェックフラグを設定
+     * @param checkedFlg boolean
+     */
+    public void setCheckedFlg(boolean checkedFlg) {
+        this.checkedFlg = checkedFlg;
+    }
+
+    /**
      * ContentValuesに値を設定して返却
-     * @return
+     * @return ContentValues
      */
     public ContentValues getParams(){
         ContentValues contentValues = new ContentValues();

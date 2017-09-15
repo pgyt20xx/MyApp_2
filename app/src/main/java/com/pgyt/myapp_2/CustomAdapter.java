@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,12 +20,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private static final String TAG = "CustomAdapter";
     private static final String BLANK_STRING = "";
+    private static final int CHECK_VISIBLE_FLG_ON = 1;
+    private static final int CHECK_VISIBLE_FLG_OFF = 0;
     private String mTitle;
     private ArrayList<ContentsBean> mItemList;
     private LayoutInflater layoutInflater;
     private OnItemClickListener itemClickListener;
     private OnImageItemClickListener imageItemClickListener;
     private OnItemLongClickListener itemLongClickListener;
+    private OnCheckBoxChegedListener checkBoxChegedListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(Context context, String title, ArrayList<ContentsBean> itemList) {
@@ -38,6 +43,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         // each data item is just a string in this case
+        private CheckBox mCheckBox;
         private TextView mContentsTitle;
         private TextView mContents;
         private TextView mRowId;
@@ -47,6 +53,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         private ViewHolder(View v) {
             super(v);
+            mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
             mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
             mContents = (TextView) v.findViewById(R.id.text_contents);
             mRowId = (TextView) v.findViewById(R.id.row_id);
@@ -91,6 +98,16 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             holder.mRowSetting.setVisibility(View.GONE);
 
         } else {
+            // チェックフラグを判定
+            if(mItemList.get(position).getCheckBoxVisibleFlg()){
+                // チェックボックスを表示する。
+                holder.mCheckBox.setVisibility(View.VISIBLE);
+
+            } else {
+                // チェックボックスを非表示にする。
+                holder.mCheckBox.setVisibility(View.GONE);
+
+            }
             holder.mContentsTitle.setVisibility(View.VISIBLE);
             holder.mContents.setVisibility(View.GONE);
             holder.mRowSetting.setVisibility(View.VISIBLE);
@@ -118,6 +135,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             public boolean onLongClick(View v) {
                 itemLongClickListener.onLongClick(v, position);
                 return true;
+            }
+        });
+
+        // チェックボックスのチェックボックス変更イベント
+        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                checkBoxChegedListener.onCheckBoxChenged(position, isChecked);
             }
         });
 
@@ -152,6 +177,13 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     /**
+     * チェックボックスチェンジのインターフェース
+     */
+    interface OnCheckBoxChegedListener {
+        boolean onCheckBoxChenged(int position, boolean isChecked);
+    }
+
+    /**
      * 行のクリックイベントのリスナーセット
      *
      * @param listener OnItemClickListener
@@ -176,5 +208,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
      */
     void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.itemLongClickListener = listener;
+    }
+
+    /**
+     * チェックボックスチェンジイベントのリスナーセット
+     *
+     * @param listener OnCheckBoxChegedListener
+     */
+    void setOnCheckBoxChegedListener(OnCheckBoxChegedListener listener) {
+        this.checkBoxChegedListener = listener;
     }
 }

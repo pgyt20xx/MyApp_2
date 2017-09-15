@@ -60,6 +60,8 @@ public class MainActivityFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_TITLE_NAME = "title_name";
     private static final String TAG = "MainActivityFragment";
+    private static final boolean CHECK_VISIBLE_FLG_ON = true;
+    private static final boolean CHECK_VISIBLE_FLG_OFF = false;
     private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
@@ -107,7 +109,7 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreateView Start");
 
         // パラメータ取得
-        String mCategoryName = getArguments().getString(ARG_TITLE_NAME);
+        final String mCategoryName = getArguments().getString(ARG_TITLE_NAME);
 
         View view = inflater.inflate(R.layout.content_main, container, false);
 
@@ -153,10 +155,18 @@ public class MainActivityFragment extends Fragment {
                         return true;
                     }
                 });
-
-
                 popupMenu.show();
+            }
+        });
 
+        // チェックボックス変更のイベント
+        mRecyclerAdapter.setOnCheckBoxChegedListener(new CustomAdapter.OnCheckBoxChegedListener() {
+            @Override
+            public boolean onCheckBoxChenged(int position, boolean isChecked) {
+                // チェックボックスの状態を設定(true:チェック、false:非チェック)
+                mContentsListMap.get(mCategoryName).get(position).setCheckedFlg(isChecked);
+
+                return false;
             }
         });
 
@@ -164,33 +174,35 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override
             public boolean onLongClick(final View view, final int position) {
+                // タイトルを消す
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
                 if (mActionModeCallback != null) {
                     return false;
                 }
 
-                // チェックボックスを全て表示、選択行をチェック状態にする。
-                int itemCount = getCurrentRecyclerView().getChildCount();
-                for (int i = 0; i < itemCount; i++) {
-                    getCurrentRecyclerView().getChildAt(i).findViewById(R.id.checkbox).setVisibility(View.VISIBLE);
+                // チェックボックス表示用のフラグをセット
+                for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
+                    contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_ON);
                 }
-                CheckBox mCheckbox = (CheckBox) view.findViewById(R.id.checkbox);
-                mCheckbox.setChecked(true);
+                getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
+
+                // クリックした行のチェックボックスをチェック
+//                Toast.makeText(getContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
+
+//                CheckBox mCheckbox = (CheckBox) getCurrentRecyclerView().getChildAt(position).findViewById(R.id.checkbox);
+//                mCheckbox.setChecked(true);
 
                 // アクションモードコールバック呼び出し。
                 mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
                     // Called when the user exits the action mode
                     @Override
                     public void onDestroyActionMode(ActionMode mode) {
-                        // アクションモードが破棄された時の処理
-                        int itemCount = getCurrentRecyclerView().getChildCount();
-                        for (int i = 0; i < itemCount; i++) {
-                            // 全部非表示・非チェック
-                            CheckBox checkBox = (CheckBox) getCurrentRecyclerView().getChildAt(i).findViewById(R.id.checkbox);
-                            checkBox.setVisibility(View.GONE);
-                            checkBox.setChecked(false);
+                        // チェックボックスを非表示にするフラグをセット
+                        for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
+                            contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_OFF);
                         }
+                        getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
                         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
                         mActionModeCallback = null;
                     }
@@ -204,48 +216,40 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onButtonClick(boolean bool, ActionMode mode) {
                         if (bool) {
-                            // 行数を取得
-                            int itemCount = getCurrentRecyclerView().getChildCount();
-
-                            // 対象のカテゴリ取得
-                            int page = mViewPager.getCurrentItem();
-                            String categoryName = mCategoryList.get(page).getCategory_name();
 
                             // 削除対象のリストを準備
                             ArrayList<ContentsBean> removeContentsList = new ArrayList<>();
-                            for (int i = 0; i < itemCount; i++) {
-                                RecyclerView currentView = getCurrentRecyclerView();
-                                CheckBox checkBox = (CheckBox) currentView.getChildAt(i).findViewById(R.id.checkbox);
+                            for (int i = 0; i < mContentsListMap.get(mCategoryName).size(); i++) {
 
                                 // チェック状態でなければ処理しない。
-                                if (!checkBox.isChecked()) {
+                                if (mContentsListMap.get(mCategoryName).get(i).getCheckedFlg()) {
                                     continue;
                                 }
 
                                 // データ削除
-                                contentsDelete((TextView) currentView.getChildAt(i).findViewById(R.id.row_id));
+                                int contentsId = mContentsListMap.get(mCategoryName).get(i).getId();
+                                TextView rowId = new TextView(getContext());
+                                rowId.setText(contentsId);
+                                contentsDelete(rowId);
 
                                 // 削除対象のリストに追加
-                                removeContentsList.add(mContentsListMap.get(categoryName).get(i));
-
+                                removeContentsList.add(mContentsListMap.get(mCategoryName).get(i));
                             }
 
                             // 削除対象をまとめて変数から削除
                             for (ContentsBean removeContents : removeContentsList) {
                                 // 削除対象の変数の位置を取得、見つからなければ次の行へ
-                                int position = mContentsListMap.get(categoryName).indexOf(removeContents);
-                                if (position < 0) {
+                                int contentsPosition = mContentsListMap.get(mCategoryName).indexOf(removeContents);
+                                if (contentsPosition < 0) {
                                     continue;
                                 }
 
                                 // 変数を削除する。
-                                mContentsListMap.get(categoryName).remove(removeContents);
+                                mContentsListMap.get(mCategoryName).remove(removeContents);
 
                                 // リサイクルビューに通知
-                                mRecyclerAdapter.notifyItemRemoved(position);
-                                mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
-
-
+                                mRecyclerAdapter.notifyItemRemoved(contentsPosition);
+                                mRecyclerAdapter.notifyItemRangeChanged(contentsPosition, mContentsListMap.get(mCategoryName).size());
                             }
                         }
                         mode.finish();
@@ -391,20 +395,20 @@ public class MainActivityFragment extends Fragment {
                 Log.d(TAG, "categoryDeletetEvent Click Positive");
 
                 // 現在のフラグメントのpositionを取得
-                int position = mViewPager.getCurrentItem();
+                int page = mViewPager.getCurrentItem();
 
                 // デフォルトタブでなければ削除
-                if (position == CLIPBOARD_TAB_POSITON) {
+                if (page == CLIPBOARD_TAB_POSITON) {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {
                     SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                     try {
-                        String param = mCategoryList.get(position).getCategory_name();
+                        String param = mCategoryList.get(page).getCategory_name();
                         new DBHelper(sqLiteDatabase).deletetCategory(param);
 
                         // 変数からカテゴリーを削除
-                        mCategoryList.remove(position);
+                        mCategoryList.remove(page);
 
                         // ページャーに変更を通知
                         mViewPager.getAdapter().notifyDataSetChanged();

@@ -36,6 +36,8 @@ import android.widget.Toast;
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -125,12 +127,12 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
-        // リサイクルビューのアダプター設定
-        ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
-        if (dataAdaperList == null) {
-            dataAdaperList = new ArrayList<>();
-        }
-        mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName, dataAdaperList);
+//        // リサイクルビューのアダプター設定
+//        ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
+//        if (dataAdaperList == null) {
+//            dataAdaperList = new ArrayList<>();
+//        }
+        mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName);
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
         // 行のクリックイベント
@@ -182,16 +184,26 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 // チェックボックス表示用のフラグをセット
+                int i = 0;
+                RecyclerView recyclerView = getCurrentRecyclerView();
                 for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
                     contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_ON);
+                    recyclerView.getAdapter().notifyItemChanged(i);
+
+                    i++;
                 }
-                getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
+
 
                 // クリックした行のチェックボックスをチェック
 //                Toast.makeText(getContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
 
-//                CheckBox mCheckbox = (CheckBox) getCurrentRecyclerView().getChildAt(position).findViewById(R.id.checkbox);
+//                CheckBox mCheckbox = (CheckBox) view.findViewById(R.id.checkbox);
 //                mCheckbox.setChecked(true);
+
+                mContentsListMap.get(mCategoryName).get(position).setCheckedFlg(true);
+
+                recyclerView.getAdapter().notifyItemChanged(position);
+
 
                 // アクションモードコールバック呼び出し。
                 mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
@@ -201,6 +213,7 @@ public class MainActivityFragment extends Fragment {
                         // チェックボックスを非表示にするフラグをセット
                         for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
                             contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_OFF);
+                            contents.setCheckedFlg(false);
                         }
                         getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
                         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
@@ -228,9 +241,7 @@ public class MainActivityFragment extends Fragment {
 
                                 // データ削除
                                 int contentsId = mContentsListMap.get(mCategoryName).get(i).getId();
-                                TextView rowId = new TextView(getContext());
-                                rowId.setText(contentsId);
-                                contentsDelete(rowId);
+                                contentsDelete(String.valueOf(contentsId));
 
                                 // 削除対象のリストに追加
                                 removeContentsList.add(mContentsListMap.get(mCategoryName).get(i));
@@ -497,12 +508,12 @@ public class MainActivityFragment extends Fragment {
     /**
      * コンテンツ削除
      */
-    private void contentsDelete(TextView mRowId) {
+    private void contentsDelete(String mRowId) {
         Log.d(TAG, "contentsDelete Start");
 
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
         try {
-            new DBHelper(sqLiteDatabase).deletetContents(mRowId.getText().toString());
+            new DBHelper(sqLiteDatabase).deletetContents(mRowId);
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -788,7 +799,7 @@ public class MainActivityFragment extends Fragment {
                 Log.d(TAG, "delete_category selected");
 
 				// 削除ボタン押下イベント
-				contentsDelete(textRowId);
+				contentsDelete(textRowId.getText().toString());
 				
 
 				// 対象のカテゴリ取得

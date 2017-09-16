@@ -16,6 +16,8 @@ import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.util.ArrayList;
 
+import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
+
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     private static final String TAG = "CustomAdapter";
@@ -23,7 +25,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final int CHECK_VISIBLE_FLG_ON = 1;
     private static final int CHECK_VISIBLE_FLG_OFF = 0;
     private String mTitle;
-    private ArrayList<ContentsBean> mItemList;
     private LayoutInflater layoutInflater;
     private OnItemClickListener itemClickListener;
     private OnImageItemClickListener imageItemClickListener;
@@ -31,9 +32,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private OnCheckBoxChegedListener checkBoxChegedListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomAdapter(Context context, String title, ArrayList<ContentsBean> itemList) {
+    CustomAdapter(Context context, String title) {
         this.mTitle = title;
-        this.mItemList = itemList;
         this.layoutInflater = LayoutInflater.from(context);
     }
 
@@ -84,12 +84,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mContentsTitle.setText(mItemList.get(position).getContents_title());
-        if (mItemList.get(position) == null) {
-            mItemList.get(position).setContents(BLANK_STRING);
+        holder.mContentsTitle.setText(mContentsListMap.get(mTitle).get(position).getContents_title());
+        if (mContentsListMap.get(mTitle).get(position) == null) {
+            mContentsListMap.get(mTitle).get(position).setContents(BLANK_STRING);
         }
-        holder.mContents.setText(mItemList.get(position).getContents());
-        holder.mRowId.setText(String.valueOf(mItemList.get(position).getId()));
+        holder.mContents.setText(mContentsListMap.get(mTitle).get(position).getContents());
+        holder.mRowId.setText(String.valueOf(mContentsListMap.get(mTitle).get(position).getId()));
 
         // クリップボートタブとそれ以外の描画を分ける
         if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
@@ -99,13 +99,23 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         } else {
             // チェックフラグを判定
-            if(mItemList.get(position).getCheckBoxVisibleFlg()){
+            if(mContentsListMap.get(mTitle).get(position).getCheckBoxVisibleFlg()){
                 // チェックボックスを表示する。
                 holder.mCheckBox.setVisibility(View.VISIBLE);
 
             } else {
                 // チェックボックスを非表示にする。
                 holder.mCheckBox.setVisibility(View.GONE);
+
+            }
+
+            if(mContentsListMap.get(mTitle).get(position).getCheckedFlg()){
+                // チェックボックスを表示する。
+                holder.mCheckBox.setChecked(true);
+
+            } else {
+                // チェックボックスを非表示にする。
+                holder.mCheckBox.setChecked(false);
 
             }
             holder.mContentsTitle.setVisibility(View.VISIBLE);
@@ -152,7 +162,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mItemList.size();
+        return mContentsListMap.get(mTitle).size();
     }
 
     /**

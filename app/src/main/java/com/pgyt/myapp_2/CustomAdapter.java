@@ -59,6 +59,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             mRowId = (TextView) v.findViewById(R.id.row_id);
             mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
             mRow = (LinearLayout) v.findViewById(R.id.row);
+
         }
     }
 
@@ -109,15 +110,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
             }
 
-            if(mContentsListMap.get(mTitle).get(position).getCheckedFlg()){
-                // チェックボックスを表示する。
-                holder.mCheckBox.setChecked(true);
-
-            } else {
-                // チェックボックスを非表示にする。
-                holder.mCheckBox.setChecked(false);
-
-            }
+            holder.mCheckBox.setChecked(mContentsListMap.get(mTitle).get(position).getCheckedFlg());
             holder.mContentsTitle.setVisibility(View.VISIBLE);
             holder.mContents.setVisibility(View.GONE);
             holder.mRowSetting.setVisibility(View.VISIBLE);

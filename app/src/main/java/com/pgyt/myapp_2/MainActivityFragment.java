@@ -235,7 +235,7 @@ public class MainActivityFragment extends Fragment {
                             for (int i = 0; i < mContentsListMap.get(mCategoryName).size(); i++) {
 
                                 // チェック状態でなければ処理しない。
-                                if (mContentsListMap.get(mCategoryName).get(i).getCheckedFlg()) {
+                                if (!mContentsListMap.get(mCategoryName).get(i).getCheckedFlg()) {
                                     continue;
                                 }
 

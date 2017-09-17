@@ -161,17 +161,6 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        // チェックボックス変更のイベント
-        mRecyclerAdapter.setOnCheckBoxChegedListener(new CustomAdapter.OnCheckBoxChegedListener() {
-            @Override
-            public boolean onCheckBoxChenged(int position, boolean isChecked) {
-                // チェックボックスの状態を設定(true:チェック、false:非チェック)
-                mContentsListMap.get(mCategoryName).get(position).setCheckedFlg(isChecked);
-
-                return false;
-            }
-        });
-
         // ロングクリックイベント
         mRecyclerAdapter.setOnItemLongClickListener(new CustomAdapter.OnItemLongClickListener() {
             @Override

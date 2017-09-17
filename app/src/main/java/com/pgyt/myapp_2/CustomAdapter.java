@@ -142,10 +142,11 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         });
 
         // チェックボックスのチェックボックス変更イベント
-        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                checkBoxChegedListener.onCheckBoxChenged(position, isChecked);
+                mContentsListMap.get(mTitle).get(holder.getAdapterPosition()).setCheckedFlg(isChecked);
             }
         });
 

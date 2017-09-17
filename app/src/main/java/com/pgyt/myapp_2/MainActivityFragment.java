@@ -536,6 +536,11 @@ public class MainActivityFragment extends Fragment {
                     mCategoryList = categoryList;
                     cursor.close();
 
+                    // コンテンツを新規作成
+                    for (CategoryBean category : mCategoryList) {
+                        mContentsListMap.put(category.getCategory_name(), new ArrayList<ContentsBean>());
+                    }
+
                     // データの変更を通知
                     mViewPager.getAdapter().notifyDataSetChanged();
 

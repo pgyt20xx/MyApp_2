@@ -1,9 +1,11 @@
 package com.pgyt.myapp_2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
+    private boolean settingMaxRow;
     private int fragmentPosition;
 
 
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setSupportActionBar(toolbar);
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
         new DBHelper(sqLiteDatabase).isDatabaseDelete(this);
+
+        // 設定を取得
+        getPreference();
 
         // サービスを起動
         this.startService(new Intent(this, MainService.class));
@@ -72,6 +78,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "onCreate End");
     }
 
+    /**
+     * 設定を取得する。
+     */
+    private void getPreference() {
+
+        // 設定値を取得
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // ステータスバーに表示するか
+        this.settingMaxRow = preferences.getBoolean("checkbox_maxrow_key", false);
+    }
 
     private void initAllData() {
         Log.d(TAG, "initData Start");
@@ -169,9 +186,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // DBからカテゴリー名を取得する
         LinkedHashMap<String, ArrayList<ContentsBean>> result = new LinkedHashMap<>();
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
+
+        // 設定から最大行数を取得
+        String limit = "50";
+        if(this.settingMaxRow) {
+           limit = "100";
+        }
         try {
             for (CategoryBean category : categoryList) {
-                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(category.getCategory_name());
+                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[] {category.getCategory_name(), limit});
                 boolean isEof = cursor.moveToFirst();
                 ArrayList<ContentsBean> contentsList = new ArrayList<>();
                 while (isEof) {

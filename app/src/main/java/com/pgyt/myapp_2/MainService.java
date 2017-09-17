@@ -36,7 +36,7 @@ public class MainService extends Service {
     private ClipboardManager mClipboardManager;
     private String mPreviousText;
     private String mClipBoard;
-    private boolean settingDisplayStatusBar = true;
+    private boolean settingDisplayStatusBar;
     private NotificationCompat.Builder mBuilder;
 
     public MainService() {
@@ -79,6 +79,9 @@ public class MainService extends Service {
     }
 
 
+    /**
+     * 設定を取得する。
+     */
     private void getPreference() {
 
         // 設定値を取得

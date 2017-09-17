@@ -113,9 +113,9 @@ class DBHelper {
      *
      * @return Cursor
      */
-    Cursor selectContentsList(String param) {
-        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? ORDER BY id DESC;";
-        return this.sqLiteDatabase.rawQuery(sql, new String[]{param});
+    Cursor selectContentsList(String[] param) {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? ORDER BY id DESC LIMIT ?;";
+        return this.sqLiteDatabase.rawQuery(sql, param);
     }
 
     /**

@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,8 +34,6 @@ import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -127,11 +124,6 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
 
-//        // リサイクルビューのアダプター設定
-//        ArrayList<ContentsBean> dataAdaperList = mContentsListMap.get(mCategoryName);
-//        if (dataAdaperList == null) {
-//            dataAdaperList = new ArrayList<>();
-//        }
         mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName);
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
@@ -173,21 +165,11 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 // チェックボックス表示用のフラグをセット
-                int i = 0;
                 RecyclerView recyclerView = getCurrentRecyclerView();
-                for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
-                    contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_ON);
+                for (int i = 0; i < mContentsListMap.get(mCategoryName).size(); i++) {
+                    mContentsListMap.get(mCategoryName).get(i).setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_ON);
                     recyclerView.getAdapter().notifyItemChanged(i);
-
-                    i++;
                 }
-
-
-                // クリックした行のチェックボックスをチェック
-//                Toast.makeText(getContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
-
-//                CheckBox mCheckbox = (CheckBox) view.findViewById(R.id.checkbox);
-//                mCheckbox.setChecked(true);
 
                 mContentsListMap.get(mCategoryName).get(position).setCheckedFlg(true);
 
@@ -200,7 +182,7 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onDestroyActionMode(ActionMode mode) {
                         // チェックボックスを非表示にするフラグをセット
-                        for (ContentsBean contents : mContentsListMap.get(mCategoryName)){
+                        for (ContentsBean contents : mContentsListMap.get(mCategoryName)) {
                             contents.setCheckBoxVisibleFlg(CHECK_VISIBLE_FLG_OFF);
                             contents.setCheckedFlg(false);
                         }
@@ -757,7 +739,7 @@ public class MainActivityFragment extends Fragment {
      * @param position int
      * @return boolean
      */
-    public boolean onOptionsPopUpItemSelected(MenuItem item, TextView textRowId, TextView textContents,  int position) {
+    public boolean onOptionsPopUpItemSelected(MenuItem item, TextView textRowId, TextView textContents, int position) {
         Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition Start");
 
         // 押下されたメニューで分岐
@@ -774,12 +756,12 @@ public class MainActivityFragment extends Fragment {
             case R.id.menu_share:
                 Log.d(TAG, "menu_share selected");
 
-				Intent intent = new Intent();
-				String sendString = textContents.getText().toString();
-			
-				intent.setAction(Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_TEXT, sendString);
+                Intent intent = new Intent();
+                String sendString = textContents.getText().toString();
+
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, sendString);
                 startActivity(intent);
 
                 return true;
@@ -787,21 +769,21 @@ public class MainActivityFragment extends Fragment {
             case R.id.menu_delete:
                 Log.d(TAG, "delete_category selected");
 
-				// 削除ボタン押下イベント
-				contentsDelete(textRowId.getText().toString());
-				
+                // 削除ボタン押下イベント
+                contentsDelete(textRowId.getText().toString());
 
-				// 対象のカテゴリ取得
-				int page = mViewPager.getCurrentItem();
-				String categoryName = mCategoryList.get(page).getCategory_name();
 
-				// 変数から削除
-				ContentsBean removeContents = mContentsListMap.get(categoryName).get(position);
-				mContentsListMap.get(categoryName).remove(removeContents);
+                // 対象のカテゴリ取得
+                int page = mViewPager.getCurrentItem();
+                String categoryName = mCategoryList.get(page).getCategory_name();
 
-				// リサイクルビューに通知
-				mRecyclerAdapter.notifyItemRemoved(position);
-				mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
+                // 変数から削除
+                ContentsBean removeContents = mContentsListMap.get(categoryName).get(position);
+                mContentsListMap.get(categoryName).remove(removeContents);
+
+                // リサイクルビューに通知
+                mRecyclerAdapter.notifyItemRemoved(position);
+                mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
 
                 return true;
         }

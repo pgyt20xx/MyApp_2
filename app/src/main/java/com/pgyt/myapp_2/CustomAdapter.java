@@ -12,10 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
-
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
@@ -100,7 +96,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         } else {
             // チェックフラグを判定
-            if(mContentsListMap.get(mTitle).get(position).getCheckBoxVisibleFlg()){
+            if (mContentsListMap.get(mTitle).get(position).getCheckBoxVisibleFlg()) {
                 // チェックボックスを表示する。
                 holder.mCheckBox.setVisibility(View.VISIBLE);
 
@@ -142,10 +138,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         });
 
         // チェックボックスのチェックボックス変更イベント
-        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                // チェックボックスのチェンジイベントはここで処理しないと、
+                // スクロールしたときにチェックが全て外れてしまう。
                 mContentsListMap.get(mTitle).get(holder.getAdapterPosition()).setCheckedFlg(isChecked);
             }
         });

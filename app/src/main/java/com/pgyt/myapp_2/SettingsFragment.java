@@ -1,6 +1,5 @@
 package com.pgyt.myapp_2;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.util.Log;

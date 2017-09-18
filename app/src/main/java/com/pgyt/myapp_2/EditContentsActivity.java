@@ -1,11 +1,11 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.os.*;
-import android.support.v7.app.*;
-import android.view.*;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
-import com.pgyt.myapp_2.model.*;
+import com.pgyt.myapp_2.model.ContentsBean;
 
 public class EditContentsActivity extends AppCompatActivity
         implements EditContentsFragment.OnFragmentInteractionListener {

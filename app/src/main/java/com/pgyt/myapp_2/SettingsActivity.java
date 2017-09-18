@@ -1,16 +1,19 @@
 package com.pgyt.myapp_2;
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 
 public class SettingsActivity extends PreferenceActivity
         implements LoaderManager.LoaderCallbacks<SharedPreferences> {
 
     private static String TAG = "SettingsActivity";
+    private boolean settingChengedFlg;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,7 +23,27 @@ public class SettingsActivity extends PreferenceActivity
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment()).commit();
 
-        getLoaderManager().initLoader(0, null, this);
+        SharedPreferencesLoader sharedPreferencesLoader = (SharedPreferencesLoader) getLoaderManager().initLoader(0, null, this);
+        sharedPreferencesLoader.setPreferenceChengeListener(new SharedPreferencesLoader.PreferenceChengeListener() {
+            @Override
+            public boolean preferenceChenged(String key) {
+                Log.d(TAG, key + " chenged");
+
+                // 変更した設定によって処理を分ける場合
+                switch (key) {
+                    case "checkbox_status_bar_key":
+                        settingChengedFlg = true;
+
+                        break;
+
+                    case "checkbox_maxrow_key":
+                        settingChengedFlg = true;
+
+                        break;
+                }
+                return false;
+            }
+        });
 
         Log.d(TAG, "onCreate End");
     }
@@ -30,8 +53,23 @@ public class SettingsActivity extends PreferenceActivity
         super.onDestroy();
         Log.d(TAG, "onDestroy Start");
 
-
         Log.d(TAG, "onDestroy End");
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyDown Start");
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent data = new Intent();
+            data.putExtra("settingChengedFlg", settingChengedFlg);
+            setResult(RESULT_OK, data);
+            finish();
+            return true;
+        }
+        Log.d(TAG, "onKeyDown End");
+
+        return false;
     }
 
     @Override
@@ -39,7 +77,7 @@ public class SettingsActivity extends PreferenceActivity
         Log.d(TAG, "onCreateLoader Start");
         Log.d(TAG, "onCreateLoader End");
 
-        return(new SharedPreferencesLoader(this));
+        return (new SharedPreferencesLoader(this));
     }
 
     @Override
@@ -61,4 +99,5 @@ public class SettingsActivity extends PreferenceActivity
 
         Log.d(TAG, "onLoaderReset End");
     }
+
 }

@@ -44,6 +44,7 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
 import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_EDIT_CONTENTS;
+import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_SETTING;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
@@ -65,7 +66,7 @@ public class MainActivityFragment extends Fragment {
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
     private ArrayAdapter<String> mDrawerAdapter;
-    private OnFragmentInteractionListener mListener;
+    private OnSettingChengedListener settingChengedListener;
     public PopupMenu popupMenu = null;
 
 
@@ -250,11 +251,14 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d(TAG, "onActivityResult Start");
+
         // Fragment#startActivityForResult() で呼んだ
         // IntentをFragmentActivityのonActivityResult()で処理する場合には、
         // 渡されたrequestCodeの下位16ビットだけを比較対象にする必要がある。
         // (requestCode & 0xffff)
 
+        // コンテンツ編集画面からの戻り
         if (requestCode == REQUEST_CODE_EDIT_CONTENTS) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
@@ -275,6 +279,15 @@ public class MainActivityFragment extends Fragment {
 
             }
         }
+
+        // 設定画面からの戻り
+        if (requestCode == REQUEST_CODE_SETTING) {
+            if (resultCode == RESULT_OK) {
+                boolean isChenged = intent.getBooleanExtra("settingChengedFlg", false);
+                settingChengedListener.onSettingChengedListener(isChenged);
+            }
+        }
+        Log.d(TAG, "onActivityResult End");
     }
 
     /**
@@ -661,8 +674,8 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onAttach Start");
 
         // リスナーは必ずここでセットする。
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnSettingChengedListener) {
+            settingChengedListener = (OnSettingChengedListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -676,14 +689,14 @@ public class MainActivityFragment extends Fragment {
         super.onDetach();
         Log.d(TAG, "onDetach Start");
 
-        mListener = null;
+        settingChengedListener = null;
 
         Log.d(TAG, "onDetach End");
     }
 
 
-    interface OnFragmentInteractionListener {
-        void onFragmentInteractionListener(View v);
+    interface OnSettingChengedListener {
+        void onSettingChengedListener(boolean isChenged);
     }
 
     @Override
@@ -729,7 +742,7 @@ public class MainActivityFragment extends Fragment {
                 // 設定押下
                 Log.d(TAG, "action_settings selected");
                 Intent intent = new android.content.Intent(getContext(), SettingsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_SETTING);
                 return true;
 
         }

@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.pgyt.myapp_2.model.ContentsBean;
 
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
 
 public class MainService extends Service {

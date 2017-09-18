@@ -2,7 +2,6 @@ package com.pgyt.myapp_2;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -11,6 +10,8 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static String TAG = "SharedPreferencesLoader";
+    private PreferenceChengeListener preferenceChengeListener;
+
 
     private SharedPreferences prefs;
 
@@ -37,8 +38,10 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
 
         onContentChanged();
 
-        Log.d(TAG, "onSharedPreferenceChanged End");
+        // 変更をアクティビティに通知
+        preferenceChengeListener.preferenceChenged(key);
 
+        Log.d(TAG, "onSharedPreferenceChanged End");
     }
 
     /**
@@ -71,5 +74,21 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
 
         Log.d(TAG, "persist End");
 
+    }
+
+    /**
+     * チェックボックスチェンジのインターフェース
+     */
+    interface PreferenceChengeListener {
+        boolean preferenceChenged(String key);
+    }
+
+    /**
+     * ロングクリックイベントのリスナーセット
+     *
+     * @param listener OnItemLongClickListener
+     */
+    void setPreferenceChengeListener(PreferenceChengeListener listener) {
+        this.preferenceChengeListener = listener;
     }
 }

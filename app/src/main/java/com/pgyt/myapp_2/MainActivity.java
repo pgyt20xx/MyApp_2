@@ -21,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -31,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
-        MainActivityFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+        MainActivityFragment.OnSettingChengedListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
     private static final String BLANK_STRING = "";
@@ -42,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private static final String COLUMN_CONTENTS = "contents";
     public static final int CLIPBOARD_TAB_POSITON = 0;
     public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
+    public static final int REQUEST_CODE_SETTING = 1002;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
     private boolean settingMaxRow;
@@ -189,12 +189,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // 設定から最大行数を取得
         String limit = "50";
-        if(this.settingMaxRow) {
-           limit = "100";
+        if (this.settingMaxRow) {
+            limit = "100";
         }
         try {
             for (CategoryBean category : categoryList) {
-                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[] {category.getCategory_name(), limit});
+                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[]{category.getCategory_name(), limit});
                 boolean isEof = cursor.moveToFirst();
                 ArrayList<ContentsBean> contentsList = new ArrayList<>();
                 while (isEof) {
@@ -242,15 +242,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
         Log.d(TAG, "setNavigationDrawerList End");
-    }
-
-    /**
-     * フラグメントがコンテンツを削除したら呼び出される。
-     *
-     * @param v View
-     */
-    public void onContentsChanged(View v) {
-
     }
 
     @Override
@@ -351,7 +342,27 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
-    public void onFragmentInteractionListener(View v) {
+    public void onSettingChengedListener(boolean isChenged) {
+        Log.d(TAG, "onSettingChengedListener Start");
+
+        if (isChenged) {
+            Log.d(TAG, "onSettingChengedListener Setting Chenged");
+
+            // 設定を取得
+            getPreference();
+
+            // サービスを起動
+            this.startService(new Intent(this, MainService.class));
+
+            // データ取得
+            initAllData();
+
+            // フラグメントの初期化
+            initFragmentView();
+
+        }
+
+        Log.d(TAG, "onSettingChengedListener End");
 
     }
 

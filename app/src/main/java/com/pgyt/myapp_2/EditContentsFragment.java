@@ -1,17 +1,19 @@
 package com.pgyt.myapp_2;
 
 
-import android.app.*;
-import android.content.*;
-import android.database.sqlite.*;
-import android.os.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
+import android.app.Fragment;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-import com.pgyt.myapp_2.model.*;
-
-import static com.pgyt.myapp_2.MainActivity.mCategoryList;
+import com.pgyt.myapp_2.model.ContentsBean;
 
 
 public class EditContentsFragment extends Fragment {

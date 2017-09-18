@@ -25,7 +25,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private OnItemClickListener itemClickListener;
     private OnImageItemClickListener imageItemClickListener;
     private OnItemLongClickListener itemLongClickListener;
-    private OnCheckBoxChegedListener checkBoxChegedListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     CustomAdapter(Context context, String title) {
@@ -179,13 +178,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     /**
-     * チェックボックスチェンジのインターフェース
-     */
-    interface OnCheckBoxChegedListener {
-        boolean onCheckBoxChenged(int position, boolean isChecked);
-    }
-
-    /**
      * 行のクリックイベントのリスナーセット
      *
      * @param listener OnItemClickListener
@@ -210,14 +202,5 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
      */
     void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.itemLongClickListener = listener;
-    }
-
-    /**
-     * チェックボックスチェンジイベントのリスナーセット
-     *
-     * @param listener OnCheckBoxChegedListener
-     */
-    void setOnCheckBoxChegedListener(OnCheckBoxChegedListener listener) {
-        this.checkBoxChegedListener = listener;
     }
 }

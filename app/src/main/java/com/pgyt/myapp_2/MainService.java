@@ -70,6 +70,9 @@ public class MainService extends Service {
         // 通知を設定
         if (this.settingDisplayStatusBar) {
             setNotification();
+        } else {
+            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(NOTIFICATION_ID);
         }
 
         Log.d(TAG, "onStartCommand End");

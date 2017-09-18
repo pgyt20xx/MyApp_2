@@ -351,7 +351,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             // 設定を取得
             getPreference();
 
-            // サービスを起動
+            // サービスを再起動
+            this.stopService(new Intent(this, MainService.class));
             this.startService(new Intent(this, MainService.class));
 
             // データ取得

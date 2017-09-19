@@ -11,8 +11,8 @@ import android.view.KeyEvent;
 
 public class SettingsActivity extends PreferenceActivity
         implements LoaderManager.LoaderCallbacks<SharedPreferences> {
-
     private static String TAG = "SettingsActivity";
+
     private boolean settingChengedFlg;
 
     @Override

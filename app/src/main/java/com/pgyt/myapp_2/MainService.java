@@ -23,15 +23,15 @@ import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.ContentsBean;
 
-import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
+import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
+import static com.pgyt.myapp_2.CommonConstants.STATUS_BAR_TITLE;
 
 
 public class MainService extends Service {
-
     private static final String TAG = "MainService";
-    private static final String CLIP_BOARD_TITLE_NAME = "DummyContentsTitle";
-    private static final String STATUS_BAR_TITLE = "Current ClipBoard";
-    private static final int NOTIFICATION_ID = 10;
+
     private ClipboardManager mClipboardManager;
     private String mPreviousText;
     private String mClipBoard;

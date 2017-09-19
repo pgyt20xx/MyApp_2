@@ -15,11 +15,12 @@ import android.widget.TextView;
 
 import com.pgyt.myapp_2.model.ContentsBean;
 
+import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+
 
 public class EditContentsFragment extends Fragment {
+    private static final String TAG = "EditContentsFragment";
 
-    private static String TAG = "EditContentsFragment";
-    private static final String BLANK_STRING = "";
     private OnFragmentInteractionListener mListener;
     private String contentsId;
     private String contentsTitle;

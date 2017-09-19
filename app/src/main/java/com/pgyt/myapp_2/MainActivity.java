@@ -29,26 +29,25 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
+import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
+import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
+
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnSettingChengedListener, NavigationView.OnNavigationItemSelectedListener {
-
-    public static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
-    private static final String BLANK_STRING = "";
     private static final String TAG = "MainActivity";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_CATEGORY_NAME = "category_name";
-    private static final String COLUMN_CONTENTS_TITLE = "contents_title";
-    private static final String COLUMN_CONTENTS = "contents";
-    public static final int CLIPBOARD_TAB_POSITON = 0;
-    public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
-    public static final int REQUEST_CODE_SETTING = 1002;
-	public static final int MAX_ROWSIZE_DEFAULT = 50;
-	public static final int MAX_ROWSIZE_MAXIMUM = 100;
+
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
+
     static boolean settingMaxRow;
-	static boolean settingDisplayStatusBar;
-	static int mMaxRowSize = 0;
+    static boolean settingDisplayStatusBar;
+    static int mMaxRowSize = 0;
     private int fragmentPosition;
 
 
@@ -89,17 +88,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // 設定値を取得
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		// ステータスバー表示
-		this.settingDisplayStatusBar = preferences.getBoolean("checkbox_status_bar_key", false);
+
+        // ステータスバー表示
+        this.settingDisplayStatusBar = preferences.getBoolean("checkbox_status_bar_key", false);
 
         // 最大行数
         this.settingMaxRow = preferences.getBoolean("checkbox_maxrow_key", false);
-		this.mMaxRowSize = MAX_ROWSIZE_DEFAULT;
-		if (settingMaxRow) {
-			mMaxRowSize = MAX_ROWSIZE_MAXIMUM;
-		} 
-		
+        this.mMaxRowSize = MAX_ROWSIZE_DEFAULT;
+        if (settingMaxRow) {
+            mMaxRowSize = MAX_ROWSIZE_MAXIMUM;
+        }
+
     }
 
     private void initAllData() {
@@ -200,13 +199,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
 
         // 設定から最大行数を取得
-        String limit = "50";
+        int limit = MAX_ROWSIZE_DEFAULT;
         if (this.settingMaxRow) {
-            limit = "100";
+            limit = MAX_ROWSIZE_MAXIMUM;
         }
         try {
             for (CategoryBean category : categoryList) {
-                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[]{category.getCategory_name(), limit});
+                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[]{category.getCategory_name(), String.valueOf(limit)});
                 boolean isEof = cursor.moveToFirst();
                 ArrayList<ContentsBean> contentsList = new ArrayList<>();
                 while (isEof) {

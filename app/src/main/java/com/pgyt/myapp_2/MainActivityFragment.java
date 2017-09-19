@@ -1,50 +1,69 @@
 package com.pgyt.myapp_2;
 
-import android.content.*;
-import android.database.*;
-import android.database.sqlite.*;
-import android.os.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.text.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import com.pgyt.myapp_2.model.*;
-import java.util.*;
-
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.pgyt.myapp_2.model.CategoryBean;
+import com.pgyt.myapp_2.model.ContentsBean;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
-import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
-import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_EDIT_CONTENTS;
-import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_SETTING;
-import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
+import static com.pgyt.myapp_2.CommonConstants.ARG_SECTION_NUMBER;
+import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE_NAME;
+import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_OFF;
+import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_ON;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
+import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_CATEGORY_NAME = "category_name";
-    private static final String COLUMN_CONTENTS_TITLE = "contents_title";
-    private static final String COLUMN_CONTENTS = "contents";
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final String ARG_TITLE_NAME = "title_name";
     private static final String TAG = "MainActivityFragment";
-    private static final boolean CHECK_VISIBLE_FLG_ON = true;
-    private static final boolean CHECK_VISIBLE_FLG_OFF = false;
+
+
     private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
@@ -217,10 +236,10 @@ public class MainActivityFragment extends Fragment {
                                 mRecyclerAdapter.notifyItemRemoved(contentsPosition);
                                 mRecyclerAdapter.notifyItemRangeChanged(contentsPosition, mContentsListMap.get(mCategoryName).size());
                             }
-							
-							// 削除した分補充する
+
+                            // 削除した分補充する
                             // 再取得する行数
-                            int rowSize= mContentsListMap.get(mCategoryName).size();
+                            int rowSize = mContentsListMap.get(mCategoryName).size();
                             int lack = mMaxRowSize - rowSize;
 
                             // 取得する行のid
@@ -234,7 +253,7 @@ public class MainActivityFragment extends Fragment {
                                 mContentsListMap.get(mCategoryName).add(contents);
                                 mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(mCategoryName).size());
                             }
-							
+
                         }
                         mode.finish();
                     }
@@ -802,31 +821,31 @@ public class MainActivityFragment extends Fragment {
                 // リサイクルビューに通知
                 mRecyclerAdapter.notifyItemRemoved(position);
                 mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
-				
-				// 再取得する行数
-				int rowSize= mContentsListMap.get(categoryName).size();
-				int lack = mMaxRowSize - rowSize;
-				
-				// 取得する行のid
-				int id = mContentsListMap.get(categoryName).get(rowSize - 1).getId();
-				
-				// コンテンツ取得
+
+                // 再取得する行数
+                int rowSize = mContentsListMap.get(categoryName).size();
+                int lack = mMaxRowSize - rowSize;
+
+                // 取得する行のid
+                int id = mContentsListMap.get(categoryName).get(rowSize - 1).getId();
+
+                // コンテンツ取得
                 LinkedHashMap<String, ArrayList<ContentsBean>> contentsMap = getContents(categoryName, String.valueOf(id), String.valueOf(lack));
 
                 // 変数に格納
-				for (ContentsBean contents : contentsMap.get(categoryName)) {
-					mContentsListMap.get(categoryName).add(contents);
-					mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(categoryName).size());
-				}
+                for (ContentsBean contents : contentsMap.get(categoryName)) {
+                    mContentsListMap.get(categoryName).add(contents);
+                    mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(categoryName).size());
+                }
 
                 return true;
         }
         Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition End");
         return super.onOptionsItemSelected(item);
     }
-	
-	// 指定した件数分、コンテンツを取得する
-	LinkedHashMap<String, ArrayList<ContentsBean>> getContents(String categoryName, String from, String limit) {
+
+    // 指定した件数分、コンテンツを取得する
+    LinkedHashMap<String, ArrayList<ContentsBean>> getContents(String categoryName, String from, String limit) {
         Log.d(TAG, "getContents Start");
 
         // DBからカテゴリー名を取得する
@@ -834,20 +853,20 @@ public class MainActivityFragment extends Fragment {
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getContext()).getWritableDatabase();
 
         try {
-			Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsWhereCategoryNameId(new String[]{categoryName, from, limit});
-			boolean isEof = cursor.moveToFirst();
-			ArrayList<ContentsBean> contentsList = new ArrayList<>();
-			while (isEof) {
-				ContentsBean contents = new ContentsBean();
-				contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
-				contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
-				contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
-				contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
-				contentsList.add(contents);
-				isEof = cursor.moveToNext();
-			}
-			result.put(categoryName, contentsList);
-			cursor.close();
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsWhereCategoryNameId(new String[]{categoryName, from, limit});
+            boolean isEof = cursor.moveToFirst();
+            ArrayList<ContentsBean> contentsList = new ArrayList<>();
+            while (isEof) {
+                ContentsBean contents = new ContentsBean();
+                contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
+                contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
+                contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
+                contentsList.add(contents);
+                isEof = cursor.moveToNext();
+            }
+            result.put(categoryName, contentsList);
+            cursor.close();
 
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
@@ -859,6 +878,6 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "getContents End");
         return result;
     }
-	
-	
+
+
 }

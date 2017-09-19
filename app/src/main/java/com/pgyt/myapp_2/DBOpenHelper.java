@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static com.pgyt.myapp_2.CommonConstants.DB_NAME;
+import static com.pgyt.myapp_2.CommonConstants.DB_VERSION;
+
 class DBOpenHelper extends SQLiteOpenHelper {
-    private Context m_context;
     private static final String TAG = "DBOpenHelper";
-    private static final String DB_NAME = "android_sqlite";
-    private static final int DB_VERSION = 1;
+
+    private Context m_context;
 
     DBOpenHelper(final Context context) {
         super(context, DB_NAME, null, DB_VERSION);

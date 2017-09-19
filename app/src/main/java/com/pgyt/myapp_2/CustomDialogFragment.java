@@ -11,20 +11,22 @@ import android.widget.TextView;
 
 import java.util.EventListener;
 
+import static com.pgyt.myapp_2.CommonConstants.ARG_EDIT_TITLE_1;
+import static com.pgyt.myapp_2.CommonConstants.ARG_EDIT_TITLE_2;
+import static com.pgyt.myapp_2.CommonConstants.ARG_MESSAGE;
+import static com.pgyt.myapp_2.CommonConstants.ARG_PATTERN;
+import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE;
+import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_CONFIRM;
+import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_EDIT_1;
+import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_EDIT_2;
+
 
 public class CustomDialogFragment extends DialogFragment {
+    private static CustomDialogFragment frag = new CustomDialogFragment();
+
     private ConfirmDialogListener confirmDialogListener = null;
     private EditDialogListener1 editDialogListener1 = null;
     private EditDialogListener2 editDialogListener2 = null;
-    private static final String ARG_TITLE = "title";
-    private static final String ARG_MESSAGE = "message";
-    private static final String ARG_EDIT_TITLE_1 = "editTextTitle1";
-    private static final String ARG_EDIT_TITLE_2 = "editTextTitle2";
-    private static final String ARG_PATTERN = "pattern";
-    private static final String PETTERN_DIALOG_CONFIRM = "0";
-    private static final String PETTERN_DIALOG_EDIT_1 = "1";
-    private static final String PETTERN_DIALOG_EDIT_2 = "2";
-    private static CustomDialogFragment frag = new CustomDialogFragment();
 
     /**
      * ダイアログフラグメント作成

@@ -11,13 +11,13 @@ import com.pgyt.myapp_2.model.ContentsBean;
 
 import java.io.File;
 
+import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+import static com.pgyt.myapp_2.CommonConstants.TABLE_NAME_CATEGORY;
+import static com.pgyt.myapp_2.CommonConstants.TABLE_NAME_CONTENTS;
+
 
 class DBHelper {
     private SQLiteDatabase sqLiteDatabase;
-    private static final String BLANK_STRING = "";
-    private static final String TABLE_NAME_CATEGORY = "CATEGORY";
-    private static final String TABLE_NAME_CONTENTS = "CONTENTS";
-
 
     DBHelper(final SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
@@ -131,8 +131,8 @@ class DBHelper {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE contents = ? ORDER BY category_name ASC, id DESC;";
         return this.sqLiteDatabase.rawQuery(sql, new String[]{param});
     }
-	
-	/**
+
+    /**
      * 指定したコンテンツを取得する。
      *
      * @return Cursor

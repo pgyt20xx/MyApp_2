@@ -9,10 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class CustomActionModeCallback implements ActionMode.Callback {
-
     private final String TAG = "ActionModeCallback";
-    private FragmentManager mFragmentManager;
 
+    private FragmentManager mFragmentManager;
     private OnButtonClickListener buttonClickListener;
 
     CustomActionModeCallback(View view, FragmentManager fragmentManager) {

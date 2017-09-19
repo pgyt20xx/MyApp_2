@@ -12,14 +12,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
-
     private static final String TAG = "CustomAdapter";
-    private static final String BLANK_STRING = "";
-    private static final int CHECK_VISIBLE_FLG_ON = 1;
-    private static final int CHECK_VISIBLE_FLG_OFF = 0;
     private String mTitle;
     private LayoutInflater layoutInflater;
     private OnItemClickListener itemClickListener;
@@ -88,7 +86,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRowId.setText(String.valueOf(mContentsListMap.get(mTitle).get(position).getId()));
 
         // クリップボートタブとそれ以外の描画を分ける
-        if (MainActivity.CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
+        if (CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
             holder.mContentsTitle.setVisibility(View.GONE);
             holder.mContents.setVisibility(View.VISIBLE);
             holder.mRowSetting.setVisibility(View.GONE);

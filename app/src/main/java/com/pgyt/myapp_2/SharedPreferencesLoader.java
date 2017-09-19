@@ -8,11 +8,9 @@ import android.util.Log;
 
 public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-
     private static String TAG = "SharedPreferencesLoader";
+
     private PreferenceChengeListener preferenceChengeListener;
-
-
     private SharedPreferences prefs;
 
     public SharedPreferencesLoader(Context context) {

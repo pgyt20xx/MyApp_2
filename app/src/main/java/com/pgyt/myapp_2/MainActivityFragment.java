@@ -219,6 +219,21 @@ public class MainActivityFragment extends Fragment {
                             }
 							
 							// 削除した分補充する
+                            // 再取得する行数
+                            int rowSize= mContentsListMap.get(mCategoryName).size();
+                            int lack = mMaxRowSize - rowSize;
+
+                            // 取得する行のid
+                            int id = mContentsListMap.get(mCategoryName).get(rowSize - 1).getId();
+
+                            // コンテンツ取得
+                            LinkedHashMap<String, ArrayList<ContentsBean>> contentsMap = getContents(mCategoryName, String.valueOf(id), String.valueOf(lack));
+
+                            // 変数に格納
+                            for (ContentsBean contents : contentsMap.get(mCategoryName)) {
+                                mContentsListMap.get(mCategoryName).add(contents);
+                                mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(mCategoryName).size());
+                            }
 							
                         }
                         mode.finish();
@@ -796,9 +811,9 @@ public class MainActivityFragment extends Fragment {
 				int id = mContentsListMap.get(categoryName).get(rowSize - 1).getId();
 				
 				// コンテンツ取得
-				LinkedHashMap<String, ArrayList<ContentsBean>> contentsMap = getContents(categoryName, String.valueOf(id), String.valueOf(lack));
-				
-				// 変数に格納
+                LinkedHashMap<String, ArrayList<ContentsBean>> contentsMap = getContents(categoryName, String.valueOf(id), String.valueOf(lack));
+
+                // 変数に格納
 				for (ContentsBean contents : contentsMap.get(categoryName)) {
 					mContentsListMap.get(categoryName).add(contents);
 					mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(categoryName).size());

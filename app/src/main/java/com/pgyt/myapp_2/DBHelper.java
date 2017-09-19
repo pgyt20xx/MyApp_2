@@ -138,7 +138,7 @@ class DBHelper {
      * @return Cursor
      */
     Cursor selectContentsWhereCategoryNameId(String param[]) {
-        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? AND id < ? ORDER BY category_name ASC, id DESC;";
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? AND id < ? ORDER BY category_name ASC, id DESC LIMIT ?;";
         return this.sqLiteDatabase.rawQuery(sql, param);
     }
 

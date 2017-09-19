@@ -42,9 +42,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public static final int CLIPBOARD_TAB_POSITON = 0;
     public static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     public static final int REQUEST_CODE_SETTING = 1002;
+	public static final int MAX_ROWSIZE_DEFAULT = 50;
+	public static final int MAX_ROWSIZE_MAXIMUM = 100;
     public static ArrayList<CategoryBean> mCategoryList;
     public static LinkedHashMap<String, ArrayList<ContentsBean>> mContentsListMap;
-    private boolean settingMaxRow;
+    static boolean settingMaxRow;
+	static boolean settingDisplayStatusBar;
+	static int mMaxRowSize = 0;
     private int fragmentPosition;
 
 
@@ -85,9 +89,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // 設定値を取得
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		// ステータスバー表示
+		this.settingDisplayStatusBar = preferences.getBoolean("checkbox_status_bar_key", false);
 
-        // ステータスバーに表示するか
+        // 最大行数
         this.settingMaxRow = preferences.getBoolean("checkbox_maxrow_key", false);
+		this.mMaxRowSize = MAX_ROWSIZE_DEFAULT;
+		if (settingMaxRow) {
+			mMaxRowSize = MAX_ROWSIZE_MAXIMUM;
+		} 
+		
     }
 
     private void initAllData() {

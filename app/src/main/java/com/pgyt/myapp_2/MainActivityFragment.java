@@ -1,42 +1,24 @@
 package com.pgyt.myapp_2;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
+import android.content.*;
+import android.database.*;
+import android.database.sqlite.*;
+import android.os.*;
+import android.support.design.widget.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.pgyt.myapp_2.model.*;
+import java.util.*;
+
 import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.pgyt.myapp_2.model.CategoryBean;
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -45,6 +27,7 @@ import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.CLIPBOARD_TAB_POSITON;
 import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_EDIT_CONTENTS;
 import static com.pgyt.myapp_2.MainActivity.REQUEST_CODE_SETTING;
+import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
@@ -234,6 +217,9 @@ public class MainActivityFragment extends Fragment {
                                 mRecyclerAdapter.notifyItemRemoved(contentsPosition);
                                 mRecyclerAdapter.notifyItemRangeChanged(contentsPosition, mContentsListMap.get(mCategoryName).size());
                             }
+							
+							// 削除した分補充する
+							
                         }
                         mode.finish();
                     }
@@ -790,7 +776,6 @@ public class MainActivityFragment extends Fragment {
                 // 削除ボタン押下イベント
                 contentsDelete(textRowId.getText().toString());
 
-
                 // 対象のカテゴリ取得
                 int page = mViewPager.getCurrentItem();
                 String categoryName = mCategoryList.get(page).getCategory_name();
@@ -802,10 +787,63 @@ public class MainActivityFragment extends Fragment {
                 // リサイクルビューに通知
                 mRecyclerAdapter.notifyItemRemoved(position);
                 mRecyclerAdapter.notifyItemRangeChanged(position, mContentsListMap.get(categoryName).size());
+				
+				// 再取得する行数
+				int rowSize= mContentsListMap.get(categoryName).size();
+				int lack = mMaxRowSize - rowSize;
+				
+				// 取得する行のid
+				int id = mContentsListMap.get(categoryName).get(rowSize - 1).getId();
+				
+				// コンテンツ取得
+				LinkedHashMap<String, ArrayList<ContentsBean>> contentsMap = getContents(categoryName, String.valueOf(id), String.valueOf(lack));
+				
+				// 変数に格納
+				for (ContentsBean contents : contentsMap.get(categoryName)) {
+					mContentsListMap.get(categoryName).add(contents);
+					mRecyclerAdapter.notifyItemInserted(mContentsListMap.get(categoryName).size());
+				}
 
                 return true;
         }
         Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition End");
         return super.onOptionsItemSelected(item);
     }
+	
+	// 指定した件数分、コンテンツを取得する
+	LinkedHashMap<String, ArrayList<ContentsBean>> getContents(String categoryName, String from, String limit) {
+        Log.d(TAG, "getContents Start");
+
+        // DBからカテゴリー名を取得する
+        LinkedHashMap<String, ArrayList<ContentsBean>> result = new LinkedHashMap<>();
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getContext()).getWritableDatabase();
+
+        try {
+			Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsWhereCategoryNameId(new String[]{categoryName, from, limit});
+			boolean isEof = cursor.moveToFirst();
+			ArrayList<ContentsBean> contentsList = new ArrayList<>();
+			while (isEof) {
+				ContentsBean contents = new ContentsBean();
+				contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+				contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
+				contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
+				contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
+				contentsList.add(contents);
+				isEof = cursor.moveToNext();
+			}
+			result.put(categoryName, contentsList);
+			cursor.close();
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+
+        } finally {
+            sqLiteDatabase.close();
+        }
+
+        Log.d(TAG, "getContents End");
+        return result;
+    }
+	
+	
 }

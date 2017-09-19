@@ -131,6 +131,16 @@ class DBHelper {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE contents = ? ORDER BY category_name ASC, id DESC;";
         return this.sqLiteDatabase.rawQuery(sql, new String[]{param});
     }
+	
+	/**
+     * 指定したコンテンツを取得する。
+     *
+     * @return Cursor
+     */
+    Cursor selectContentsWhereCategoryNameId(String param[]) {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS WHERE category_name = ? AND id < ? ORDER BY category_name ASC, id DESC;";
+        return this.sqLiteDatabase.rawQuery(sql, param);
+    }
 
 //    /**
 //     * クリーンアップ

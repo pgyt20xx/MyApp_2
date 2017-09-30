@@ -73,7 +73,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder Start");
 
         // - get element from your dataset at this position
@@ -113,7 +113,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemClickListener.onClick(v, holder.mContents, position);
+                itemClickListener.onClick(v, holder.mContents, holder.getAdapterPosition());
             }
         });
 
@@ -121,7 +121,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageItemClickListener.onClick(v, holder.mRowId, holder.mContents, position);
+                imageItemClickListener.onClick(v, holder.mRowId, holder.mContents, holder.getAdapterPosition());
             }
         });
 
@@ -129,7 +129,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         holder.mRow.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                itemLongClickListener.onLongClick(v, position);
+                itemLongClickListener.onLongClick(v, holder.getAdapterPosition());
                 return true;
             }
         });

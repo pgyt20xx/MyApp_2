@@ -67,7 +67,6 @@ public class MainActivityFragment extends Fragment {
     private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
-    private ArrayAdapter<String> mDrawerAdapter;
     private OnSettingChengedListener settingChengedListener;
     public PopupMenu popupMenu = null;
 
@@ -180,7 +179,7 @@ public class MainActivityFragment extends Fragment {
 
 
                 // アクションモードコールバック呼び出し。
-                mActionModeCallback = new CustomActionModeCallback(view, getFragmentManager()) {
+                mActionModeCallback = new CustomActionModeCallback(getFragmentManager()) {
                     // Called when the user exits the action mode
                     @Override
                     public void onDestroyActionMode(ActionMode mode) {
@@ -294,8 +293,6 @@ public class MainActivityFragment extends Fragment {
 
                 // リサイクルビューに通知
                 getCurrentRecyclerView().getAdapter().notifyItemChanged(position);
-
-            } else if (requestCode == RESULT_CANCELED) {
 
             }
         }
@@ -600,7 +597,7 @@ public class MainActivityFragment extends Fragment {
     /**
      * 現在表示されているリサイクルビューを返す
      *
-     * @return
+     * @return RecyclerView
      */
     private RecyclerView getCurrentRecyclerView() {
         FragmentPagerAdapter sectionPagerAdapter = (FragmentPagerAdapter) mViewPager.getAdapter();
@@ -649,7 +646,7 @@ public class MainActivityFragment extends Fragment {
         for (CategoryBean category : mCategoryList) {
             drawerList.add(category.getCategory_name());
         }
-        mDrawerAdapter = new ArrayAdapter<>(getActivity(), R.layout.drawer_list_item, drawerList);
+        ArrayAdapter<String> mDrawerAdapter = new ArrayAdapter<>(getActivity(), R.layout.drawer_list_item, drawerList);
         mDrawerList.setAdapter(mDrawerAdapter);
 
         //リスト項目が選択された時のイベントを追加

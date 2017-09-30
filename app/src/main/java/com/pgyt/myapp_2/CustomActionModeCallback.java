@@ -6,15 +6,13 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
-public class CustomActionModeCallback implements ActionMode.Callback {
-    private final String TAG = "ActionModeCallback";
+class CustomActionModeCallback implements ActionMode.Callback {
 
     private FragmentManager mFragmentManager;
     private OnButtonClickListener buttonClickListener;
 
-    CustomActionModeCallback(View view, FragmentManager fragmentManager) {
+    CustomActionModeCallback(FragmentManager fragmentManager) {
         this.mFragmentManager = fragmentManager;
 
     }

@@ -13,7 +13,7 @@ public class SettingsActivity extends PreferenceActivity
         implements LoaderManager.LoaderCallbacks<SharedPreferences> {
     private static String TAG = "SettingsActivity";
 
-    private boolean settingChengedFlg;
+    private boolean settingChangedFlg;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,20 +24,20 @@ public class SettingsActivity extends PreferenceActivity
                 .replace(android.R.id.content, new SettingsFragment()).commit();
 
         SharedPreferencesLoader sharedPreferencesLoader = (SharedPreferencesLoader) getLoaderManager().initLoader(0, null, this);
-        sharedPreferencesLoader.setPreferenceChengeListener(new SharedPreferencesLoader.PreferenceChengeListener() {
+        sharedPreferencesLoader.setPreferenceChangeListener(new SharedPreferencesLoader.PreferenceChangeListener() {
             @Override
-            public boolean preferenceChenged(String key) {
-                Log.d(TAG, key + " chenged");
+            public boolean preferenceChanged(String key) {
+                Log.d(TAG, key + " changed");
 
                 // 変更した設定によって処理を分ける場合
                 switch (key) {
                     case "checkbox_status_bar_key":
-                        settingChengedFlg = true;
+                        settingChangedFlg = true;
 
                         break;
 
                     case "checkbox_maxrow_key":
-                        settingChengedFlg = true;
+                        settingChangedFlg = true;
 
                         break;
                 }
@@ -62,7 +62,7 @@ public class SettingsActivity extends PreferenceActivity
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent data = new Intent();
-            data.putExtra("settingChengedFlg", settingChengedFlg);
+            data.putExtra("settingChangedFlg", settingChangedFlg);
             setResult(RESULT_OK, data);
             finish();
             return true;

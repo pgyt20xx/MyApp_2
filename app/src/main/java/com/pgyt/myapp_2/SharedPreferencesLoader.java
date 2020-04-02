@@ -10,7 +10,7 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static String TAG = "SharedPreferencesLoader";
 
-    private PreferenceChengeListener preferenceChengeListener;
+    private PreferenceChangeListener preferenceChangeListener;
     private SharedPreferences prefs;
 
     public SharedPreferencesLoader(Context context) {
@@ -37,7 +37,7 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
         onContentChanged();
 
         // 変更をアクティビティに通知
-        preferenceChengeListener.preferenceChenged(key);
+        preferenceChangeListener.preferenceChanged(key);
 
         Log.d(TAG, "onSharedPreferenceChanged End");
     }
@@ -77,8 +77,8 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
     /**
      * チェックボックスチェンジのインターフェース
      */
-    interface PreferenceChengeListener {
-        boolean preferenceChenged(String key);
+    interface PreferenceChangeListener {
+        boolean preferenceChanged(String key);
     }
 
     /**
@@ -86,7 +86,7 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
      *
      * @param listener OnItemLongClickListener
      */
-    void setPreferenceChengeListener(PreferenceChengeListener listener) {
-        this.preferenceChengeListener = listener;
+    void setPreferenceChangeListener(PreferenceChangeListener listener) {
+        this.preferenceChangeListener = listener;
     }
 }

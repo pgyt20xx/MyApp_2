@@ -39,7 +39,7 @@ import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
-        MainActivityFragment.OnSettingChengedListener, NavigationView.OnNavigationItemSelectedListener {
+        MainActivityFragment.OnSettingChangedListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
 
     public static ArrayList<CategoryBean> mCategoryList;
@@ -353,11 +353,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
-    public void onSettingChengedListener(boolean isChenged) {
-        Log.d(TAG, "onSettingChengedListener Start");
+    public void onSettingChangedListener(boolean isChanged) {
+        Log.d(TAG, "onSettingChangedListener Start");
 
-        if (isChenged) {
-            Log.d(TAG, "onSettingChengedListener Setting Chenged");
+        if (isChanged) {
+            Log.d(TAG, "onSettingChangedListener Setting Changed");
 
             // 設定を取得
             getPreference();
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         }
 
-        Log.d(TAG, "onSettingChengedListener End");
+        Log.d(TAG, "onSettingChangedListener End");
 
     }
 

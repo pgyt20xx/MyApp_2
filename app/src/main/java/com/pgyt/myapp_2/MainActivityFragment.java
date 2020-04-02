@@ -38,7 +38,6 @@ import com.pgyt.myapp_2.model.ContentsBean;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.pgyt.myapp_2.CommonConstants.ARG_SECTION_NUMBER;
@@ -67,7 +66,7 @@ public class MainActivityFragment extends Fragment {
     private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
-    private OnSettingChengedListener settingChengedListener;
+    private OnSettingChangedListener settingChangedListener;
     public PopupMenu popupMenu = null;
 
 
@@ -300,8 +299,8 @@ public class MainActivityFragment extends Fragment {
         // 設定画面からの戻り
         if (requestCode == REQUEST_CODE_SETTING) {
             if (resultCode == RESULT_OK) {
-                boolean isChenged = intent.getBooleanExtra("settingChengedFlg", false);
-                settingChengedListener.onSettingChengedListener(isChenged);
+                boolean isChanged = intent.getBooleanExtra("settingChangedFlg", false);
+                settingChangedListener.onSettingChangedListener(isChanged);
             }
         }
         Log.d(TAG, "onActivityResult End");
@@ -691,8 +690,8 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onAttach Start");
 
         // リスナーは必ずここでセットする。
-        if (context instanceof OnSettingChengedListener) {
-            settingChengedListener = (OnSettingChengedListener) context;
+        if (context instanceof OnSettingChangedListener) {
+            settingChangedListener = (OnSettingChangedListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -706,14 +705,14 @@ public class MainActivityFragment extends Fragment {
         super.onDetach();
         Log.d(TAG, "onDetach Start");
 
-        settingChengedListener = null;
+        settingChangedListener = null;
 
         Log.d(TAG, "onDetach End");
     }
 
 
-    interface OnSettingChengedListener {
-        void onSettingChengedListener(boolean isChenged);
+    interface OnSettingChangedListener {
+        void onSettingChangedListener(boolean isChanged);
     }
 
     @Override

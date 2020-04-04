@@ -16,10 +16,15 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        google()
+        maven { url 'https://maven.google.com' }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.encoding = "UTF-8"
 }

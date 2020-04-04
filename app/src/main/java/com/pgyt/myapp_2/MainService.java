@@ -2,6 +2,7 @@ package com.pgyt.myapp_2;
 
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -17,7 +18,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ public class MainService extends Service {
     private String mPreviousText;
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
+    // TODO
     private NotificationCompat.Builder mBuilder;
 
     public MainService() {
@@ -59,6 +61,7 @@ public class MainService extends Service {
         Log.d(TAG, "onCreate End");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -124,7 +127,9 @@ public class MainService extends Service {
                 mPreviousText = item.getText().toString();
 
                 // 通知バーの更新
-                setNotification();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    setNotification();
+                }
 
                 // コピーしたテキストの登録
                 insertNewContents(item);
@@ -172,15 +177,36 @@ public class MainService extends Service {
 
     /**
      * ステータスバーに常駐
+     * TODO
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void setNotification() {
         Log.d(TAG, "setNotification Start");
+
+        // チャンネル登録
+        String channelId = "clip"; // 通知チャンネルのIDにする任意の文字列
+        String name = "更新情報"; // 通知チャンネル名
+        int importance = NotificationManager.IMPORTANCE_HIGH; // デフォルトの重要度
+        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+        channel.setDescription("通知チャンネルの説明"); // 必須ではない
+
+        // 通知チャンネルの設定のデフォルト値。設定必須ではなく、ユーザーが変更可能。
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        channel.enableVibration(true);
+        channel.enableLights(true);
+
+        // ランチャー上でアイコンバッジを表示するかどうか
+        channel.setShowBadge(false);
+        NotificationManager nm = getSystemService(NotificationManager.class);
+        nm.createNotificationChannel(channel);
+
         mClipBoard = "";
+        // TODO :getPrimaryClip instead
         if (mClipboardManager != null && mClipboardManager.getText() != null) {
             mClipBoard = mClipboardManager.getText().toString();
         }
 
-        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder = new NotificationCompat.Builder(this, channelId);
         mBuilder.setContentTitle(STATUS_BAR_TITLE);
         mBuilder.setContentText(mClipBoard);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);

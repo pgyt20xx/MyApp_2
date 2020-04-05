@@ -132,7 +132,8 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, TextView textContents, int position) {
-                Toast.makeText(getContext(), "\"" + textContents.getText() + "\"" + " is Cliped", Toast.LENGTH_SHORT).show();
+                // TODO 不要なら消す
+                //Toast.makeText(getContext(), "\"" + textContents.getText() + "\"" + " is Clipped", Toast.LENGTH_SHORT).show();
                 copyClip(textContents);
             }
         });

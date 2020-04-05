@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,6 @@ public class MainService extends Service {
     private String mPreviousText;
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
-    // TODO
     private NotificationCompat.Builder mBuilder;
 
     public MainService() {
@@ -99,6 +99,7 @@ public class MainService extends Service {
 
     /**
      * クリップボードの監視
+     * TODO バックグラウンドで動作しない。→Android10
      */
     private OnPrimaryClipChangedListener clipListener = new OnPrimaryClipChangedListener() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -186,13 +187,13 @@ public class MainService extends Service {
         // チャンネル登録
         String channelId = "clip"; // 通知チャンネルのIDにする任意の文字列
         String name = "更新情報"; // 通知チャンネル名
-        int importance = NotificationManager.IMPORTANCE_HIGH; // デフォルトの重要度
+        int importance = NotificationManager.IMPORTANCE_MIN; // デフォルトの重要度
         NotificationChannel channel = new NotificationChannel(channelId, name, importance);
         channel.setDescription("通知チャンネルの説明"); // 必須ではない
 
         // 通知チャンネルの設定のデフォルト値。設定必須ではなく、ユーザーが変更可能。
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        channel.enableVibration(true);
+        channel.enableVibration(false);
         channel.enableLights(true);
 
         // ランチャー上でアイコンバッジを表示するかどうか
@@ -221,8 +222,9 @@ public class MainService extends Service {
         notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         notification.flags = Notification.FLAG_ONGOING_EVENT;
 
-        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mNotifyMgr.notify(NOTIFICATION_ID, notification);
+//        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        mNotifyMgr.notify(NOTIFICATION_ID, notification);
+        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, mBuilder.build());
         startForeground(NOTIFICATION_ID, notification);
         Log.d(TAG, "setNotification End");
     }

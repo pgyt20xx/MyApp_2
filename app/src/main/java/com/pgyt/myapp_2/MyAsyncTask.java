@@ -30,7 +30,7 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
         super.onPostExecute(result);
 
         // 後処理
-        listener.onSucces(result);
+        listener.onSuccess(result);
     }
 
     void setListener(Listener listener){
@@ -38,6 +38,6 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
     }
 
     interface Listener{
-        void onSucces(String result);
+        void onSuccess(String result);
     }
 }

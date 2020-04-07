@@ -39,6 +39,7 @@ public class MainService extends Service {
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
     private NotificationCompat.Builder mBuilder;
+    private MyAsyncTask task;
 
     public MainService() {
         mPreviousText = "";
@@ -54,11 +55,23 @@ public class MainService extends Service {
         mClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (mClipboardManager != null) {
             mClipboardManager.addPrimaryClipChangedListener(clipListener);
+            task = new MyAsyncTask();
+            task.setListener(createAsyncTaskListener());
+            task.execute();
         } else {
             Log.e(TAG, "error get clipboard. service end.");
             this.stopSelf();
         }
         Log.d(TAG, "onCreate End");
+    }
+
+    private MyAsyncTask.Listener createAsyncTaskListener() {
+        return new MyAsyncTask.Listener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.d(TAG, result);
+            }
+        };
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -244,6 +257,7 @@ public class MainService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy Start");
+        task.setListener(null);
         super.onDestroy();
         cancelNotification();
         if (mClipboardManager != null) {

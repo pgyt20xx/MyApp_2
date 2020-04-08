@@ -1,7 +1,10 @@
 package com.pgyt.myapp_2;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +19,7 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = "MyAsyncTask";
     private Listener listener;
     private ClipboardManager mClipboardManager;
+    private String mPreviousText;
 
 
     @Override
@@ -31,19 +35,52 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
         Log.d(TAG,"doInBackground Start");
 
-        int i = 0;
+        Context context = MyContext.getInstance().getMyContext();
+        if (context == null) {
+            return null;
+        }
+
+        mClipboardManager = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
+        if (mClipboardManager == null) {
+            return null;
+        }
+
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
 
-                Log.d(TAG,"doInBackground" + String.valueOf(i));
+                if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
+                    ClipData data = mClipboardManager.getPrimaryClip();
+
+                    ClipData.Item item = data.getItemAt(0);
+                    if (item == null || item.getText() == null) {
+                        continue;
+                    }
+
+                    // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
+                    if (item.getText().toString().equals(mPreviousText)) {
+                        continue;
+                    }
+
+                    // チェック用の変数
+                    mPreviousText = item.getText().toString();
+
+                    // 通知バーの更新
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        // TODO
+                        //setNotification();
+                        Log.d(TAG,"doInBackground " + item.getText().toString());
+
+                    }
+                }
+
+
+
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
-
-            i++;
         }
 //        TODO
 //        return null;

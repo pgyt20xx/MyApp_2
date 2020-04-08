@@ -1,5 +1,6 @@
 package com.pgyt.myapp_2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -379,6 +380,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "onSettingChangedListener End");
 
     }
+//
+//    /**
+//     * contextを返す
+//     * Activity以外からcontextを取得するためのメソッド
+//     * @return context
+//     */
+//    public static Context getAppContext () {
+//        return MainActivity.context;
+//    }
 
     /**
      * FragmentPagerAdapter呼び出し
@@ -433,6 +443,5 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, "SectionsPagerAdapter getItemPosition End");
             return POSITION_NONE;
         }
-
     }
 }

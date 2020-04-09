@@ -24,10 +24,6 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "MyAsyncTask";
     private Listener listener;
-    private ClipboardManager mClipboardManager;
-    private Context context;
-    private String mPreviousText;
-
 
     @Override
     protected void onPreExecute() {
@@ -39,97 +35,13 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... voids) {
+        // 本処理
 
-        Log.d(TAG,"doInBackground Start");
+        Log.d(TAG, "doInBackground Start");
 
-        this.context = MyContext.getInstance().getMyContext();
-        if (context == null) {
-            return null;
-        }
+        Log.d(TAG, "doInBackground end");
 
-        mClipboardManager = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
-        if (mClipboardManager == null) {
-            return null;
-        }
-
-        while (true) {
-            try {
-                Thread.sleep(2000);
-
-                if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
-                    ClipData data = mClipboardManager.getPrimaryClip();
-
-                    ClipData.Item item = data.getItemAt(0);
-                    if (item == null || item.getText() == null) {
-                        continue;
-                    }
-
-                    // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
-                    if (item.getText().toString().equals(mPreviousText)) {
-                        continue;
-                    }
-
-                    // チェック用の変数
-                    mPreviousText = item.getText().toString();
-
-                    // 通知バーの更新
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                        // 通知バーを更新する為にサービスにコールバックする
-                        listener.onSuccess(item.getText().toString());
-                        Log.d(TAG,"doInBackground " + item.getText().toString());
-                    }
-
-                    // コピーしたテキストの登録
-                    insertNewContents(item);
-                }
-
-
-
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Thread.currentThread().interrupt();
-            }
-        }
-//        TODO
-//        return null;
-    }
-
-    /**
-     * テキストをDBに登録
-     *
-     * @param item ClipData.Item
-     */
-    private void insertNewContents(ClipData.Item item) {
-        Log.d(TAG, "insertNewContents Start");
-
-        // アプリ内のコンテンツは登録しない。
-        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
-        try {
-            // 既にあるコンテンツは登録しない
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(item.getText().toString());
-            int cnt = cursor.getCount();
-            cursor.close();
-            if (cnt > 0) {
-                return;
-            }
-
-            // コンテンツの登録
-            Toast.makeText(context, "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
-            ContentsBean contents = new ContentsBean();
-            contents.setCategory_name(CLIPBOARD_TAB_NAME);
-            contents.setContents_title(CLIP_BOARD_TITLE_NAME);
-            contents.setContents(item.getText().toString());
-            new DBHelper(sqLiteDatabase).insertContents(contents);
-
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-
-        } finally {
-            sqLiteDatabase.close();
-        }
-        Log.d(TAG, "insertNewContents End");
+        return null;
     }
 
     @Override
@@ -148,7 +60,5 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
     interface Listener {
         void onSuccess(String result);
-        void onClipChanged(String clipItem);
-
     }
 }

@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -30,7 +32,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -61,14 +62,11 @@ import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
  */
 public class MainActivityFragment extends Fragment {
     private static final String TAG = "MainActivityFragment";
-
-
     private ViewPager mViewPager;
     private CustomAdapter mRecyclerAdapter;
     private CustomActionModeCallback mActionModeCallback;
     private OnSettingChangedListener settingChangedListener;
     public PopupMenu popupMenu = null;
-
 
     // コンストラクタ
     public MainActivityFragment() {
@@ -103,6 +101,7 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -111,6 +110,7 @@ public class MainActivityFragment extends Fragment {
         // パラメータ取得
         final String mCategoryName = getArguments().getString(ARG_TITLE_NAME);
 
+        // viewを取得
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // ページャー取得
@@ -132,8 +132,6 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, TextView textContents, int position) {
-                // TODO 不要なら消す
-                //Toast.makeText(getContext(), "\"" + textContents.getText() + "\"" + " is Clipped", Toast.LENGTH_SHORT).show();
                 copyClip(textContents);
             }
         });
@@ -268,6 +266,8 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.d(TAG, "onActivityResult Start");
@@ -313,6 +313,7 @@ public class MainActivityFragment extends Fragment {
      * @param id int
      * @return int
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private int getRowPositionById(int id, String categoryName) {
         ArrayList<ContentsBean> currentList = mContentsListMap.get(categoryName);
         int result = 0;
@@ -333,6 +334,7 @@ public class MainActivityFragment extends Fragment {
 
         CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Categry", "realy?", "CategoryName", null, "1");
         newFragment.setEditDialogListener1(new CustomDialogFragment.EditDialogListener1() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPositiveClick(EditText text) {
                 Log.d(TAG, "categoryInsertEvent Click Positive");
@@ -343,7 +345,6 @@ public class MainActivityFragment extends Fragment {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Please enter something", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-
 
                 SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                 try {
@@ -397,14 +398,15 @@ public class MainActivityFragment extends Fragment {
     /**
      * カテゴリー削除のダイアログイベント
      */
-    private void categoryDeletetEvent() {
-        Log.d(TAG, "categoryDeletetEvent Start");
+    private void categoryDeleteEvent() {
+        Log.d(TAG, "categoryDeleteEvent Start");
 
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete Categry", "realy?", null, null, "0");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete Category", "really?", null, null, "0");
         newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPositiveClick() {
-                Log.d(TAG, "categoryDeletetEvent Click Positive");
+                Log.d(TAG, "categoryDeleteEvent Click Positive");
 
                 // 現在のフラグメントのpositionを取得
                 int page = mViewPager.getCurrentItem();
@@ -438,12 +440,12 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void onNegativeClick() {
-                Log.d(TAG, "categoryDeletetEvent Click Negative");
+                Log.d(TAG, "categoryDeleteEvent Click Negative");
             }
         });
-        newFragment.show(getFragmentManager(), "categoryDeletetEvent");
+        newFragment.show(getFragmentManager(), "categoryDeleteEvent");
 
-        Log.d(TAG, "categoryDeletetEvent End");
+        Log.d(TAG, "categoryDeleteEvent End");
     }
 
     /**
@@ -451,8 +453,9 @@ public class MainActivityFragment extends Fragment {
      */
     private void contentsInsertEvent() {
         Log.d(TAG, "contentsInsertEvent Start");
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Contents", "realy", "ContentsTitle", "Contents", "2");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Contents", "really", "ContentsTitle", "Contents", "2");
         newFragment.setEditDialogListener2(new CustomDialogFragment.EditDialogListener2() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPositiveClick(EditText contentsTitle, EditText contentsText) {
                 Log.d(TAG, "contentsInsertEvent Click Positive");
@@ -531,11 +534,12 @@ public class MainActivityFragment extends Fragment {
     /**
      * 全削除のダイアログイベント
      */
-    private void deletetAllEvent() {
+    private void deleteAllEvent() {
         Log.d(TAG, "deleteAllEvent Start");
 
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete All", "realy?", null, null, "0");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete All", "really?", null, null, "0");
         newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPositiveClick() {
                 Log.d(TAG, "deleteAllEvent Click Positive");
@@ -638,6 +642,7 @@ public class MainActivityFragment extends Fragment {
     /**
      * ナビゲーションドロワーリスト設定
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void setDrawerList() {
         // ナビゲーションドロワーに設定するリストを作成
         ListView mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
@@ -666,6 +671,7 @@ public class MainActivityFragment extends Fragment {
      *
      * @param position int
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void popupEditEvent(int position) {
         // 設定押下
         int page = mViewPager.getCurrentItem();
@@ -746,13 +752,13 @@ public class MainActivityFragment extends Fragment {
             case R.id.delete_category:
                 // カテゴリー削除押下
                 Log.d(TAG, "delete_category selected");
-                categoryDeletetEvent();
+                categoryDeleteEvent();
                 return true;
 
             case R.id.all_delete:
                 // 全削除押下
                 Log.d(TAG, "all_delete selected");
-                deletetAllEvent();
+                deleteAllEvent();
                 return true;
 
             case R.id.action_settings:
@@ -774,6 +780,7 @@ public class MainActivityFragment extends Fragment {
      * @param position int
      * @return boolean
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public boolean onOptionsPopUpItemSelected(MenuItem item, TextView textRowId, TextView textContents, int position) {
         Log.d(TAG, "onOptionsPopUpItemSelected getItemPosition Start");
 

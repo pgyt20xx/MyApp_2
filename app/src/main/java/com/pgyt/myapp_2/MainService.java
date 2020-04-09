@@ -11,8 +11,6 @@ import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -21,12 +19,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.pgyt.myapp_2.model.ContentsBean;
-
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
 import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
 import static com.pgyt.myapp_2.CommonConstants.STATUS_BAR_TITLE;
 
@@ -35,16 +28,17 @@ public class MainService extends Service {
     private static final String TAG = "MainService";
 
     private ClipboardManager mClipboardManager;
-    private String mPreviousText;
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
     private NotificationCompat.Builder mBuilder;
-    private MyAsyncTask task;
+    private String mPreviousText;
+
+//    private MyAsyncTask task;
+
 
     public MainService() {
-        mPreviousText = "";
-        mClipBoard = "";
-
+        this.mClipBoard = "";
+        this.mPreviousText = "";
     }
 
     @Override
@@ -55,9 +49,6 @@ public class MainService extends Service {
         mClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (mClipboardManager != null) {
             mClipboardManager.addPrimaryClipChangedListener(clipListener);
-            task = new MyAsyncTask();
-            task.setListener(createAsyncTaskListener());
-            task.execute();
         } else {
             Log.e(TAG, "error get clipboard. service end.");
             this.stopSelf();
@@ -71,13 +62,6 @@ public class MainService extends Service {
             public void onSuccess(String result) {
                 Log.d(TAG, result);
             }
-
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClipChanged(String clipItem) {
-                setNotification();
-            }
-
         };
     }
 
@@ -119,7 +103,7 @@ public class MainService extends Service {
 
     /**
      * クリップボードの監視
-     * TODO バックグラウンドで動作しない。→Android10
+     * android10からフォアグラウンドでしか動作しないようになった
      */
     private OnPrimaryClipChangedListener clipListener = new OnPrimaryClipChangedListener() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -151,20 +135,14 @@ public class MainService extends Service {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     setNotification();
                 }
-
-                // コピーしたテキストの登録
-//                insertNewContents(item);
-
             }
             Log.d(TAG, "OnPrimaryClipChangedListener End");
         }
     };
 
-
-
     /**
      * ステータスバーに常駐
-     * TODO
+     * TODO 通知のカスタマイズ必要
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setNotification() {
@@ -188,9 +166,14 @@ public class MainService extends Service {
         nm.createNotificationChannel(channel);
 
         mClipBoard = "";
-        // TODO :getPrimaryClip instead
-        if (mClipboardManager != null && mClipboardManager.getText() != null) {
-            mClipBoard = mClipboardManager.getText().toString();
+        if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
+            ClipData data = mClipboardManager.getPrimaryClip();
+            // データチェック
+            if (data != null) {
+                ClipData.Item item = data.getItemAt(0);
+
+                if (item != null && item.getText() != null) mClipBoard = item.getText().toString();
+            }
         }
 
         mBuilder = new NotificationCompat.Builder(this, channelId);
@@ -230,7 +213,6 @@ public class MainService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy Start");
-        task.setListener(null);
         super.onDestroy();
         cancelNotification();
         if (mClipboardManager != null) {

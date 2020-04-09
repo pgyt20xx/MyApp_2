@@ -1,19 +1,25 @@
 package com.pgyt.myapp_2;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -31,14 +38,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
+import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnSettingChangedListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -50,7 +61,54 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     static boolean settingDisplayStatusBar;
     static int mMaxRowSize = 0;
     private int fragmentPosition;
+    private ClipboardManager mClipboardManager;
+    private String mPreviousText;
+    private Context context;
+    private NotificationCompat.Builder mBuilder;
 
+    public MainActivity() {
+        this.mPreviousText = "";
+        this.context = MyContext.getInstance().getMyContext();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus) {
+            Log.d(TAG, "onWindowFocusChanged");
+
+            // クリップボードマネージャー取得
+            mClipboardManager = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
+            if (mClipboardManager != null && mClipboardManager.hasPrimaryClip()) {
+                ClipData data = mClipboardManager.getPrimaryClip();
+
+                // データチェック
+                if (data == null) {
+                    return;
+                }
+
+                ClipData.Item item = data.getItemAt(0);
+                if (item == null || item.getText() == null) {
+                    return;
+                }
+
+                // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
+                if (item.getText().toString().equals(mPreviousText)) {
+                    return;
+                }
+
+                // 2週目チェック用の変数
+                mPreviousText = item.getText().toString();
+
+                // TODO 通知バーの更新
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                        setNotification();
+
+                }
+                // コピーしたテキストの登録
+                insertNewContents(item);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -83,6 +142,49 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         Log.d(TAG, "onCreate End");
     }
+
+    /**
+     * テキストをDBに登録
+     *
+     * @param item ClipData.Item
+     */
+    private void insertNewContents(ClipData.Item item) {
+        Log.d(TAG, "insertNewContents Start");
+
+        // アプリ内のコンテンツは登録しない。
+        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
+        try {
+//            // 既にあるコンテンツは登録しない
+//            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(item.getText().toString());
+//            int cnt = cursor.getCount();
+//            cursor.close();
+//            if (cnt > 0) {
+//                return;
+//            }
+
+            // コンテンツの登録
+            Toast.makeText(this.context, "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
+            ContentsBean contents = new ContentsBean();
+            contents.setCategory_name(CLIPBOARD_TAB_NAME);
+            contents.setContents_title(CLIP_BOARD_TITLE_NAME);
+            contents.setContents(item.getText().toString());
+            new DBHelper(sqLiteDatabase).insertContents(contents);
+
+            // データ取得
+            initAllData();
+
+            // フラグメントの初期化
+            initFragmentView();
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+
+        } finally {
+            sqLiteDatabase.close();
+        }
+        Log.d(TAG, "insertNewContents End");
+    }
+
 
     /**
      * 設定を取得する。

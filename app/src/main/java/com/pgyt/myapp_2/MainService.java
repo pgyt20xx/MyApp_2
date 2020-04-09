@@ -71,6 +71,13 @@ public class MainService extends Service {
             public void onSuccess(String result) {
                 Log.d(TAG, result);
             }
+
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClipChanged(String clipItem) {
+                setNotification();
+            }
+
         };
     }
 
@@ -146,48 +153,14 @@ public class MainService extends Service {
                 }
 
                 // コピーしたテキストの登録
-                insertNewContents(item);
+//                insertNewContents(item);
 
             }
             Log.d(TAG, "OnPrimaryClipChangedListener End");
         }
     };
 
-    /**
-     * テキストをDBに登録
-     *
-     * @param item ClipData.Item
-     */
-    private void insertNewContents(ClipData.Item item) {
-        Log.d(TAG, "insertNewContents Start");
 
-        // アプリ内のコンテンツは登録しない。
-        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-        try {
-            // 既にあるコンテンツは登録しない
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(item.getText().toString());
-            int cnt = cursor.getCount();
-            cursor.close();
-            if (cnt > 0) {
-                return;
-            }
-
-            // コンテンツの登録
-            Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
-            ContentsBean contents = new ContentsBean();
-            contents.setCategory_name(CLIPBOARD_TAB_NAME);
-            contents.setContents_title(CLIP_BOARD_TITLE_NAME);
-            contents.setContents(item.getText().toString());
-            new DBHelper(sqLiteDatabase).insertContents(contents);
-
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-
-        } finally {
-            sqLiteDatabase.close();
-        }
-        Log.d(TAG, "insertNewContents End");
-    }
 
     /**
      * ステータスバーに常駐

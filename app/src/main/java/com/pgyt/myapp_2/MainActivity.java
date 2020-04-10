@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     static boolean settingMaxRow;
     static boolean settingDisplayStatusBar;
     static int mMaxRowSize = 0;
+    static String mPreviousText = "";
     private int fragmentPosition;
     private ClipboardManager mClipboardManager;
-    private String mPreviousText;
     private Context context;
     private NotificationCompat.Builder mBuilder;
     private MainService mServiceBinder;
@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
     };
 
+    public void doBindService() {
+        Intent intent = new Intent(this, MainService.class);
+        bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (hasFocus) {
@@ -107,13 +112,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     return;
                 }
 
-                // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
-                if (item.getText().toString().equals(mPreviousText)) {
+                // 2周目の呼び出し時は登録しない
+                // TODO insertNewContentsで最後に登録されたコンテンツと比較するように修正する？
+                if (item.getText().toString().equals(this.mPreviousText)) {
                     return;
                 }
 
                 // 2週目チェック用の変数
-                mPreviousText = item.getText().toString();
+                this.mPreviousText = item.getText().toString();
 
                 // 通知バーの更新
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -130,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate Start");
-
-        mPreviousText = "";
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
@@ -434,7 +438,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onResume();
         Log.d(TAG, "onResume Start");
 
-
+        if(mServiceBinder == null) {
+            doBindService();
+        }
+        startService(new Intent(getApplicationContext(), MainService.class));
         Log.d(TAG, "onResume End");
     }
 

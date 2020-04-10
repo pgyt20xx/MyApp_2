@@ -20,6 +20,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
 import static com.pgyt.myapp_2.CommonConstants.STATUS_BAR_TITLE;
@@ -32,14 +33,14 @@ public class MainService extends Service {
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
     private NotificationCompat.Builder mBuilder;
-    private String mPreviousText;
+//    private String mPreviousText;
 
 //    private MyAsyncTask task;
 
 
     public MainService() {
         this.mClipBoard = "";
-        this.mPreviousText = "";
+//        this.mPreviousText = "";
     }
 
     @Override
@@ -125,12 +126,14 @@ public class MainService extends Service {
                 }
 
                 // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
-                if (item.getText().toString().equals(mPreviousText)) {
+                if (item.getText().toString().equals(MainActivity.mPreviousText)) {
                     return;
                 }
 
                 // 2週目チェック用の変数
-                mPreviousText = item.getText().toString();
+                MainActivity.mPreviousText = item.getText().toString();
+
+                Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
 
                 // 通知バーの更新
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

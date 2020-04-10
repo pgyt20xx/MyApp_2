@@ -11,6 +11,7 @@ import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -26,7 +27,7 @@ import static com.pgyt.myapp_2.CommonConstants.STATUS_BAR_TITLE;
 
 public class MainService extends Service {
     private static final String TAG = "MainService";
-
+    private final IBinder mBinder = new MyBinder();
     private ClipboardManager mClipboardManager;
     private String mClipBoard;
     private boolean settingDisplayStatusBar;
@@ -230,6 +231,12 @@ public class MainService extends Service {
 
         Log.d(TAG, "onBind End");
 
-        return null;
+        return mBinder;
+    }
+
+    public class MyBinder extends Binder {
+        MainService getService () {
+            return MainService.this;
+        };
     }
 }

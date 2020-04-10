@@ -2,13 +2,16 @@ package com.pgyt.myapp_2;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -65,11 +68,24 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private String mPreviousText;
     private Context context;
     private NotificationCompat.Builder mBuilder;
+    private MainService mServiceBinder;
 
     public MainActivity() {
-        this.mPreviousText = "";
         this.context = MyContext.getInstance().getMyContext();
     }
+
+    private ServiceConnection myConnection = new ServiceConnection (){
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mServiceBinder = ((MainService.MyBinder) iBinder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mServiceBinder = null;
+        }
+    };
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -99,9 +115,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 // 2週目チェック用の変数
                 mPreviousText = item.getText().toString();
 
-                // TODO 通知バーの更新
+                // 通知バーの更新
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                        setNotification();
+                        mServiceBinder.setNotification();
 
                 }
                 // コピーしたテキストの登録
@@ -114,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate Start");
+
+        mPreviousText = "";
 
         // アクティビティを設定
         setContentView(R.layout.activity_main);
@@ -545,5 +563,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             Log.d(TAG, "SectionsPagerAdapter getItemPosition End");
             return POSITION_NONE;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mServiceBinder != null) {
+//            mServiceBinder.stopSelf();
+        }
+//        unbindService(myConnection);
+//        mServiceBinder = null;
     }
 }

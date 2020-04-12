@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 
-class RecilerItemDecoration extends RecyclerView.ItemDecoration {
+/**
+ * RecyclerItemDecoration
+ */
+class RecyclerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{
             android.R.attr.listDivider
@@ -18,7 +21,7 @@ class RecilerItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
 
 
-    RecilerItemDecoration(Context context) {
+    RecyclerItemDecoration(Context context) {
         final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = a.getDrawable(0);
         a.recycle();

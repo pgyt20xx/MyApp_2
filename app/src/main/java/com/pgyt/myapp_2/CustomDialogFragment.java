@@ -16,11 +16,14 @@ import static com.pgyt.myapp_2.CommonConstants.ARG_EDIT_TITLE_2;
 import static com.pgyt.myapp_2.CommonConstants.ARG_MESSAGE;
 import static com.pgyt.myapp_2.CommonConstants.ARG_PATTERN;
 import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE;
-import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_CONFIRM;
-import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_EDIT_1;
-import static com.pgyt.myapp_2.CommonConstants.PETTERN_DIALOG_EDIT_2;
+import static com.pgyt.myapp_2.CommonConstants.PATTERN_DIALOG_CONFIRM;
+import static com.pgyt.myapp_2.CommonConstants.PATTERN_DIALOG_EDIT_1;
+import static com.pgyt.myapp_2.CommonConstants.PATTERN_DIALOG_EDIT_2;
 
 
+/**
+ * CustomDialogFragment
+ */
 public class CustomDialogFragment extends DialogFragment {
     private static CustomDialogFragment frag = new CustomDialogFragment();
 
@@ -75,7 +78,7 @@ public class CustomDialogFragment extends DialogFragment {
         title2.setText(editTitle2);
 
         switch (pattern) {
-            case PETTERN_DIALOG_CONFIRM:
+            case PATTERN_DIALOG_CONFIRM:
                 // ダイアログ作成
                 builder.setIcon(R.mipmap.ic_launcher);
                 builder.setTitle(title);
@@ -85,7 +88,7 @@ public class CustomDialogFragment extends DialogFragment {
                 setEvent(builder);
                 break;
 
-            case PETTERN_DIALOG_EDIT_1:
+            case PATTERN_DIALOG_EDIT_1:
                 // ダイアログ作成
                 builder.setIcon(R.mipmap.ic_launcher);
                 builder.setTitle(title);
@@ -98,7 +101,7 @@ public class CustomDialogFragment extends DialogFragment {
                 setEvent(builder, editView1);
                 break;
 
-            case PETTERN_DIALOG_EDIT_2:
+            case PATTERN_DIALOG_EDIT_2:
                 // ダイアログ作成
                 builder.setIcon(R.mipmap.ic_launcher);
                 builder.setTitle(title);

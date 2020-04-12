@@ -7,6 +7,9 @@ import android.view.View;
 
 import com.pgyt.myapp_2.model.ContentsBean;
 
+/**
+ * EditContentsActivity
+ */
 public class EditContentsActivity extends AppCompatActivity
         implements EditContentsFragment.OnFragmentInteractionListener {
     @Override

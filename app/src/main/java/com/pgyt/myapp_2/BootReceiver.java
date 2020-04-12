@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+/**
+ * BootReceiver
+ */
 public class BootReceiver extends BroadcastReceiver {
     private static final String TAG = "BootReceiver";
 

@@ -1,6 +1,8 @@
 package com.pgyt.myapp_2;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,9 @@ import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
 import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
+/**
+ * CustomAdapter
+ */
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
     private String mTitle;
@@ -72,6 +77,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder Start");
@@ -89,7 +95,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         if (CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
             holder.mContentsTitle.setVisibility(View.GONE);
             holder.mContents.setVisibility(View.VISIBLE);
-            holder.mRowSetting.setVisibility(View.GONE);
+            holder.mRowSetting.setVisibility(View.VISIBLE);
 
         } else {
             // チェックフラグを判定
@@ -125,7 +131,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             }
         });
 
-        // reciclerViewのロングクリックイベント
+        // recyclerViewのロングクリックイベント
         holder.mRow.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -149,6 +155,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     // Return the size of your dataset (invoked by the layout manager)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public int getItemCount() {
         return mContentsListMap.get(mTitle).size();

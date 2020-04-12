@@ -22,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,7 +41,7 @@ import java.util.Map;
 
 import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
 import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITION;
 import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
@@ -50,8 +49,10 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
-import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
 
+/**
+ * MainActivity
+ */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,
         MainActivityFragment.OnSettingChangedListener, NavigationView.OnNavigationItemSelectedListener {
@@ -266,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (position == CLIPBOARD_TAB_POSITON) {
+                if (position == CLIPBOARD_TAB_POSITION) {
                     fab.hide();
                 } else {
                     fab.show();
@@ -384,9 +385,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreareOptionMenu Start");
+        Log.d(TAG, "onCreateOptionMenu Start");
         // Inflate the menu; this adds items to the action bar if it is present.
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         Log.d(TAG, "onCreareOptionMenu getItemPosition End");
@@ -396,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestsrt Start");
+        Log.d(TAG, "onRestart Start");
 
         // 変数内のコンテンツ数を取得
         int contentsSize = 0;
@@ -430,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             initFragmentView();
         }
 
-        Log.d(TAG, "onRestsrt End");
+        Log.d(TAG, "onRestart End");
     }
 
     @Override
@@ -507,15 +507,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "onSettingChangedListener End");
 
     }
-//
-//    /**
-//     * contextを返す
-//     * Activity以外からcontextを取得するためのメソッド
-//     * @return context
-//     */
-//    public static Context getAppContext () {
-//        return MainActivity.context;
-//    }
 
     /**
      * FragmentPagerAdapter呼び出し

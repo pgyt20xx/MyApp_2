@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
+/**
+ * SettingsFragment
+ */
 public class SettingsFragment extends PreferenceFragment {
     private static String TAG = "SettingsFragment";
 

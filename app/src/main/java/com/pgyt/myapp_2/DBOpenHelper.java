@@ -14,6 +14,9 @@ import java.io.InputStreamReader;
 import static com.pgyt.myapp_2.CommonConstants.DB_NAME;
 import static com.pgyt.myapp_2.CommonConstants.DB_VERSION;
 
+/**
+ * DBOpenHelper
+ */
 class DBOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "DBOpenHelper";
 

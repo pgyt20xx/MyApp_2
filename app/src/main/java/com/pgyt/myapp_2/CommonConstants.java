@@ -1,5 +1,8 @@
 package com.pgyt.myapp_2;
 
+/**
+ * CommonConstants
+ */
 class CommonConstants {
     // 引数
     static final String ARG_TITLE = "title";
@@ -11,9 +14,9 @@ class CommonConstants {
     static final String ARG_TITLE_NAME = "title_name";
 
     // ダイアログ
-    static final String PETTERN_DIALOG_CONFIRM = "0";
-    static final String PETTERN_DIALOG_EDIT_1 = "1";
-    static final String PETTERN_DIALOG_EDIT_2 = "2";
+    static final String PATTERN_DIALOG_CONFIRM = "0";
+    static final String PATTERN_DIALOG_EDIT_1 = "1";
+    static final String PATTERN_DIALOG_EDIT_2 = "2";
 
     // DB
     static final int DB_VERSION = 1;
@@ -29,14 +32,14 @@ class CommonConstants {
     // 共通
     static final boolean CHECK_VISIBLE_FLG_ON = true;
     static final boolean CHECK_VISIBLE_FLG_OFF = false;
-    static final int CLIPBOARD_TAB_POSITON = 0;
+    static final int CLIPBOARD_TAB_POSITION = 0;
     static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     static final int REQUEST_CODE_SETTING = 1002;
     static final int MAX_ROWSIZE_DEFAULT = 50;
     static final int MAX_ROWSIZE_MAXIMUM = 100;
     static final String BLANK_STRING = "";
     static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
-    static final String CLIP_BOARD_TITLE_NAME = "DummyContentsTitle";
+    static final String CLIP_BOARD_TITLE_NAME = "ClipBoard";
     static final String STATUS_BAR_TITLE = "Current ClipBoard";
     static final int NOTIFICATION_ID = 10;
 

@@ -16,6 +16,9 @@ import static com.pgyt.myapp_2.CommonConstants.TABLE_NAME_CATEGORY;
 import static com.pgyt.myapp_2.CommonConstants.TABLE_NAME_CONTENTS;
 
 
+/**
+ * DBHelper
+ */
 class DBHelper {
     private SQLiteDatabase sqLiteDatabase;
 

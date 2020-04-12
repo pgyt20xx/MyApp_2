@@ -17,7 +17,7 @@ import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
 import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
 
 /**
- * Created by pgyt on 2018/03/24.
+ * MyAsyncTask
  */
 
 public class MyAsyncTask extends AsyncTask<Void, Void, String> {

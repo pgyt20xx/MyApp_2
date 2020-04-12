@@ -46,7 +46,7 @@ import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE_NAME;
 import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_OFF;
 import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_ON;
 import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITON;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITION;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
@@ -58,7 +58,7 @@ import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
 
 /**
- * A placeholder fragment containing a simple view.
+ * MainActivityFragment
  */
 public class MainActivityFragment extends Fragment {
     private static final String TAG = "MainActivityFragment";
@@ -123,7 +123,7 @@ public class MainActivityFragment extends Fragment {
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.addItemDecoration(new RecilerItemDecoration(getContext()));
+        mRecyclerView.addItemDecoration(new RecyclerItemDecoration(getContext()));
 
         mRecyclerAdapter = new CustomAdapter(getContext(), mCategoryName);
         mRecyclerView.setAdapter(mRecyclerAdapter);
@@ -412,7 +412,7 @@ public class MainActivityFragment extends Fragment {
                 int page = mViewPager.getCurrentItem();
 
                 // デフォルトタブでなければ削除
-                if (page == CLIPBOARD_TAB_POSITON) {
+                if (page == CLIPBOARD_TAB_POSITION) {
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "CLIPBOARD cannot Delete", Snackbar.LENGTH_SHORT).show();
 
                 } else {

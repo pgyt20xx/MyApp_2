@@ -1,6 +1,7 @@
 package com.pgyt.myapp_2;
 
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,6 +19,9 @@ import com.pgyt.myapp_2.model.ContentsBean;
 import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
 
 
+/**
+ * EditContentsFragment
+ */
 public class EditContentsFragment extends Fragment {
     private static final String TAG = "EditContentsFragment";
 
@@ -29,6 +33,7 @@ public class EditContentsFragment extends Fragment {
     public EditContentsFragment() {
     }
 
+    @SuppressLint("ValidFragment")
     public EditContentsFragment(String contentsId, String contentsTitle, String contents) {
         this.contentsId = contentsId;
         this.contentsTitle = contentsTitle;

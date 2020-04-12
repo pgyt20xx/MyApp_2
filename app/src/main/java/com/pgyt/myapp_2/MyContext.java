@@ -3,6 +3,9 @@ package com.pgyt.myapp_2;
 import android.app.Application;
 import android.content.Context;
 
+/**
+ * MyContext
+ */
 public class MyContext {
     private static MyContext instance = null;
     private Context applicationContext;

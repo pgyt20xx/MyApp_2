@@ -9,6 +9,9 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 
+/**
+ * SettingsActivity
+ */
 public class SettingsActivity extends PreferenceActivity
         implements LoaderManager.LoaderCallbacks<SharedPreferences> {
     private static String TAG = "SettingsActivity";

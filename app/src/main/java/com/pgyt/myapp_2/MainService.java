@@ -26,6 +26,9 @@ import static com.pgyt.myapp_2.CommonConstants.NOTIFICATION_ID;
 import static com.pgyt.myapp_2.CommonConstants.STATUS_BAR_TITLE;
 
 
+/**
+ * MainService
+ */
 public class MainService extends Service {
     private static final String TAG = "MainService";
     private final IBinder mBinder = new MyBinder();

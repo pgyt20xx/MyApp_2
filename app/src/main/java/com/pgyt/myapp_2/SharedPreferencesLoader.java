@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+/**
+ * SharedPreferencesLoader
+ */
 public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static String TAG = "SharedPreferencesLoader";

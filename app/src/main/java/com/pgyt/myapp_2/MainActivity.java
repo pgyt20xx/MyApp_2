@@ -186,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 //            }
 
             // コンテンツの登録
-            Toast.makeText(this.context, "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
             ContentsBean contents = new ContentsBean();
             contents.setCategory_name(CLIPBOARD_TAB_NAME);
             contents.setContents_title(CLIP_BOARD_TITLE_NAME);

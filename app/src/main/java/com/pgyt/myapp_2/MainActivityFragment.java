@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -94,7 +95,7 @@ public class MainActivityFragment extends Fragment {
 
         if (getArguments() != null) {
 
-            Log.d(TAG, "OnCreate");
+            Log.d(TAG, "OnCreate getArguments() != null");
 
         }
         Log.d(TAG, "onCreate End");
@@ -133,6 +134,9 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View view, TextView textContents, int position) {
                 copyClip(textContents);
+
+                // TODO 背景色などで選択状態がわかるようにする。
+
             }
         });
 

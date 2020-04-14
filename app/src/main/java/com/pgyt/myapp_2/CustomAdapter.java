@@ -93,26 +93,27 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         // クリップボートタブとそれ以外の描画を分ける
         if (CLIPBOARD_TAB_NAME.equals(this.mTitle)) {
+            // クリップボードタブの表示内容
             holder.mContentsTitle.setVisibility(View.GONE);
             holder.mContents.setVisibility(View.VISIBLE);
             holder.mRowSetting.setVisibility(View.VISIBLE);
 
         } else {
-            // チェックフラグを判定
-            if (mContentsListMap.get(mTitle).get(position).getCheckBoxVisibleFlg()) {
-                // チェックボックスを表示する。
-                holder.mCheckBox.setVisibility(View.VISIBLE);
-
-            } else {
-                // チェックボックスを非表示にする。
-                holder.mCheckBox.setVisibility(View.GONE);
-
-            }
-
+            // クリップボードタブ以外の表示内容
             holder.mCheckBox.setChecked(mContentsListMap.get(mTitle).get(position).getCheckedFlg());
             holder.mContentsTitle.setVisibility(View.VISIBLE);
             holder.mContents.setVisibility(View.GONE);
             holder.mRowSetting.setVisibility(View.VISIBLE);
+        }
+        // チェックフラグを判定
+        if (mContentsListMap.get(mTitle).get(position).getCheckBoxVisibleFlg()) {
+            // チェックボックスを表示する。
+            holder.mCheckBox.setVisibility(View.VISIBLE);
+
+        } else {
+            // チェックボックスを非表示にする。
+            holder.mCheckBox.setVisibility(View.GONE);
+
         }
 
         // 行のクリックイベント

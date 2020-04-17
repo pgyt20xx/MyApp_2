@@ -136,7 +136,6 @@ public class MainActivityFragment extends Fragment {
                 copyClip(textContents);
 
                 // TODO 背景色などで選択状態がわかるようにする。
-
             }
         });
 
@@ -833,6 +832,11 @@ public class MainActivityFragment extends Fragment {
                 // 再取得する行数
                 int rowSize = mContentsListMap.get(categoryName).size();
                 int lack = mMaxRowSize - rowSize;
+
+                // 削除により0件になった場合は以降の処理を実施しない。
+                if (rowSize == 0) {
+                    return true;
+                }
 
                 // 取得する行のid
                 int id = mContentsListMap.get(categoryName).get(rowSize - 1).getId();

@@ -26,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -266,6 +267,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+
+                // ページ遷移する度にデータpagerにデータの変更を通知する
+                MainActivityFragment.getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
+
+                // 追加ボタンのフローティングの有無を設定する
                 if (position == CLIPBOARD_TAB_POSITION) {
                     fab.hide();
                 } else {

@@ -1,6 +1,8 @@
 package com.pgyt.myapp_2;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
@@ -151,6 +153,18 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
                 mContentsListMap.get(mTitle).get(holder.getAdapterPosition()).setCheckedFlg(isChecked);
             }
         });
+
+        // 行の選択状態を設定する。
+        String currentString = mTitle + String.valueOf(position) + mContentsListMap.get(mTitle).get(holder.getAdapterPosition()).getContents();
+        if (currentString.equals(MainActivityFragment.selectedContents)) {
+            Log.d(TAG, currentString + "is selected");
+            holder.mContentsTitle.setTypeface(Typeface.DEFAULT_BOLD);
+
+        } else {
+            Log.d(TAG, currentString + "is not selected");
+            holder.mContentsTitle.setTypeface(Typeface.DEFAULT);
+            
+        }
 
         Log.d(TAG, "onBindViewHolder End");
     }

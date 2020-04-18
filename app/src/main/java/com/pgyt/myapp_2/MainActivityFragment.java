@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -63,8 +64,9 @@ import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
  */
 public class MainActivityFragment extends Fragment {
     private static final String TAG = "MainActivityFragment";
-    private ViewPager mViewPager;
-    private CustomAdapter mRecyclerAdapter;
+    static ViewPager mViewPager;
+    static CustomAdapter mRecyclerAdapter;
+    static String selectedContents = null;
     private CustomActionModeCallback mActionModeCallback;
     private OnSettingChangedListener settingChangedListener;
     public PopupMenu popupMenu = null;
@@ -135,7 +137,10 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view, TextView textContents, int position) {
                 copyClip(textContents);
 
-                // TODO 背景色などで選択状態がわかるようにする。
+                // 選択状態がわかるようにする。
+                selectedContents = mCategoryName + String.valueOf(position) +mContentsListMap.get(mCategoryName).get(position).getContents();
+                textContents.setTypeface(Typeface.DEFAULT_BOLD);
+                mRecyclerAdapter.notifyDataSetChanged();
             }
         });
 
@@ -606,7 +611,7 @@ public class MainActivityFragment extends Fragment {
      *
      * @return RecyclerView
      */
-    private RecyclerView getCurrentRecyclerView() {
+    static RecyclerView getCurrentRecyclerView() {
         FragmentPagerAdapter sectionPagerAdapter = (FragmentPagerAdapter) mViewPager.getAdapter();
         MainActivityFragment fragment = (MainActivityFragment) sectionPagerAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem());
         return (RecyclerView) fragment.getView().findViewById(R.id.recyclerView);

@@ -23,6 +23,7 @@ import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
 public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "MyAsyncTask";
+    private static final String RESULT = "background end";
     private Listener listener;
 
     @Override
@@ -41,7 +42,7 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
         Log.d(TAG, "doInBackground end");
 
-        return null;
+        return RESULT;
     }
 
     @Override
@@ -53,6 +54,8 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
             listener.onSuccess(result);
         }
     }
+
+    private void onUpdate() {}
 
     void setListener(Listener listener) {
         this.listener = listener;

@@ -61,6 +61,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
             mRow = (LinearLayout) v.findViewById(R.id.row);
 
         }
+
+        public TextView getmContents() {
+            return mContents;
+        }
+
+        public TextView getmContentsTitle() {
+            return mContentsTitle;
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -155,15 +163,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         });
 
         // 行の選択状態を設定する。
-        String currentString = mTitle + String.valueOf(position) + mContentsListMap.get(mTitle).get(holder.getAdapterPosition()).getContents();
-        if (currentString.equals(MainActivityFragment.selectedContents)) {
-            Log.d(TAG, currentString + "is selected");
+        String currentId = holder.mRowId.getText().toString();
+        if (currentId.equals(MainActivityFragment.selectedContents)) {
+            Log.d(TAG, currentId + "is selected");
+            holder.mContents.setTypeface(Typeface.DEFAULT_BOLD);
             holder.mContentsTitle.setTypeface(Typeface.DEFAULT_BOLD);
-
         } else {
-            Log.d(TAG, currentString + "is not selected");
+            Log.d(TAG, currentId + "is not selected");
+            holder.mContents.setTypeface(Typeface.DEFAULT);
             holder.mContentsTitle.setTypeface(Typeface.DEFAULT);
-            
         }
 
         Log.d(TAG, "onBindViewHolder End");

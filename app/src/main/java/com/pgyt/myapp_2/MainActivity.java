@@ -26,12 +26,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -71,12 +69,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private Context context;
     private NotificationCompat.Builder mBuilder;
     private MainService mServiceBinder;
+    private MyAsyncTask mytask;
 
     public MainActivity() {
         this.context = MyContext.getInstance().getMyContext();
     }
 
-    private ServiceConnection myConnection = new ServiceConnection (){
+    private ServiceConnection myConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -123,10 +122,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 // 2週目チェック用の変数
                 this.mPreviousText = item.getText().toString();
 
+                if (mServiceBinder == null) return;
+
                 // 通知バーの更新
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mServiceBinder.setNotification();
-
+                    mServiceBinder.setNotification();
                 }
                 // コピーしたテキストの登録
                 insertNewContents(item);
@@ -267,8 +267,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-
                 // ページ遷移する度にデータpagerにデータの変更を通知する
                 MainActivityFragment.getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
 
@@ -284,6 +282,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);
         Log.d(TAG, "initFragment End");
+    }
+
+    private MyAsyncTask.Listener createListener() {
+        return new MyAsyncTask.Listener() {
+            @Override
+            public void onSuccess(String result) {
+                Log.d(TAG, result);
+            }
+        };
     }
 
     /**
@@ -444,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onResume();
         Log.d(TAG, "onResume Start");
 
-        if(mServiceBinder == null) {
+        if (mServiceBinder == null) {
             doBindService();
         }
         startService(new Intent(getApplicationContext(), MainService.class));
@@ -572,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onPause() {
         super.onPause();
-        if(mServiceBinder != null) {
+        if (mServiceBinder != null) {
 //            mServiceBinder.stopSelf();
         }
 //        unbindService(myConnection);

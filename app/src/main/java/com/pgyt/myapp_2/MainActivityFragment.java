@@ -123,7 +123,7 @@ public class MainActivityFragment extends Fragment {
         setDrawerList();
 
         // リサイクルビューの設定
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecyclerItemDecoration(getContext()));
@@ -135,12 +135,30 @@ public class MainActivityFragment extends Fragment {
         mRecyclerAdapter.setOnItemClickListener(new CustomAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, TextView textContents, int position) {
+
+                // クリップボードに張り付ける
                 copyClip(textContents);
 
-                // 選択状態がわかるようにする。
-                selectedContents = mCategoryName + String.valueOf(position) +mContentsListMap.get(mCategoryName).get(position).getContents();
+                TextView textContentsTitle = view.findViewById(R.id.text_contents_title);
+                TextView rowId = view.findViewById(R.id.row_id);
+
+                // クリックされた行を保存しておく。
+                selectedContents = rowId.getText().toString();
+                CustomAdapter.ViewHolder viewHolder;
+                RecyclerView recyclerView = getCurrentRecyclerView();
+
+                // 見えている全ての行の太字を解除
+                for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
+                    viewHolder = (CustomAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                    if (viewHolder == null) continue;
+                    viewHolder.getmContents().setTypeface(Typeface.DEFAULT);
+                    viewHolder.getmContentsTitle().setTypeface(Typeface.DEFAULT);
+
+                }
+
+                // クリックされた行を太字化する。
                 textContents.setTypeface(Typeface.DEFAULT_BOLD);
-                mRecyclerAdapter.notifyDataSetChanged();
+                textContentsTitle.setTypeface(Typeface.DEFAULT_BOLD);
             }
         });
 

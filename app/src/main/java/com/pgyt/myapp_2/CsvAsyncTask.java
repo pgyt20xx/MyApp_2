@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.pgyt.myapp_2.CommonConstants.*;
 import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
 import static com.pgyt.myapp_2.CommonConstants.CSV_IMPORT;
 
@@ -64,9 +65,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
                     result = EXPORT_SUCCESS;
 
-                }
-                ;
-
+                };
 
                 break;
 
@@ -78,14 +77,13 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 if (csvImport()) {
 
                     result = IMPORT_SUCCESS;
-                }
-                ;
+                };
 
                 break;
+
             default:
 
         }
-
 
         Log.d(TAG, "doInBackground end");
 
@@ -110,17 +108,27 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
     private Boolean csvExport() {
         Log.d(TAG, "csvExport Start");
 
-        // TODO ディレクトリを指定できるようにする。
-        // TODO ディレクトリ存在確認
-
-        File outfile;
+        File outFile;
         PrintWriter printWriter = null;
+
+        // 外部ストレージマウント確認
+        String state = Environment.getExternalStorageState();
+        if (!Environment.MEDIA_MOUNTED.equals(state)) {
+            return false;
+        }
+
+        // ディレクトリの存在確認・作成
+        File outDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        if (!outDir.exists()) {
+            outDir.mkdir();
+        }
 
         try {
             // ファイル作成
-            outfile = new File(Environment.getDataDirectory().getPath(), "YourClipExport" + MainActivity.getNowDate() + ".csv");
-            outfile.createNewFile();
-            printWriter = new PrintWriter(new FileWriter(outfile));
+            outFile = new File(outDir,"YourClipExport" + MainActivity.getNowDate() + ".csv");
+            outFile.createNewFile();
+            printWriter = new PrintWriter(new FileWriter(outFile));
 
             SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
 
@@ -132,9 +140,9 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
             String contents;
             String record;
             while (cursor.moveToNext()){
-                categoryName = cursor.getString(cursor.getColumnIndex("category_name"));
-                contentsTitle = cursor.getString(cursor.getColumnIndex("contents_title"));
-                contents = cursor.getString(cursor.getColumnIndex("contents"));
+                categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+                contentsTitle = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE));
+                contents = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS));
                 record = "\"" + categoryName + "\",\"" + contentsTitle + "\",\"" + contents + "\"";
                 printWriter.println(record);
             }
@@ -144,11 +152,11 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
         } catch (FileNotFoundException e) {
             // フォルダへのアクセス権限がない
-//            Toast.makeText(this.context, "You do not have access permission.", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "csvImport " + e.getCause());
             return false;
 
         } catch (Exception e) {
-//            Toast.makeText(this.context, "CSV output failed.", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "csvImport " + e.getCause());
             return false;
 
         } finally {
@@ -156,7 +164,6 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 printWriter.close();
             }
         }
-        Toast.makeText(this.context, "CSV output was successful.", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "csvExport End");
         return true;
     }

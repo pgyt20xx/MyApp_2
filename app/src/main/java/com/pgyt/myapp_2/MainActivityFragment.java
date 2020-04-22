@@ -1,10 +1,12 @@
 package com.pgyt.myapp_2;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -12,9 +14,11 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -58,6 +62,7 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_IO_PERMISSION;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
@@ -637,18 +642,23 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, Environment.getDataDirectory().getPath());
 
         // ダイアログを表示してディレクトリを通知
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Export", "Path : " + Environment.getDataDirectory().getPath(), null, null, "0");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance(
+                "Export",
+                "Path : " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),
+                null,
+                null,
+                "0");
         newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onPositiveClick() {
                 Log.d(TAG, "exportEvent Click Positive");
 
-                // AsyncTask呼出し
-                csvTask = new CsvAsyncTask();
-                csvTask.setListener(createCsvAsyncListener());
-                csvTask.execute(CSV_EXPORT);
-
+                if (Build.VERSION.SDK_INT >= 23) {
+                    checkPermission();
+                } else {
+                    callCsvAsyncTask();
+                }
             }
             @Override
             public void onNegativeClick() {
@@ -661,6 +671,84 @@ public class MainActivityFragment extends Fragment {
 
         // 終了ダイアログ表示
         Log.d(TAG, "exportEvent End");
+    }
+
+
+    /**
+     * CsvAsyncTask呼出し
+     */
+    private void callCsvAsyncTask () {
+        Log.d(TAG, "callCsvAsyncTask Start");
+
+        // AsyncTask呼出し
+        csvTask = new CsvAsyncTask();
+        csvTask.setListener(createCsvAsyncListener());
+        csvTask.execute(CSV_EXPORT);
+
+        Log.d(TAG, "callCsvAsyncTask End");
+    }
+
+
+    /**
+     * IOパーミッションチェックを行う。
+     */
+    private void checkPermission () {
+        Log.d(TAG, "checkPermission Start");
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            // 既に許可している場合
+            callCsvAsyncTask();
+
+        } else {
+            // 拒否していた場合
+             requestIOPermission();
+        }
+
+        Log.d(TAG, "checkPermission End");
+    }
+
+    /**
+     * IOパーミッションの許可を求める。
+     */
+    private void requestIOPermission () {
+        Log.d(TAG, "requestIOPermission Start");
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
+
+        } else {
+            Toast.makeText(getContext(), "App requires permission to run.", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
+
+        }
+
+        Log.d(TAG, "requestIOPermission End");
+    }
+
+    /**
+     *
+     * パーミッション許可のユーザー操作によるコールバック
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult Start");
+
+        if (requestCode == REQUEST_IO_PERMISSION) {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 使用が許可された場合
+                callCsvAsyncTask();
+            } else {
+                // 拒否された場合
+                Toast.makeText(getContext(), "Cannot Export", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        Log.d(TAG, "onRequestPermissionsResult End");
+
     }
 
     /**
@@ -965,7 +1053,6 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onSuccess(String result) {
                 Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-
             }
         };
     }

@@ -34,6 +34,7 @@ public class MainService extends Service {
     private final IBinder mBinder = new MyBinder();
     private ClipboardManager mClipboardManager;
     private String mClipBoard;
+    private String mPreviousText = "";
     private boolean settingDisplayStatusBar;
     private NotificationCompat.Builder mBuilder;
 //    private String mPreviousText;
@@ -120,12 +121,12 @@ public class MainService extends Service {
                 }
 
                 // 2周目の呼び出し時は登録しない(ブラウザ内コピー等)
-                if (item.getText().toString().equals(MainActivity.mPreviousText)) {
+                if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
 
                 // 2週目チェック用の変数
-                MainActivity.mPreviousText = item.getText().toString();
+                mPreviousText = item.getText().toString();
 
                 Toast.makeText(getApplicationContext(), "\"" + item.getText().toString() + "\"" + " copied", Toast.LENGTH_SHORT).show();
 

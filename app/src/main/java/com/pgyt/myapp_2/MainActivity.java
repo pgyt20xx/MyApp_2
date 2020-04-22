@@ -51,6 +51,7 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
+import static com.pgyt.myapp_2.MainActivityFragment.selectedContents;
 
 /**
  * MainActivity
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     static boolean settingMaxRow;
     static boolean settingDisplayStatusBar;
     static int mMaxRowSize = 0;
-    static String mPreviousText = "";
+    private String mPreviousText = "";
     private int fragmentPosition;
     private ClipboardManager mClipboardManager;
     private Context context;
@@ -117,12 +118,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                 // 2周目の呼び出し時は登録しない
                 // TODO insertNewContentsで最後に登録されたコンテンツと比較するように修正する？
-                if (item.getText().toString().equals(this.mPreviousText)) {
+                if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
 
                 // 2週目チェック用の変数
-                this.mPreviousText = item.getText().toString();
+                mPreviousText = item.getText().toString();
 
                 if (mServiceBinder == null) return;
 
@@ -180,8 +181,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // アプリ内のコンテンツは登録しない。
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
         try {
-//            // 既にあるコンテンツは登録しない
-//            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(item.getText().toString());
+            // 既にあるクリップボードのコンテンツは登録しない
+//            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(new String[] {CLIP_BOARD_TITLE_NAME, item.getText().toString()});
+//            while (cursor.moveToNext()){
+//                selectedContents = cursor.getString(cursor.getColumnIndex(COLUMN_ID));
+//            }
 //            int cnt = cursor.getCount();
 //            cursor.close();
 //            if (cnt > 0) {
@@ -193,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             contents.setCategory_name(CLIPBOARD_TAB_NAME);
             contents.setContents_title(CLIP_BOARD_TITLE_NAME);
             contents.setContents(item.getText().toString());
-            new DBHelper(sqLiteDatabase).insertContents(contents);
+            selectedContents = String.valueOf(new DBHelper(sqLiteDatabase).insertContents(contents));
 
             // データ取得
             initAllData();

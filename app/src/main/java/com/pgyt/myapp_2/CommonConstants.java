@@ -41,6 +41,8 @@ class CommonConstants {
     static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
     static final String CLIP_BOARD_TITLE_NAME = "ClipBoard";
     static final String STATUS_BAR_TITLE = "Current ClipBoard";
+    static final String CSV_EXPORT = "1";
+    static final String CSV_IMPORT = "2";
     static final int NOTIFICATION_ID = 10;
 
 }

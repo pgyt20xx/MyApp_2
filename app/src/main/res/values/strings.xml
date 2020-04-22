@@ -6,6 +6,8 @@
     <string name="delete_category">Delete Current Category</string>
     <string name="menu_setting">Setting</string>
 	<string name="menu_delete_all">Delete All</string>
+    <string name="menu_export">Export</string>
+
 
     <!-- NavigationDrawer -->
     <string name="drawer_open">Drawer Open</string>

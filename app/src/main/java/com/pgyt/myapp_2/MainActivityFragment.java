@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
@@ -53,6 +55,7 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
+import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
@@ -70,6 +73,7 @@ public class MainActivityFragment extends Fragment {
     private CustomActionModeCallback mActionModeCallback;
     private OnSettingChangedListener settingChangedListener;
     public PopupMenu popupMenu = null;
+    private CsvAsyncTask csvTask;
 
     // コンストラクタ
     public MainActivityFragment() {
@@ -427,7 +431,7 @@ public class MainActivityFragment extends Fragment {
     private void categoryDeleteEvent() {
         Log.d(TAG, "categoryDeleteEvent Start");
 
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete Category", "really?", null, null, "0");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete Category", "Are you really sure?", null, null, "0");
         newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
@@ -445,7 +449,7 @@ public class MainActivityFragment extends Fragment {
                     SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                     try {
                         String param = mCategoryList.get(page).getCategory_name();
-                        new DBHelper(sqLiteDatabase).deletetCategory(param);
+                        new DBHelper(sqLiteDatabase).deleteCategory(param);
 
                         // 変数からカテゴリーを削除
                         mCategoryList.remove(page);
@@ -479,7 +483,7 @@ public class MainActivityFragment extends Fragment {
      */
     private void contentsInsertEvent() {
         Log.d(TAG, "contentsInsertEvent Start");
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Contents", "really", "ContentsTitle", "Contents", "2");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Add Contents", "Are you really sure?", "ContentsTitle", "Contents", "2");
         newFragment.setEditDialogListener2(new CustomDialogFragment.EditDialogListener2() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
@@ -543,7 +547,7 @@ public class MainActivityFragment extends Fragment {
 
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
         try {
-            new DBHelper(sqLiteDatabase).deletetContents(mRowId);
+            new DBHelper(sqLiteDatabase).deleteContents(mRowId);
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -563,7 +567,7 @@ public class MainActivityFragment extends Fragment {
     private void deleteAllEvent() {
         Log.d(TAG, "deleteAllEvent Start");
 
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete All", "really?", null, null, "0");
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Delete All", "Are you really sure?", null, null, "0");
         newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
@@ -573,7 +577,7 @@ public class MainActivityFragment extends Fragment {
                 // 全データ削除
                 SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getContext()).getWritableDatabase();
                 try {
-                    new DBHelper(sqLiteDatabase).deletetAll();
+                    new DBHelper(sqLiteDatabase).deleteAll();
                     Snackbar.make(getActivity().findViewById(R.id.activity_main), "Delete All data Success", Snackbar.LENGTH_SHORT).show();
 
                     // データをクリア
@@ -619,9 +623,44 @@ public class MainActivityFragment extends Fragment {
                 Log.d(TAG, "deleteAllEvent Click Negative");
             }
         });
-        newFragment.show(getFragmentManager(), "categoryInsertEvent");
+        newFragment.show(getFragmentManager(), "deleteAllEvent");
 
         Log.d(TAG, "deleteAllEvent End");
+    }
+
+    /**
+     * CSVファイルエクスポートイベント
+     */
+    private void exportEvent() {
+        Log.d(TAG, "exportEvent Start");
+
+        Log.d(TAG, Environment.getDataDirectory().getPath());
+
+        // ダイアログを表示してディレクトリを通知
+        CustomDialogFragment newFragment = CustomDialogFragment.newInstance("Export", "Path : " + Environment.getDataDirectory().getPath(), null, null, "0");
+        newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+            @Override
+            public void onPositiveClick() {
+                Log.d(TAG, "exportEvent Click Positive");
+
+                // AsyncTask呼出し
+                csvTask = new CsvAsyncTask();
+                csvTask.setListener(createCsvAsyncListener());
+                csvTask.execute(CSV_EXPORT);
+
+            }
+            @Override
+            public void onNegativeClick() {
+                Log.d(TAG, "exportEvent Click Negative");
+
+            }
+        });
+
+        newFragment.show(getFragmentManager(), "exportEvent");
+
+        // 終了ダイアログ表示
+        Log.d(TAG, "exportEvent End");
     }
 
     /**
@@ -739,6 +778,7 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onDetach Start");
 
         settingChangedListener = null;
+        csvTask.setListener(null);
 
         Log.d(TAG, "onDetach End");
     }
@@ -785,6 +825,12 @@ public class MainActivityFragment extends Fragment {
                 // 全削除押下
                 Log.d(TAG, "all_delete selected");
                 deleteAllEvent();
+                return true;
+
+            case R.id.export:
+                // 全削除押下
+                Log.d(TAG, "export");
+                exportEvent();
                 return true;
 
             case R.id.action_settings:
@@ -912,6 +958,16 @@ public class MainActivityFragment extends Fragment {
 
         Log.d(TAG, "getContents End");
         return result;
+    }
+
+    private CsvAsyncTask.Listener createCsvAsyncListener(){
+        return new CsvAsyncTask.Listener() {
+            @Override
+            public void onSuccess(String result) {
+                Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+            }
+        };
     }
 
 

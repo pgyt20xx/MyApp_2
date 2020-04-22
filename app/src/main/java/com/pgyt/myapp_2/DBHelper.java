@@ -80,7 +80,7 @@ class DBHelper {
     /**
      * 全テーブルのデータを削除する。
      */
-    void deletetAll() {
+    void deleteAll() {
         this.sqLiteDatabase.delete("CATEGORY", "category_name <> ?", new String[]{"CLIPBOARD"});
         this.sqLiteDatabase.delete("CONTENTS", null, null);
     }
@@ -91,7 +91,7 @@ class DBHelper {
      *
      * @param param String
      */
-    void deletetCategory(String param) {
+    void deleteCategory(String param) {
         this.sqLiteDatabase.delete("CATEGORY", "category_name = ?", new String[]{param});
         this.sqLiteDatabase.delete("CONTENTS", "category_name = ?", new String[]{param});
     }
@@ -101,7 +101,7 @@ class DBHelper {
      *
      * @param param String
      */
-    void deletetContents(String param) {
+    void deleteContents(String param) {
         this.sqLiteDatabase.delete("CONTENTS", "id = ?", new String[]{param});
     }
 
@@ -112,6 +112,16 @@ class DBHelper {
      */
     Cursor selectAllContents() {
         String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY category_name ASC, id DESC;";
+        return this.sqLiteDatabase.rawQuery(sql, null);
+    }
+
+    /**
+     * コンテンツを全件取得する。
+     *
+     * @return Cursor
+     */
+    Cursor selectAllCategory() {
+        String sql = "SELECT id, category_name FROM CATEGORY ORDER BY category_name ASC, id DESC;";
         return this.sqLiteDatabase.rawQuery(sql, null);
     }
 

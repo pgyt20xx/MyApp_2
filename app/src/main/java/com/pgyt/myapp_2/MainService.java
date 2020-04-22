@@ -61,15 +61,6 @@ public class MainService extends Service {
         Log.d(TAG, "onCreate End");
     }
 
-    private MyAsyncTask.Listener createAsyncTaskListener() {
-        return new MyAsyncTask.Listener() {
-            @Override
-            public void onSuccess(String result) {
-                Log.d(TAG, result);
-            }
-        };
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

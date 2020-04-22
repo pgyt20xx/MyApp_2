@@ -34,7 +34,10 @@ import android.view.MenuItem;
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -69,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private Context context;
     private NotificationCompat.Builder mBuilder;
     private MainService mServiceBinder;
-    private MyAsyncTask mytask;
 
     public MainActivity() {
         this.context = MyContext.getInstance().getMyContext();
@@ -208,6 +210,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "insertNewContents End");
     }
 
+    static String getNowDate(){
+        final DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        final Date date = new Date(System.currentTimeMillis());
+        return df.format(date);
+    }
+
 
     /**
      * 設定を取得する。
@@ -282,15 +290,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // ViewPagerをTabLayoutに設定
         tabLayout.setupWithViewPager(viewPager);
         Log.d(TAG, "initFragment End");
-    }
-
-    private MyAsyncTask.Listener createListener() {
-        return new MyAsyncTask.Listener() {
-            @Override
-            public void onSuccess(String result) {
-                Log.d(TAG, result);
-            }
-        };
     }
 
     /**

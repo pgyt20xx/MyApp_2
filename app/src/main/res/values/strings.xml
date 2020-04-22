@@ -18,7 +18,7 @@
     <string name="checkbox_status_bar_summary">Display in the status bar</string>
     <string name="checkbox_maxrow_title">Max rows Status</string>
     <string name="checkbox_maxrow_key">checkbox_maxrow_key</string>
-    <string name="checkbox_maxrow_summary">Display Maxrows 100. Default 50.</string>
+    <string name="checkbox_maxrow_summary">Display Max 50. Default 20.</string>
 
     <!-- contextMenu -->
     <string name="context_menu_share">Share</string>

@@ -19,6 +19,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -70,7 +71,7 @@ import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
 /**
  * MainActivityFragment
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements OnRequestPermissionsResultCallback {
     private static final String TAG = "MainActivityFragment";
     static ViewPager mViewPager;
     static CustomAdapter mRecyclerAdapter;
@@ -639,35 +640,11 @@ public class MainActivityFragment extends Fragment {
     private void exportEvent() {
         Log.d(TAG, "exportEvent Start");
 
-        Log.d(TAG, Environment.getDataDirectory().getPath());
-
-        // ダイアログを表示してディレクトリを通知
-        CustomDialogFragment newFragment = CustomDialogFragment.newInstance(
-                "Export",
-                "Path : " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),
-                null,
-                null,
-                "0");
-        newFragment.setConfirmDialogListener(new CustomDialogFragment.ConfirmDialogListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-            @Override
-            public void onPositiveClick() {
-                Log.d(TAG, "exportEvent Click Positive");
-
-                if (Build.VERSION.SDK_INT >= 23) {
-                    checkPermission();
-                } else {
-                    callCsvAsyncTask();
-                }
-            }
-            @Override
-            public void onNegativeClick() {
-                Log.d(TAG, "exportEvent Click Negative");
-
-            }
-        });
-
-        newFragment.show(getFragmentManager(), "exportEvent");
+        if (Build.VERSION.SDK_INT >= 23) {
+            checkPermission();
+        } else {
+            callCsvAsyncTask();
+        }
 
         // 終了ダイアログ表示
         Log.d(TAG, "exportEvent End");
@@ -713,15 +690,19 @@ public class MainActivityFragment extends Fragment {
     private void requestIOPermission () {
         Log.d(TAG, "requestIOPermission Start");
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
+        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // 過去にリクエストを拒否した場合
+            Log.d(TAG, "requestIOPermission Aパターン");
 
         } else {
-            Toast.makeText(getContext(), "App requires permission to run.", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
+            // 初回リクエストの場合
+            // リクエストを「今後は表示しない」を選択した場合
+            // デバイスのポリシーでパーミッションが禁止されている場合
+            Log.d(TAG, "requestIOPermission Bパターン");
 
         }
 
+        requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
         Log.d(TAG, "requestIOPermission End");
     }
 
@@ -743,7 +724,7 @@ public class MainActivityFragment extends Fragment {
                 callCsvAsyncTask();
             } else {
                 // 拒否された場合
-                Toast.makeText(getContext(), "Cannot Export", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "App requires permission to run.", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -866,7 +847,10 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onDetach Start");
 
         settingChangedListener = null;
-        csvTask.setListener(null);
+
+        if (csvTask != null) {
+            csvTask.setListener(null);
+        }
 
         Log.d(TAG, "onDetach End");
     }

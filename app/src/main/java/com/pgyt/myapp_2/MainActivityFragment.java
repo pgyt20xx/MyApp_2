@@ -650,6 +650,18 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         Log.d(TAG, "exportEvent End");
     }
 
+    /**
+     * CSVファイルインポートイベント
+     */
+    private void importEvent() {
+        Log.d(TAG, "importEvent Start");
+
+        // 実装中
+
+        // 終了ダイアログ表示
+        Log.d(TAG, "importEvent End");
+    }
+
 
     /**
      * CsvAsyncTask呼出し
@@ -899,10 +911,16 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
                 deleteAllEvent();
                 return true;
 
-            case R.id.export:
+            case R.id.file_export:
                 // 全削除押下
-                Log.d(TAG, "export");
+                Log.d(TAG, "file_export selected");
                 exportEvent();
+                return true;
+
+            case R.id.file_import:
+                // 全削除押下
+                Log.d(TAG, "file_import selected");
+                importEvent();
                 return true;
 
             case R.id.action_settings:

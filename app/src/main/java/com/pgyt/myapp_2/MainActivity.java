@@ -51,6 +51,7 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
 import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
+import static com.pgyt.myapp_2.MainActivityFragment.getCurrentRecyclerView;
 import static com.pgyt.myapp_2.MainActivityFragment.selectedContents;
 
 /**
@@ -181,16 +182,24 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // アプリ内のコンテンツは登録しない。
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
         try {
-            // 既にあるクリップボードのコンテンツは登録しない
-//            Cursor cursor = new DBHelper(sqLiteDatabase).selectContents(new String[] {CLIP_BOARD_TITLE_NAME, item.getText().toString()});
-//            while (cursor.moveToNext()){
-//                selectedContents = cursor.getString(cursor.getColumnIndex(COLUMN_ID));
-//            }
-//            int cnt = cursor.getCount();
-//            cursor.close();
-//            if (cnt > 0) {
-//                return;
-//            }
+            // 最後に登録されたクリップボードタブのデータを取得する
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsLimitOne(new String[] {CLIP_BOARD_TITLE_NAME});
+
+            // 1件しか取得しないがループで処理しておく
+            String lastContentsId = BLANK_STRING;
+            String lastContents = BLANK_STRING;
+            while (cursor.moveToNext()){
+                lastContentsId = cursor.getString(cursor.getColumnIndex(COLUMN_ID));
+                lastContents = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS));
+            }
+            cursor.close();
+
+            // 最後に登録されたクリップボードタブのデータと同じだった場合は処理しない
+            if (lastContents.equals(item.getText().toString())) {
+                selectedContents = lastContentsId;
+                getCurrentRecyclerView().getAdapter().notifyDataSetChanged();
+                return;
+            }
 
             // コンテンツの登録
             ContentsBean contents = new ContentsBean();

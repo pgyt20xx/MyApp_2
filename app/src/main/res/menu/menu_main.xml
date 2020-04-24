@@ -21,8 +21,14 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/export"
+        android:id="@+id/file_export"
         android:title="@string/menu_export"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/file_import"
+        android:title="@string/menu_import"
         android:orderInCategory="100"
         app:showAsAction="never" />
 

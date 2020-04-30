@@ -41,16 +41,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITION;
-import static com.pgyt.myapp_2.CommonConstants.CLIP_BOARD_TITLE_NAME;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
-import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
-import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
+import static com.pgyt.myapp_2.CommonConstants.*;
+import static com.pgyt.myapp_2.CommonMethod.*;
 import static com.pgyt.myapp_2.MainActivityFragment.getCurrentRecyclerView;
 import static com.pgyt.myapp_2.MainActivityFragment.selectedContents;
 
@@ -118,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 }
 
                 // 2周目の呼び出し時は登録しない
-                // TODO insertNewContentsで最後に登録されたコンテンツと比較するように修正する？
                 if (item.getText().toString().equals(mPreviousText)) {
                     return;
                 }
@@ -266,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     /**
      * フラグメントを初期化し画面を再描画する
      */
-    private void initFragmentView() {
+    void initFragmentView() {
         Log.d(TAG, "initFragment Start");
 
         // フラグメントを取得する
@@ -305,85 +296,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "initFragment End");
     }
 
-    /**
-     * カテゴリー名取得
-     *
-     * @return ArrayList
-     */
-    private ArrayList<CategoryBean> getAllCategory() {
-        Log.d(TAG, "getAllCategory Start");
 
-        // DBからカテゴリー名を取得する
-        ArrayList<CategoryBean> result = new ArrayList<>();
-        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-        try {
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectCategory(BLANK_STRING);
-            boolean isEof = cursor.moveToFirst();
-            while (isEof) {
-                CategoryBean category = new CategoryBean();
-                category.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
-                category.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
-                result.add(category);
-                isEof = cursor.moveToNext();
-            }
-            cursor.close();
 
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
 
-        } finally {
-            sqLiteDatabase.close();
-        }
-
-        Log.d(TAG, "getAllCategory End");
-        return result;
-    }
-
-    /**
-     * 全コンテンツを取得
-     *
-     * @return HashMap
-     */
-    LinkedHashMap<String, ArrayList<ContentsBean>> getAllContents(ArrayList<CategoryBean> categoryList) {
-        Log.d(TAG, "getAllContents Start");
-
-        // DBからカテゴリー名を取得する
-        LinkedHashMap<String, ArrayList<ContentsBean>> result = new LinkedHashMap<>();
-        SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.getApplicationContext()).getWritableDatabase();
-
-        // 設定から最大行数を取得
-        int limit = MAX_ROWSIZE_DEFAULT;
-        if (this.settingMaxRow) {
-            limit = MAX_ROWSIZE_MAXIMUM;
-        }
-        try {
-            for (CategoryBean category : categoryList) {
-                Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsList(new String[]{category.getCategory_name(), String.valueOf(limit)});
-                boolean isEof = cursor.moveToFirst();
-                ArrayList<ContentsBean> contentsList = new ArrayList<>();
-                while (isEof) {
-                    ContentsBean contents = new ContentsBean();
-                    contents.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
-                    contents.setCategory_name(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
-                    contents.setContents_title(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS_TITLE)));
-                    contents.setContents(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS)));
-                    contentsList.add(contents);
-                    isEof = cursor.moveToNext();
-                }
-                result.put(category.getCategory_name(), contentsList);
-                cursor.close();
-            }
-
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-
-        } finally {
-            sqLiteDatabase.close();
-        }
-
-        Log.d(TAG, "getAllContents End");
-        return result;
-    }
 
     /**
      * ナビゲーションドロワー設定
@@ -414,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        Log.d(TAG, "onCreareOptionMenu getItemPosition End");
+        Log.d(TAG, "onCreateOptionMenu getItemPosition End");
         return true;
     }
 

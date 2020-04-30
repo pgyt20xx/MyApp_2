@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -45,25 +43,14 @@ import android.widget.Toast;
 import com.pgyt.myapp_2.model.CategoryBean;
 import com.pgyt.myapp_2.model.ContentsBean;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
-import static com.pgyt.myapp_2.CommonConstants.ARG_SECTION_NUMBER;
-import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_OFF;
-import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_ON;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
-import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITION;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
-import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
-import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
-import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
-import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
-import static com.pgyt.myapp_2.CommonConstants.REQUEST_IO_PERMISSION;
+import static com.pgyt.myapp_2.CommonConstants.*;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
@@ -315,6 +302,7 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
 
         // コンテンツ編集画面からの戻り
         if (requestCode == REQUEST_CODE_EDIT_CONTENTS) {
+            Log.d(TAG, "onActivityResult REQUEST_CODE_EDIT_CONTENTS");
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 // Intent取得
@@ -335,11 +323,32 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
 
         // 設定画面からの戻り
         if (requestCode == REQUEST_CODE_SETTING) {
+            Log.d(TAG, "onActivityResult REQUEST_CODE_SETTING");
             if (resultCode == RESULT_OK) {
                 boolean isChanged = intent.getBooleanExtra("settingChangedFlg", false);
                 settingChangedListener.onSettingChangedListener(isChanged);
             }
         }
+
+        // ファイル選択
+        if (requestCode == REQUEST_CODE_CHOSE_FILE) {
+            Log.d(TAG, "onActivityResult REQUEST_CODE_CHOSE_FILE");
+            if (resultCode == RESULT_OK) {
+                try {
+                    String filePath = intent.getDataString();
+                    filePath = filePath.substring(filePath.indexOf("storage"));
+                    String decodedFilePath = URLDecoder.decode(filePath, "utf-8");
+                    callCsvAsyncTask(CSV_IMPORT, decodedFilePath);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "File import error " + e.getCause(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        }
+
+
         Log.d(TAG, "onActivityResult End");
     }
 
@@ -643,7 +652,7 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermission();
         } else {
-            callCsvAsyncTask();
+            callCsvAsyncTask(CSV_EXPORT, BLANK_STRING);
         }
 
         // 終了ダイアログ表示
@@ -656,23 +665,26 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
     private void importEvent() {
         Log.d(TAG, "importEvent Start");
 
-        // 実装中
+        // ファイル選択を呼び出す
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        startActivityForResult(intent, REQUEST_CODE_CHOSE_FILE);
 
         // 終了ダイアログ表示
         Log.d(TAG, "importEvent End");
     }
 
-
     /**
      * CsvAsyncTask呼出し
      */
-    private void callCsvAsyncTask () {
+    private void callCsvAsyncTask(String impOrExp, String importFilePath) {
         Log.d(TAG, "callCsvAsyncTask Start");
 
         // AsyncTask呼出し
         csvTask = new CsvAsyncTask();
         csvTask.setListener(createCsvAsyncListener());
-        csvTask.execute(CSV_EXPORT);
+        csvTask.execute(impOrExp, importFilePath);
 
         Log.d(TAG, "callCsvAsyncTask End");
     }
@@ -681,16 +693,16 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
     /**
      * IOパーミッションチェックを行う。
      */
-    private void checkPermission () {
+    private void checkPermission() {
         Log.d(TAG, "checkPermission Start");
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             // 既に許可している場合
-            callCsvAsyncTask();
+            callCsvAsyncTask(CSV_EXPORT, BLANK_STRING);
 
         } else {
             // 拒否していた場合
-             requestIOPermission();
+            requestIOPermission();
         }
 
         Log.d(TAG, "checkPermission End");
@@ -699,7 +711,7 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
     /**
      * IOパーミッションの許可を求める。
      */
-    private void requestIOPermission () {
+    private void requestIOPermission() {
         Log.d(TAG, "requestIOPermission Start");
 
         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -714,12 +726,11 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
 
         }
 
-        requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IO_PERMISSION);
         Log.d(TAG, "requestIOPermission End");
     }
 
     /**
-     *
      * パーミッション許可のユーザー操作によるコールバック
      *
      * @param requestCode
@@ -727,13 +738,13 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
      * @param grantResults
      */
     @Override
-    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult Start");
 
         if (requestCode == REQUEST_IO_PERMISSION) {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 使用が許可された場合
-                callCsvAsyncTask();
+                callCsvAsyncTask(CSV_EXPORT, BLANK_STRING);
             } else {
                 // 拒否された場合
                 Toast.makeText(getContext(), "App requires permission to run.", Toast.LENGTH_SHORT).show();
@@ -1050,14 +1061,25 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         return result;
     }
 
-    private CsvAsyncTask.Listener createCsvAsyncListener(){
+    private CsvAsyncTask.Listener createCsvAsyncListener() {
         return new CsvAsyncTask.Listener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onSuccess(String result) {
                 Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+                if (IMPORT_SUCCESS.equals(result)) {
+                    initAllData();
+
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.initFragmentView();
+                }
             }
         };
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void initAllData() {
+        mCategoryList = CommonMethod.getAllCategory();
+        mContentsListMap = CommonMethod.getAllContents(mCategoryList);
+    }
 }

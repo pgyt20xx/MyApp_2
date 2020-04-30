@@ -33,8 +33,10 @@ class CommonConstants {
     static final boolean CHECK_VISIBLE_FLG_ON = true;
     static final boolean CHECK_VISIBLE_FLG_OFF = false;
     static final int CLIPBOARD_TAB_POSITION = 0;
+    static final int REQUEST_IO_PERMISSION = 1000;
     static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     static final int REQUEST_CODE_SETTING = 1002;
+    static final int REQUEST_CODE_CHOSE_FILE = 1003;
     static final int MAX_ROWSIZE_DEFAULT = 20;
     static final int MAX_ROWSIZE_MAXIMUM = 50;
     static final String BLANK_STRING = "";
@@ -43,7 +45,15 @@ class CommonConstants {
     static final String STATUS_BAR_TITLE = "Current ClipBoard";
     static final String CSV_EXPORT = "1";
     static final String CSV_IMPORT = "2";
-    static final int REQUEST_IO_PERMISSION = 1000;
     static final int NOTIFICATION_ID = 10;
+    static final String ESCAPE_DOUBLE_QUOTE = "\"";
+    static final String BRACE_LEFT = "{";
+    static final String BRACE_RIGHT = "}";
+    static final String COLON = ":";
+    static final String COMMA = ",";
+    static final String EXPORT_SUCCESS = "export is succeed";
+    static final String IMPORT_SUCCESS = "import is succeed";
+    static final String EXPORT_FAILURE = "export is failed";
+    static final String IMPORT_FAILURE = "import is failed";
 
 }

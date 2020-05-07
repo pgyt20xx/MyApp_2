@@ -18,15 +18,14 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
-import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_DEFAULT;
-import static com.pgyt.myapp_2.CommonConstants.MAX_ROWSIZE_MAXIMUM;
-import static com.pgyt.myapp_2.MainActivity.*;
+import static com.pgyt.myapp_2.CommonConstants.MAX_ROW_SIZE_DEFAULT;
+import static com.pgyt.myapp_2.CommonConstants.MAX_ROW_SIZE_MAXIMUM;
+import static com.pgyt.myapp_2.MainActivity.settingMaxRow;
 
 public class CommonMethod {
-    private Context context;
     private static final String TAG = "CommonMethod";
 
-    public CommonMethod(){
+    public CommonMethod() {
     }
 
     /**
@@ -80,9 +79,9 @@ public class CommonMethod {
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
 
         // 設定から最大行数を取得
-        int limit = MAX_ROWSIZE_DEFAULT;
+        int limit = MAX_ROW_SIZE_DEFAULT;
         if (settingMaxRow) {
-            limit = MAX_ROWSIZE_MAXIMUM;
+            limit = MAX_ROW_SIZE_MAXIMUM;
         }
         try {
             for (CategoryBean category : categoryList) {

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -52,9 +53,11 @@ public class CustomDialogFragment extends DialogFragment {
         return frag;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        assert getArguments() != null;
         String title = getArguments().getString(ARG_TITLE);
         String message = getArguments().getString(ARG_MESSAGE);
         String editTitle1 = getArguments().getString(ARG_EDIT_TITLE_1);
@@ -203,7 +206,7 @@ public class CustomDialogFragment extends DialogFragment {
     /**
      * リスナーを追加する(確認ダイアログ)
      *
-     * @param listener
+     * @param listener リスナー
      */
     public void setConfirmDialogListener(ConfirmDialogListener listener) {
         this.confirmDialogListener = listener;
@@ -212,7 +215,7 @@ public class CustomDialogFragment extends DialogFragment {
     /**
      * リスナーを追加する(登録・編集ダイアログ)
      *
-     * @param listener
+     * @param listener リスナー
      */
     public void setEditDialogListener1(EditDialogListener1 listener) {
         this.editDialogListener1 = listener;
@@ -221,18 +224,18 @@ public class CustomDialogFragment extends DialogFragment {
     /**
      * リスナーを追加する(登録・編集ダイアログ)
      *
-     * @param listener
+     * @param listener リスナー
      */
     public void setEditDialogListener2(EditDialogListener2 listener) {
         this.editDialogListener2 = listener;
     }
 
-    /**
-     * リスナーを削除する
-     */
-    public void removeDialogListener() {
-
-    }
+//    /**
+//     * リスナーを削除する
+//     */
+//    public void removeDialogListener() {
+//
+//    }
 
     /**
      * 確認ダイアログリスナー

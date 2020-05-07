@@ -32,8 +32,7 @@ class DBHelper {
      * @param params CategoryBean
      */
     long insertCategory(CategoryBean params) {
-        long id = this.sqLiteDatabase.insert(TABLE_NAME_CATEGORY, BLANK_STRING, params.getParams());
-        return id;
+        return this.sqLiteDatabase.insert(TABLE_NAME_CATEGORY, BLANK_STRING, params.getParams());
     }
 
     /**
@@ -42,8 +41,7 @@ class DBHelper {
      * @param params ContentsBean
      */
     long insertContents(ContentsBean params) {
-        long id = this.sqLiteDatabase.insert(TABLE_NAME_CONTENTS, BLANK_STRING, params.getParams());
-        return id;
+        return this.sqLiteDatabase.insert(TABLE_NAME_CONTENTS, BLANK_STRING, params.getParams());
     }
 
     /**
@@ -54,8 +52,7 @@ class DBHelper {
     int updateContents(ContentsBean param) {
         ContentValues cv = new ContentValues();
         cv.put("contents", param.getContents());
-        int cnt = this.sqLiteDatabase.update(TABLE_NAME_CONTENTS, cv, "id = ?", new String[]{String.valueOf(param.getId())});
-        return cnt;
+        return this.sqLiteDatabase.update(TABLE_NAME_CONTENTS, cv, "id = ?", new String[]{String.valueOf(param.getId())});
     }
 
 
@@ -116,6 +113,16 @@ class DBHelper {
     }
 
     /**
+     * コンテンツを全件取得する。(エクスポート用)
+     *
+     * @return Cursor
+     */
+    Cursor selectAllContentsAsc() {
+        String sql = "SELECT id, category_name, contents_title, contents FROM CONTENTS ORDER BY id ASC;";
+        return this.sqLiteDatabase.rawQuery(sql, null);
+    }
+
+    /**
      * コンテンツを全件取得する。
      *
      * @return Cursor
@@ -166,24 +173,24 @@ class DBHelper {
 //        }
 //    }
 
-    /**
-     * データベース削除
-     *
-     * @param context Context
-     * @return boolean
-     * TODO; 不要であれば削除する
-     */
-    boolean isDatabaseDelete(final Context context) {
-        boolean result = false;
-
-        if (this.sqLiteDatabase != null) {
-            File file = context.getDatabasePath(new DBOpenHelper(context).getDatabaseName());
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                result = SQLiteDatabase.deleteDatabase(file);
-            }
-        }
-        return result;
-    }
+//    /**
+//     * データベース削除
+//     *
+//     * @param context Context
+//     * @return boolean
+//     * TODO; 不要であれば削除する
+//     */
+//    boolean isDatabaseDelete(final Context context) {
+//        boolean result = false;
+//
+//        if (this.sqLiteDatabase != null) {
+//            File file = context.getDatabasePath(new DBOpenHelper(context).getDatabaseName());
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                result = SQLiteDatabase.deleteDatabase(file);
+//            }
+//        }
+//        return result;
+//    }
 
 }

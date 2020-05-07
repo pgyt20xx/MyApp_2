@@ -10,7 +10,7 @@ public class MyContext {
     private static MyContext instance = null;
     private Context applicationContext;
 
-    static void onCreateApplication(Context applicationContext) {
+    private static void onCreateApplication(Context applicationContext) {
         instance = new MyContext(applicationContext);
     }
 
@@ -18,14 +18,14 @@ public class MyContext {
         this.applicationContext = applicationContext;
     }
 
-    public static MyContext getInstance() {
+    static MyContext getInstance() {
         if (instance == null) {
             throw new RuntimeException("MyContext should be initialized");
         }
         return instance;
     }
 
-    public Context getMyContext() {
+    Context getMyContext() {
         return this.applicationContext;
     }
 

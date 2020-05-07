@@ -42,7 +42,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.pgyt.myapp_2.CommonConstants.*;
-import static com.pgyt.myapp_2.CommonMethod.*;
+import static com.pgyt.myapp_2.CommonMethod.getAllCategory;
+import static com.pgyt.myapp_2.CommonMethod.getAllContents;
 import static com.pgyt.myapp_2.MainActivityFragment.getCurrentRecyclerView;
 import static com.pgyt.myapp_2.MainActivityFragment.selectedContents;
 
@@ -174,12 +175,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
         try {
             // 最後に登録されたクリップボードタブのデータを取得する
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsLimitOne(new String[] {CLIP_BOARD_TITLE_NAME});
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectContentsLimitOne(new String[]{CLIP_BOARD_TITLE_NAME});
 
             // 1件しか取得しないがループで処理しておく
             String lastContentsId = BLANK_STRING;
             String lastContents = BLANK_STRING;
-            while (cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 lastContentsId = cursor.getString(cursor.getColumnIndex(COLUMN_ID));
                 lastContents = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENTS));
             }
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         Log.d(TAG, "insertNewContents End");
     }
 
-    static String getNowDate(){
+    static String getNowDate() {
         final DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         final Date date = new Date(System.currentTimeMillis());
         return df.format(date);
@@ -234,9 +235,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         // 最大行数
         this.settingMaxRow = preferences.getBoolean("checkbox_maxrow_key", false);
-        this.mMaxRowSize = MAX_ROWSIZE_DEFAULT;
+        this.mMaxRowSize = MAX_ROW_SIZE_DEFAULT;
         if (settingMaxRow) {
-            mMaxRowSize = MAX_ROWSIZE_MAXIMUM;
+            mMaxRowSize = MAX_ROW_SIZE_MAXIMUM;
         }
 
     }
@@ -295,9 +296,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         tabLayout.setupWithViewPager(viewPager);
         Log.d(TAG, "initFragment End");
     }
-
-
-
 
 
     /**

@@ -1,6 +1,7 @@
 package com.pgyt.myapp_2;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -50,7 +51,24 @@ import java.util.LinkedHashMap;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
-import static com.pgyt.myapp_2.CommonConstants.*;
+import static com.pgyt.myapp_2.CommonConstants.ARG_SECTION_NUMBER;
+import static com.pgyt.myapp_2.CommonConstants.ARG_TITLE_NAME;
+import static com.pgyt.myapp_2.CommonConstants.BLANK_STRING;
+import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_OFF;
+import static com.pgyt.myapp_2.CommonConstants.CHECK_VISIBLE_FLG_ON;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_NAME;
+import static com.pgyt.myapp_2.CommonConstants.CLIPBOARD_TAB_POSITION;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
+import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
+import static com.pgyt.myapp_2.CommonConstants.CSV_IMPORT;
+import static com.pgyt.myapp_2.CommonConstants.IMPORT_SUCCESS;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_CHOSE_FILE;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
+import static com.pgyt.myapp_2.CommonConstants.REQUEST_IO_PERMISSION;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
@@ -60,6 +78,7 @@ import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
  */
 public class MainActivityFragment extends Fragment implements OnRequestPermissionsResultCallback {
     private static final String TAG = "MainActivityFragment";
+    @SuppressLint("StaticFieldLeak")
     static ViewPager mViewPager;
     static CustomAdapter mRecyclerAdapter;
     static String selectedContents = null;
@@ -108,19 +127,20 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         Log.d(TAG, "onCreateView Start");
 
         // パラメータ取得
+        assert getArguments() != null;
         final String mCategoryName = getArguments().getString(ARG_TITLE_NAME);
 
         // viewを取得
         View view = inflater.inflate(R.layout.content_main, container, false);
 
         // ページャー取得
-        mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+        mViewPager = getActivity().findViewById(R.id.pager);
 
         // ナビゲーションドロワーリスト設定
         setDrawerList();
 
         // リサイクルビューの設定
-        final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        final RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new RecyclerItemDecoration(getContext()));
@@ -336,6 +356,8 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
             if (resultCode == RESULT_OK) {
                 try {
                     String filePath = intent.getDataString();
+
+                    assert filePath != null;
                     filePath = filePath.substring(filePath.indexOf("storage"));
                     String decodedFilePath = URLDecoder.decode(filePath, "utf-8");
                     callCsvAsyncTask(CSV_IMPORT, decodedFilePath);
@@ -662,6 +684,7 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
     /**
      * CSVファイルインポートイベント
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void importEvent() {
         Log.d(TAG, "importEvent Start");
 
@@ -898,6 +921,7 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
      * @param item MenuItem
      * @return boolean
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected getItemPosition Start");

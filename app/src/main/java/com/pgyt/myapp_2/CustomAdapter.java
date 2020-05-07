@@ -1,9 +1,9 @@
 package com.pgyt.myapp_2;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,7 +31,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private OnImageItemClickListener imageItemClickListener;
     private OnItemLongClickListener itemLongClickListener;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    // Provide a suitable constructor (depends on the kind of dataSet)
     CustomAdapter(Context context, String title) {
         this.mTitle = title;
         this.layoutInflater = LayoutInflater.from(context);
@@ -53,12 +53,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         private ViewHolder(View v) {
             super(v);
-            mCheckBox = (CheckBox) v.findViewById(R.id.checkbox);
-            mContentsTitle = (TextView) v.findViewById(R.id.text_contents_title);
-            mContents = (TextView) v.findViewById(R.id.text_contents);
-            mRowId = (TextView) v.findViewById(R.id.row_id);
-            mRowSetting = (ImageView) v.findViewById(R.id.image_clip_setting);
-            mRow = (LinearLayout) v.findViewById(R.id.row);
+            mCheckBox = v.findViewById(R.id.checkbox);
+            mContentsTitle = v.findViewById(R.id.text_contents_title);
+            mContents = v.findViewById(R.id.text_contents);
+            mRowId = v.findViewById(R.id.row_id);
+            mRowSetting = v.findViewById(R.id.image_clip_setting);
+            mRow = v.findViewById(R.id.row);
 
         }
 
@@ -72,8 +72,9 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder Start");
 
         // create a new view
@@ -82,7 +83,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
         Log.d(TAG, "onCreateViewHolder End");
 
-        // set the view's size, margins, paddings and layout parameters
+        // set the view's size, margins, padding and layout parameters
         return new ViewHolder(view);
     }
 
@@ -92,7 +93,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder Start");
 
-        // - get element from your dataset at this position
+        // - get element from your dataSet at this position
         // - replace the contents of the view with that element
         holder.mContentsTitle.setText(mContentsListMap.get(mTitle).get(position).getContents_title());
         if (mContentsListMap.get(mTitle).get(position) == null) {
@@ -177,7 +178,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
         Log.d(TAG, "onBindViewHolder End");
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of your dataSet (invoked by the layout manager)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public int getItemCount() {

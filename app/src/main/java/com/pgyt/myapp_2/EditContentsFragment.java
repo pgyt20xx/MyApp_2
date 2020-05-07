@@ -106,7 +106,8 @@ public class EditContentsFragment extends Fragment {
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(getActivity()).getWritableDatabase();
         try {
             // 編集内容で更新
-            new DBHelper(sqLiteDatabase).updateContents(param);
+            int cnt = new DBHelper(sqLiteDatabase).updateContents(param);
+            Log.d(TAG, "updateContents Update Count: " + cnt);
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());

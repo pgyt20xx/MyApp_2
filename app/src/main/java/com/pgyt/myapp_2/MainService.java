@@ -232,9 +232,11 @@ public class MainService extends Service {
         return mBinder;
     }
 
-    public class MyBinder extends Binder {
-        MainService getService () {
+    class MyBinder extends Binder {
+        MainService getService() {
             return MainService.this;
-        };
+        }
+
+        ;
     }
 }

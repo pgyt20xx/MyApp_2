@@ -37,8 +37,8 @@ class CommonConstants {
     static final int REQUEST_CODE_EDIT_CONTENTS = 1001;
     static final int REQUEST_CODE_SETTING = 1002;
     static final int REQUEST_CODE_CHOSE_FILE = 1003;
-    static final int MAX_ROWSIZE_DEFAULT = 20;
-    static final int MAX_ROWSIZE_MAXIMUM = 50;
+    static final int MAX_ROW_SIZE_DEFAULT = 20;
+    static final int MAX_ROW_SIZE_MAXIMUM = 50;
     static final String BLANK_STRING = "";
     static final String CLIPBOARD_TAB_NAME = "CLIPBOARD";
     static final String CLIP_BOARD_TITLE_NAME = "ClipBoard";

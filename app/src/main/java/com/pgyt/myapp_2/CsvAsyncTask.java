@@ -1,5 +1,6 @@
 package com.pgyt.myapp_2;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.pgyt.myapp_2.model.CategoryBean;
@@ -25,13 +25,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import static com.pgyt.myapp_2.CommonConstants.*;
-import static com.pgyt.myapp_2.MainActivity.mCategoryList;
-import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
+import static com.pgyt.myapp_2.CommonConstants.BRACE_LEFT;
+import static com.pgyt.myapp_2.CommonConstants.BRACE_RIGHT;
+import static com.pgyt.myapp_2.CommonConstants.COLON;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CATEGORY_NAME;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
+import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
+import static com.pgyt.myapp_2.CommonConstants.COMMA;
+import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
+import static com.pgyt.myapp_2.CommonConstants.CSV_IMPORT;
+import static com.pgyt.myapp_2.CommonConstants.ESCAPE_DOUBLE_QUOTE;
+import static com.pgyt.myapp_2.CommonConstants.EXPORT_FAILURE;
+import static com.pgyt.myapp_2.CommonConstants.EXPORT_SUCCESS;
+import static com.pgyt.myapp_2.CommonConstants.IMPORT_FAILURE;
+import static com.pgyt.myapp_2.CommonConstants.IMPORT_SUCCESS;
 
 /**
  * MyAsyncTask
@@ -39,8 +49,9 @@ import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 
 class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
-    private static final String TAG = "MyAsyncTask";
+    private static final String TAG = "CsvAsyncTask";
     private Listener listener;
+    @SuppressLint("StaticFieldLeak")
     private Context context;
 
     @Override
@@ -54,7 +65,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
     /**
      * @param strings [import or export, importFilePath]
-     * @return
+     * @return String result
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -76,7 +87,6 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 if (csvExport()) {
                     result = EXPORT_SUCCESS;
                 }
-                ;
 
                 break;
 
@@ -88,7 +98,6 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 if (csvImport(importFilePath)) {
                     result = IMPORT_SUCCESS;
                 }
-                ;
 
                 break;
 
@@ -131,20 +140,20 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
         // ディレクトリの存在確認・作成
         File outDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-        if (!outDir.exists()) {
-            outDir.mkdir();
-        }
+//        if (!outDir.exists()) {
+//            outDir.mkdir();
+//        }
 
         try {
             // ファイル作成
             outFile = new File(outDir, "YourClipExport" + MainActivity.getNowDate() + ".json");
-            outFile.createNewFile();
+//            outFile.createNewFile();
             printWriter = new PrintWriter(new FileWriter(outFile));
 
             SQLiteDatabase sqLiteDatabase = new DBOpenHelper(context).getWritableDatabase();
 
             // コンテンツテーブル全件取得
-            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContents();
+            Cursor cursor = new DBHelper(sqLiteDatabase).selectAllContentsAsc();
 
             String id;
             String categoryName;
@@ -200,11 +209,11 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
         SQLiteDatabase sqLiteDatabase = new DBOpenHelper(this.context).getWritableDatabase();
         try (FileInputStream fileInputStream = new FileInputStream(filePath);
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));) {
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream))) {
 
             // CSVファイル読み込み
             String line;
-            LinkedHashSet categorySet = new LinkedHashSet<String>();
+            LinkedHashSet<String> categorySet = new LinkedHashSet<>();
             while ((line = bufferedReader.readLine()) != null) {
 
                 JSONObject json = new JSONObject(line);
@@ -218,6 +227,8 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 param.setContents_title(contents_title);
                 param.setContents(contents);
                 int id = (int) new DBHelper(sqLiteDatabase).insertContents(param);
+
+                Log.d(TAG, "Insert Contents ID:" + id);
 
                 // カテゴリーテーブルインサート用
                 categorySet.add(category_name);
@@ -240,6 +251,8 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
                 CategoryBean param = new CategoryBean();
                 param.setCategory_name(category);
                 int id = (int) new DBHelper(sqLiteDatabase).insertCategory(param);
+
+                Log.d(TAG, "Insert Category ID:" + id);
 
             }
 

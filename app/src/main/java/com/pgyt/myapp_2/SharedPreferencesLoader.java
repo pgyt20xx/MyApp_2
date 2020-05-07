@@ -16,7 +16,7 @@ public class SharedPreferencesLoader extends AsyncTaskLoader<SharedPreferences>
     private PreferenceChangeListener preferenceChangeListener;
     private SharedPreferences prefs;
 
-    public SharedPreferencesLoader(Context context) {
+    SharedPreferencesLoader(Context context) {
         super(context);
     }
 

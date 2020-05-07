@@ -15,7 +15,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
             Log.d(TAG, "onReceive Application Start MyApp_2");
 
             // サービスを起動

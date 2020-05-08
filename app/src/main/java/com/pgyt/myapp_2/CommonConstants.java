@@ -55,5 +55,6 @@ class CommonConstants {
     static final String IMPORT_SUCCESS = "import is succeed";
     static final String EXPORT_FAILURE = "export is failed";
     static final String IMPORT_FAILURE = "import is failed";
+    static final String LINE_FEED = "\r\n";
 
 }

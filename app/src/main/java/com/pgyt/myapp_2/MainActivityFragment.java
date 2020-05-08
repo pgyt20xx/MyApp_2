@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -64,11 +65,13 @@ import static com.pgyt.myapp_2.CommonConstants.COLUMN_CONTENTS_TITLE;
 import static com.pgyt.myapp_2.CommonConstants.COLUMN_ID;
 import static com.pgyt.myapp_2.CommonConstants.CSV_EXPORT;
 import static com.pgyt.myapp_2.CommonConstants.CSV_IMPORT;
+import static com.pgyt.myapp_2.CommonConstants.EXPORT_SUCCESS;
 import static com.pgyt.myapp_2.CommonConstants.IMPORT_SUCCESS;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_CHOSE_FILE;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_EDIT_CONTENTS;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_CODE_SETTING;
 import static com.pgyt.myapp_2.CommonConstants.REQUEST_IO_PERMISSION;
+import static com.pgyt.myapp_2.CommonConstants.LINE_FEED;
 import static com.pgyt.myapp_2.MainActivity.mCategoryList;
 import static com.pgyt.myapp_2.MainActivity.mContentsListMap;
 import static com.pgyt.myapp_2.MainActivity.mMaxRowSize;
@@ -698,16 +701,21 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         Log.d(TAG, "importEvent End");
     }
 
+
     /**
-     * CsvAsyncTask呼出し
+     * @param impOrExp インポートかエクスポートか
+     * @param importFilePath インポート時のみインポートファイルパス
      */
     private void callCsvAsyncTask(String impOrExp, String importFilePath) {
         Log.d(TAG, "callCsvAsyncTask Start");
 
+        // エクスポート時のファイルパスをダウンロードディレクトリ直下に設定
+        String exportFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+
         // AsyncTask呼出し
         csvTask = new CsvAsyncTask();
         csvTask.setListener(createCsvAsyncListener());
-        csvTask.execute(impOrExp, importFilePath);
+        csvTask.execute(impOrExp, importFilePath, exportFilePath);
 
         Log.d(TAG, "callCsvAsyncTask End");
     }
@@ -1089,13 +1097,20 @@ public class MainActivityFragment extends Fragment implements OnRequestPermissio
         return new CsvAsyncTask.Listener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
-            public void onSuccess(String result) {
-                Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            public void onSuccess(String result, String importFilePath, String exportFilePath) {
                 if (IMPORT_SUCCESS.equals(result)) {
-                    initAllData();
+                    Toast.makeText(getContext(), result + LINE_FEED + importFilePath, Toast.LENGTH_SHORT).show();
 
+                    initAllData();
                     MainActivity mainActivity = (MainActivity) getActivity();
                     mainActivity.initFragmentView();
+
+                } else if (EXPORT_SUCCESS.equals(result)) {
+                    Toast.makeText(getContext(), result + LINE_FEED + exportFilePath, Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
                 }
             }
         };

@@ -53,6 +53,8 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
     private Listener listener;
     @SuppressLint("StaticFieldLeak")
     private Context context;
+    private String importFilePath = null;
+    private String exportFilePath = null;
 
     @Override
     protected void onPreExecute() {
@@ -73,8 +75,10 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
         Log.d(TAG, "doInBackground Start");
 
+        this.importFilePath = strings[1];
+        this.exportFilePath = strings[2];
+
         String impOrExp = strings[0];
-        String importFilePath = strings[1];
         String result = null;
 
         // 本処理
@@ -84,7 +88,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
                 result = EXPORT_FAILURE;
 
-                if (csvExport()) {
+                if (csvExport(exportFilePath)) {
                     result = EXPORT_SUCCESS;
                 }
 
@@ -117,7 +121,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
 
         // 後処理
         if (listener != null) {
-            listener.onSuccess(result);
+            listener.onSuccess(result, this.importFilePath, this.exportFilePath);
         }
     }
 
@@ -125,7 +129,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
      * CSVエクスポート処理
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private Boolean csvExport() {
+    private Boolean csvExport(String filepath) {
         Log.d(TAG, "csvExport Start");
 
         File outFile;
@@ -138,8 +142,7 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
         }
 
         // ディレクトリの存在確認・作成
-        File outDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        File outDir = new File(filepath);
 //        if (!outDir.exists()) {
 //            outDir.mkdir();
 //        }
@@ -278,6 +281,6 @@ class CsvAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     interface Listener {
-        void onSuccess(String result);
+        void onSuccess(String result, String importFilePath, String exportFilePath);
     }
 }
